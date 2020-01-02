@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3B89B204-2765-4EC7-A254-ADE5803409E3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Schmidt.TechnicalPlan</RootNamespace>
+    <AssemblyName>Schmidt.TechnicalPlan</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\Ic90dev\Plugins\TechnicalPlan\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\Ic90dev\Plugins\TechnicalPlan\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="KD.Plugin.Word">
+      <HintPath>..\..\..\..\Ic90dev\Plugins\Standard\Word\KD.Plugin.Word.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kd.sdk">
+      <HintPath>..\..\..\..\Ic90dev\kd.sdk.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Syncfusion.Compression.Base">
+      <HintPath>..\..\..\..\GitHub\ExternalReferences\Syncfusion\Essential Studio\13.4.0.53\precompiledassemblies\13.4.0.53\4.0\Syncfusion.Compression.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.DocIO.Base">
+      <HintPath>..\..\..\..\GitHub\ExternalReferences\Syncfusion\Essential Studio\13.4.0.53\precompiledassemblies\13.4.0.53\4.0\Syncfusion.DocIO.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.DocToPdfConverter.Base">
+      <HintPath>..\..\..\..\GitHub\ExternalReferences\Syncfusion\Essential Studio\13.4.0.53\precompiledassemblies\13.4.0.53\4.0\Syncfusion.DocToPdfConverter.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Pdf.Base">
+      <HintPath>..\..\..\..\GitHub\ExternalReferences\Syncfusion\Essential Studio\13.4.0.53\precompiledassemblies\13.4.0.53\4.0\Syncfusion.Pdf.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.PdfViewer.Windows">
+      <HintPath>..\..\..\..\GitHub\ExternalReferences\Syncfusion\Essential Studio\13.4.0.53\precompiledassemblies\13.4.0.53\4.0\Syncfusion.PdfViewer.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Shared.Base">
+      <HintPath>..\..\..\..\GitHub\ExternalReferences\Syncfusion\Essential Studio\13.4.0.53\precompiledassemblies\13.4.0.53\4.0\Syncfusion.Shared.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Tools.Windows">
+      <HintPath>..\..\..\..\GitHub\ExternalReferences\Syncfusion\Essential Studio\13.4.0.53\precompiledassemblies\13.4.0.53\4.0\Syncfusion.Tools.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\Analysis\SceneAnalysis.cs">
+      <Link>src\Analysis\SceneAnalysis.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\App\KDConfig.cs">
+      <Link>src\App\KDConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\Const\LayerConst.cs">
+      <Link>src\Const\LayerConst.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\Const\SubTypeConst.cs">
+      <Link>src\Const\SubTypeConst.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\Const\TopicConst.cs">
+      <Link>src\Const\TopicConst.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\InSitu\InSitu.Ini.cs">
+      <Link>src\InSitu\InSitu.Ini.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\Maths\Maths.cs">
+      <Link>src\Maths\Maths.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\Model\TypedArticle.cs">
+      <Link>src\Model\TypedArticle.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\Model\TypedArticles.cs">
+      <Link>src\Model\TypedArticles.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\SDK\CatalogHelper.cs">
+      <Link>src\SDK\CatalogHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\SDK\ScriptHelper.cs">
+      <Link>src\SDK\ScriptHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\System\AssemblyHelper.cs">
+      <Link>src\System\AssemblyHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\System\CsvHelper.cs">
+      <Link>src\System\CsvHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\System\DataHelper.cs">
+      <Link>src\System\DataHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\System\HSLColor.cs">
+      <Link>src\System\HSLColor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\System\ImageHelper.cs">
+      <Link>src\System\ImageHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\System\IniHelper.cs">
+      <Link>src\System\IniHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common Source Developpement\KD.Plugin.Core\src\Translate\DialogMessage.cs">
+      <Link>src\Translate\DialogMessage.cs</Link>
+    </Compile>
+    <Compile Include="GenerateViewDialogForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GenerateViewDialogForm.Designer.cs">
+      <DependentUpon>GenerateViewDialogForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SellerResponsabilityMessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SellerResponsabilityMessageForm.Designer.cs">
+      <DependentUpon>SellerResponsabilityMessageForm.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GenerateViewDialogForm.resx">
+      <DependentUpon>GenerateViewDialogForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SellerResponsabilityMessageForm.resx">
+      <DependentUpon>SellerResponsabilityMessageForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ico.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\print.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\settings.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\twin.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
