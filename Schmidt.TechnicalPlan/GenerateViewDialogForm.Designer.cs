@@ -39,7 +39,7 @@
             this.PaperList_CBX = new System.Windows.Forms.ComboBox();
             this.ScaleList_CBX = new System.Windows.Forms.ComboBox();
             this.PdfDocumentView_SyncPDFV = new Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView();
-            this.myImageButton = new Schmidt.TechnicalPlan.MyImageButton();
+            this.MyImageButton = new Schmidt.TechnicalPlan.MyImageButton();
             this.MyListView_MLV = new Schmidt.TechnicalPlan.MyListView();
             this.iconBar_TSP.SuspendLayout();
             this.SuspendLayout();
@@ -143,19 +143,20 @@
             this.PdfDocumentView_SyncPDFV.TabIndex = 0;
             this.PdfDocumentView_SyncPDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.Default;
             // 
-            // myImageButton
+            // MyImageButton
             // 
-            this.myImageButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("myImageButton.BackgroundImage")));
-            this.myImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.myImageButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.myImageButton.Location = new System.Drawing.Point(216, 130);
-            this.myImageButton.Margin = new System.Windows.Forms.Padding(0);
-            this.myImageButton.Name = "myImageButton";
-            this.myImageButton.Size = new System.Drawing.Size(55, 55);
-            this.myImageButton.TabIndex = 17;
-            this.myImageButton.Tag = "";
-            this.myImageButton.UseVisualStyleBackColor = true;
-            this.myImageButton.Visible = false;
+            this.MyImageButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("MyImageButton.BackgroundImage")));
+            this.MyImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.MyImageButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.MyImageButton.Location = new System.Drawing.Point(216, 130);
+            this.MyImageButton.Margin = new System.Windows.Forms.Padding(0);
+            this.MyImageButton.Name = "MyImageButton";
+            this.MyImageButton.Size = new System.Drawing.Size(55, 55);
+            this.MyImageButton.TabIndex = 17;
+            this.MyImageButton.Tag = "";
+            this.MyImageButton.UseVisualStyleBackColor = true;
+            this.MyImageButton.Visible = false;
+            this.MyImageButton.Click += new System.EventHandler(this.MyImageButton_Click);
             // 
             // MyListView_MLV
             // 
@@ -185,7 +186,7 @@
             this.ClientSize = new System.Drawing.Size(984, 761);
             this.Controls.Add(this.ScaleList_CBX);
             this.Controls.Add(this.PdfDocumentView_SyncPDFV);
-            this.Controls.Add(this.myImageButton);
+            this.Controls.Add(this.MyImageButton);
             this.Controls.Add(this.OrientationList_CBX);
             this.Controls.Add(this.iconBar_TSP);
             this.Controls.Add(this.PaperList_CBX);
@@ -213,7 +214,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton openFolder_BTN;
         private MyListView MyListView_MLV;
-        private MyImageButton myImageButton;
+        private MyImageButton MyImageButton;
         private System.Windows.Forms.ComboBox OrientationList_CBX;
         private System.Windows.Forms.ComboBox PaperList_CBX;
         public System.Windows.Forms.ComboBox ScaleList_CBX;
