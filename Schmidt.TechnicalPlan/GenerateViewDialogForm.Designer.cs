@@ -100,6 +100,10 @@
             this.OrientationList_CBX.Size = new System.Drawing.Size(121, 21);
             this.OrientationList_CBX.TabIndex = 16;
             this.OrientationList_CBX.Visible = false;
+            this.OrientationList_CBX.SelectedValueChanged += new System.EventHandler(this.OrientationList_CBX_SelectedValueChanged);
+            this.OrientationList_CBX.Enter += new System.EventHandler(this.OrientationList_CBX_Enter);
+            this.OrientationList_CBX.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OrientationList_CBX_KeyPress);
+            this.OrientationList_CBX.Leave += new System.EventHandler(this.OrientationList_CBX_Leave);
             // 
             // PaperList_CBX
             // 
@@ -109,6 +113,10 @@
             this.PaperList_CBX.Size = new System.Drawing.Size(121, 21);
             this.PaperList_CBX.TabIndex = 15;
             this.PaperList_CBX.Visible = false;
+            this.PaperList_CBX.SelectedValueChanged += new System.EventHandler(this.PaperList_CBX_SelectedValueChanged);
+            this.PaperList_CBX.Enter += new System.EventHandler(this.PaperList_CBX_Enter);
+            this.PaperList_CBX.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.PaperList_CBX_KeyPress);
+            this.PaperList_CBX.Leave += new System.EventHandler(this.PaperList_CBX_Leave);
             // 
             // ScaleList_CBX
             // 
@@ -119,6 +127,10 @@
             this.ScaleList_CBX.Size = new System.Drawing.Size(121, 21);
             this.ScaleList_CBX.TabIndex = 14;
             this.ScaleList_CBX.Visible = false;
+            this.ScaleList_CBX.SelectedValueChanged += new System.EventHandler(this.ScaleList_CBX_SelectedValueChanged);
+            this.ScaleList_CBX.Enter += new System.EventHandler(this.ScaleList_CBX_Enter);
+            this.ScaleList_CBX.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ScaleList_CBX_KeyPress);
+            this.ScaleList_CBX.Leave += new System.EventHandler(this.ScaleList_CBX_Leave);
             // 
             // PdfDocumentView_SyncPDFV
             // 
@@ -155,7 +167,7 @@
             this.MyListView_MLV.FullRowSelect = true;
             this.MyListView_MLV.GridLines = true;
             this.MyListView_MLV.HideSelection = false;
-            this.MyListView_MLV.Location = new System.Drawing.Point(19, 71);
+            this.MyListView_MLV.Location = new System.Drawing.Point(12, 62);
             this.MyListView_MLV.Name = "MyListView_MLV";
             this.MyListView_MLV.Size = new System.Drawing.Size(387, 521);
             this.MyListView_MLV.TabIndex = 8;
@@ -171,17 +183,18 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(984, 761);
-            this.Controls.Add(PdfDocumentView_SyncPDFV);
+            this.Controls.Add(this.ScaleList_CBX);
+            this.Controls.Add(this.PdfDocumentView_SyncPDFV);
             this.Controls.Add(this.myImageButton);
             this.Controls.Add(this.OrientationList_CBX);
             this.Controls.Add(this.iconBar_TSP);
             this.Controls.Add(this.PaperList_CBX);
             this.Controls.Add(this.MyListView_MLV);
-            this.Controls.Add(this.ScaleList_CBX);
             this.KeyPreview = true;
             this.Name = "GenerateViewDialogForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GenerateViewDialogForm";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.GenerateViewDialogForm_FormClosed);
             this.Load += new System.EventHandler(this.GenerateViewDialogForm_Load);
             this.Shown += new System.EventHandler(this.GenerateViewDialogForm_Shown);
             this.iconBar_TSP.ResumeLayout(false);

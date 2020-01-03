@@ -20,12 +20,13 @@ namespace Schmidt.TechnicalPlan
         private Dico _dico = null;
 
         public int _callParamsBlock;
+        private List<ListViewItem> subDocList = new List<ListViewItem>();
 
         const int InitialZoomValue = 99;
         private double _zoom;
 
-        private ListViewItem lvItem = null;       
-
+        private ListViewItem lvItem = null;
+        private int lvItemIndex = -1;
         private int lviSelectedRowIndex = -1;
         private int lviSelectedColumnIndex = (int)MyListView.Enum.ListViewColumnIndex.UnKnown;
 
@@ -120,7 +121,7 @@ namespace Schmidt.TechnicalPlan
         }
         public void BuildDocument(int nDoc) //plugin Word
         {
-            this._docIndex2Use = nDoc; // FindDocNameFromChoice(nDoc);
+            this._docIndex2Use = FindDocNameFromChoice(nDoc); //nDoc; // 
             this._pluginWord.BuildDocument(this.MergedWordDocument, this._pluginWord.CurrentAppli.DocDir, this.DocIndex2Use/* nDoc*/, -1 /* nHeading */, false /*true*/, null);
         }
         public void EndWork()//plugin Word
@@ -272,23 +273,66 @@ namespace Schmidt.TechnicalPlan
         }
         //
 
-        private int FindDocNameFromChoice(int inDoc)
+        private List<ListViewItem> GetSubDocNamesFromListViewItem(ListViewItem lvi) //plugin Word
         {
-            int scale = ScaleList_CBX.SelectedIndex;
-            int paper = PaperList_CBX.SelectedIndex;
-            int orient = OrientationList_CBX.SelectedIndex;
-            int tot = scale + paper + orient + (inDoc * 12);
+            subDocList.Clear();
+            if (lvi != null)
+            {
+                foreach (ListViewItem lvsi in lvi.SubItems)
+                {
+                    subDocList.Add(lvsi);
+                }
+            }
+            return subDocList;
+        }
+        private int FindDocNameFromChoice(int iDoc)
+        {
+            int select = 0;           
+            
+            if (lvItem != null && lvItem.Index == iDoc)
+            {
+                int nbSubDoc = this._pluginWord.CurrentAppli.GetDocItemsNb(iDoc);
 
-            return tot;
-            //int nbDoc = _pluginWord.CurrentAppli.GetDocsNb();
-            //for (int iDoc = 0; iDoc < nbDoc; iDoc++)
-            //{
-            //    string docName = this.GetLocalizedDocName(iDoc);
-            //    lvItem = this.FindListViewItemFromDocName(docName);
-            //}
+                for (int iSubDoc = 0; iSubDoc < nbSubDoc; iSubDoc++)
+                {
+                    string name = this._pluginWord.CurrentAppli.DocItemGetInfo(iDoc, iSubDoc, KD.SDK.AppliEnum.DocItemInfo.FILENAME);
+                }
+                    //string customId1 = this._pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(lvItem.Tag.ToString() + ConstCustomName.ScaleID);
+                    //string customId2 = this._pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(lvItem.Tag.ToString() + ConstCustomName.PaperID);
+                    //string customId3 = this._pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(lvItem.Tag.ToString() + ConstCustomName.OrientationID);
+
+                    //if (!String.IsNullOrEmpty(customId1) && !String.IsNullOrEmpty(customId2) && !String.IsNullOrEmpty(customId3))
+                    //{
+                    //    select += this.ComboIndex(customId1);
+                    //    select += this.ComboIndex(customId2);
+                    //    select += this.ComboIndex(customId3);
+                    //}
+            }
+           
+            int tot = select + (iDoc * 12) + 1;
+
+            return tot;            
+        }
+        private int ComboIndex(string customId)
+        {
+            int selectedIndex = 0;
+            string[] customIndex = customId.Split(KD.CharTools.Const.SemiColon);
+            if (customIndex.Length == 3)
+            {
+                if (customIndex[0] == lvItem.Tag.ToString())
+                {
+                    int.TryParse(customIndex[2], out selectedIndex);
+                }
+                
+            }
+            return selectedIndex;
         }
 
 
+        private int GetComboboxSelectedIndex(ComboBox comboBox)
+        {
+            return comboBox.SelectedIndex + 1;
+        }
         private int GetSelectedRowIndex()
         {
             if (lvItem != null)
@@ -440,6 +484,7 @@ namespace Schmidt.TechnicalPlan
         {
             //this.DisableListViewEvent();
             int index = 0;
+            
             int nbDoc = _pluginWord.CurrentAppli.GetDocsNb();
             for (int iDoc = 0; iDoc < nbDoc; iDoc++)
             {
@@ -603,6 +648,10 @@ namespace Schmidt.TechnicalPlan
         {
             this.AddTwinButton();
         }
+        private void GenerateViewDialogForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            PdfDocumentView_SyncPDFV.Unload();
+        }
 
         private void MyListView_MLV_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -702,12 +751,12 @@ namespace Schmidt.TechnicalPlan
         }
         private void MyListView_MLV_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            if (e.Item.Index != -1)
+            if (e.Item.Index != -1 && lvItem.Index != -1)
             {
                 if (lvItem.Checked)
                 {
-                    int nDoc = lvItem.Index;
-                    this.BuildDocument(lvItem.Index);
+                    lvItemIndex = lvItem.Index;
+                    this.BuildDocument(lvItemIndex);
                     this.EndWork();                   
                 }
             }
@@ -772,7 +821,7 @@ namespace Schmidt.TechnicalPlan
             this.SetTagAndTextInComboBox(this.OrientationList_CBX);
         }
 
-       
+      
     }
 
     //public class ConstListView
@@ -795,7 +844,7 @@ namespace Schmidt.TechnicalPlan
     //    //static public string ButtonTextOpenWorkingDir = "Documents disponibles";
     //    //static public string ButtonTextDeleteFile = "&Supprimer";
 
-       
+
     //}
 
     public class ConstCustomName
@@ -886,21 +935,21 @@ namespace Schmidt.TechnicalPlan
         }
         #endregion
 
-        //private const int WM_HSCROLL = 0x114;
-        //private const int WM_VSCROLL = 0x115;
+        private const int WM_HSCROLL = 0x114;
+        private const int WM_VSCROLL = 0x115;
 
-        //protected override void WndProc(ref Message msg)
-        //{
-        //    // Look for the WM_VSCROLL or the WM_HSCROLL messages.
-        //    if ((msg.Msg == WM_VSCROLL) || (msg.Msg == WM_HSCROLL))
-        //    {
-        //        // Move focus to the ListView to cause ComboBox to lose focus.
-        //        this.Focus();
-        //    }
+        protected override void WndProc(ref Message msg)
+        {
+            // Look for the WM_VSCROLL or the WM_HSCROLL messages.
+            if ((msg.Msg == WM_VSCROLL) || (msg.Msg == WM_HSCROLL))
+            {
+                // Move focus to the ListView to cause ComboBox to lose focus.
+                this.Focus();
+            }
 
-        //    // Pass message to default handler.
-        //    base.WndProc(ref msg);
-        //}
+            // Pass message to default handler.
+            base.WndProc(ref msg);
+        }
     }
 
     public class MyImageButton : System.Windows.Forms.Button
