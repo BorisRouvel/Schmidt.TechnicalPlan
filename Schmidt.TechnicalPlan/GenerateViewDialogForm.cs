@@ -133,12 +133,11 @@ namespace Schmidt.TechnicalPlan
         public void EndMerge(string docname)//plugin Word
         {
             this.ActivatePdfViewer();
-            //this._generateDocumentDialog.UpdateListViewItemImageIndex(docname);
+           
             string pdfFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
             this.LoadPdfFile(pdfFilePath);
 
-            //this._generateDocumentDialog.UpdateListViewItemImageIndex(docname);
-            //this._generateDocumentDialog.SelectListViewItem(MyListView_MLV, lvItem, true);
+          
 
         }
         private void ActivatePdfViewer() //plugin Word
