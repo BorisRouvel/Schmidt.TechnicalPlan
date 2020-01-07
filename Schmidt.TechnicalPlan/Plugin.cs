@@ -123,7 +123,7 @@ namespace Schmidt.TechnicalPlan
         {
             if (viewDialogForm == null)
             {                
-                viewDialogForm = new GenerateViewDialogForm(pluginWord, generateDocumentDialog, dico);               
+                viewDialogForm = new GenerateViewDialogForm(pluginWord, dico);   // generateDocumentDialog,            
             }
         }
         private void InitializeGenerateDocumentDialog()
@@ -146,7 +146,7 @@ namespace Schmidt.TechnicalPlan
 
             pluginWord.InitializeAll(lCallParamsBlock);
 
-            this.InitializeGenerateDocumentDialog();
+            //this.InitializeGenerateDocumentDialog();
             this.InitializeViewDialogForm();
 
             this.ShowGenerateViewDialogForm();            

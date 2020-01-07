@@ -12,11 +12,10 @@ using Syncfusion.DocIO.DLS;
 
 namespace Schmidt.TechnicalPlan
 {
-  
+
     public partial class GenerateViewDialogForm : Form
-    {        
-        public KD.Plugin.Word.Plugin _pluginWord = null;
-        private KD.Plugin.Word.GenerateDocumentDialog _generateDocumentDialog = null;
+    {
+        public KD.Plugin.Word.Plugin _pluginWord = null;        
         private Dico _dico = null;
         private MyImageButton myOverViewButton = null;
 
@@ -27,22 +26,22 @@ namespace Schmidt.TechnicalPlan
         private double _zoom;
 
         private ListViewItem lvItem = null;
-       
+
         private int lviSelectedRowIndex = -1;
         private int lviSelectedColumnIndex = (int)MyListView.Enum.ListViewColumnIndex.UnKnown;
 
-        int _docIndex2Use = -1;
-        public int DocIndex2Use
-        {
-            get
-            {
-                return _docIndex2Use;
-            }
-            set
-            {
-                _docIndex2Use = value;
-            }
-        }
+        //int _docIndex2Use = -1;
+        //public int DocIndex2Use
+        //{
+        //    get
+        //    {
+        //        return _docIndex2Use;
+        //    }
+        //    set
+        //    {
+        //        _docIndex2Use = value;
+        //    }
+        //}
 
         private string _currentPdfFilePath;
         public string CurrentPdfFilePath
@@ -57,52 +56,52 @@ namespace Schmidt.TechnicalPlan
             }
         }
 
-        WordDocument _mergedWordDocument = null;
-        public WordDocument MergedWordDocument
-        {
-            get
-            {
-                return _mergedWordDocument;
-            }
-            set
-            {
-                _mergedWordDocument = value;
-            }
-        }
+        //WordDocument _mergedWordDocument = null;
+        //public WordDocument MergedWordDocument
+        //{
+        //    get
+        //    {
+        //        return _mergedWordDocument;
+        //    }
+        //    set
+        //    {
+        //        _mergedWordDocument = value;
+        //    }
+        //}
 
-        public GenerateViewDialogForm(KD.Plugin.Word.Plugin pluginWord, KD.Plugin.Word.GenerateDocumentDialog generateDocumentDialog, Dico dico )//, int callParamsBlock)
+        public GenerateViewDialogForm(KD.Plugin.Word.Plugin pluginWord,  Dico dico)//, KD.Plugin.Word.GenerateDocumentDialog generateDocumentDialog,
         {
             InitializeComponent();
 
             //_callParamsBlock = callParamsBlock;
             _pluginWord = pluginWord;
-           // _generateDocumentDialog = generateDocumentDialog;
+            // _generateDocumentDialog = generateDocumentDialog;
             _dico = dico;
-            _mergedWordDocument = new WordDocument(/*firstWordTemplateFilePath*/);
+            this._pluginWord.MergedWordDocument = new WordDocument(/*firstWordTemplateFilePath*/);
 
             //_pluginWord.InitializeAll(_callParamsBlock);
-           
+
         }
 
         private void InitializeListView()
         {
-            this.MyListView_MLV.Clear();
+            this.myListView_MLV.Clear();
             // Add the pet to our listview
             //docListView.View = View.SmallIcon;
-            this.MyListView_MLV.View = View.Details;
+            this.myListView_MLV.View = View.Details;
             // Display check boxes.
-            this.MyListView_MLV.CheckBoxes = true;
+            this.myListView_MLV.CheckBoxes = true;
             // Select the item and subitems when selection is made.
-            this.MyListView_MLV.FullRowSelect = true;
+            this.myListView_MLV.FullRowSelect = true;
             // Display grid lines.
-            this.MyListView_MLV.GridLines = true;
+            this.myListView_MLV.GridLines = true;
             // Sort the items in the list in ascending order.
-            this.MyListView_MLV.Sorting = SortOrder.None;//.Ascending;
+            this.myListView_MLV.Sorting = SortOrder.None;//.Ascending;
 
             Font stdfont = new Font("Microsoft Sans Serif", 10.0f, FontStyle.Regular);
             this.Font = stdfont;
 
-            this.MyListView_MLV.HideSelection = false;
+            this.myListView_MLV.HideSelection = false;
 
             var header = new List<string>();
 
@@ -112,29 +111,29 @@ namespace Schmidt.TechnicalPlan
             header.Add(this._dico.GetTranslate(IdentifyConstanteId.ColumnHeaderPaperID));
             header.Add(this._dico.GetTranslate(IdentifyConstanteId.ColumnHeaderOrientationID));
             header.Add(this._dico.GetTranslate(IdentifyConstanteId.ColumnHeaderOverviewID));//Plugin.pluginWord.CurrentAppli.GetTranslatedText
-            header.ForEach(name => this.MyListView_MLV.Columns.Add(name));
+            header.ForEach(name => this.myListView_MLV.Columns.Add(name));
 
             // Loop through and size each column header to fit the column header text.
-            foreach (ColumnHeader ch in this.MyListView_MLV.Columns)
+            foreach (ColumnHeader ch in this.myListView_MLV.Columns)
             {
                 ch.Width = -2;
             }
         }
         public void BuildDocument(int nDoc) //plugin Word
         {
-            this._docIndex2Use = FindDocNameFromChoice(nDoc); //nDoc; // 
-            this._pluginWord.BuildDocument(this.MergedWordDocument, this._pluginWord.CurrentAppli.DocDir, this.DocIndex2Use/* nDoc*/, -1 /* nHeading */, false /*true*/, null);
+            this._pluginWord.DocIndex2Use = FindDocNameFromChoice(nDoc); //nDoc; // 
+            this._pluginWord.BuildDocument(this._pluginWord.MergedWordDocument, this._pluginWord.CurrentAppli.DocDir, this._pluginWord.DocIndex2Use/* nDoc*/, -1 /* nHeading */, false /*true*/, null);
         }
         public void EndWork()//plugin Word
-        {          
-            this._pluginWord.EndWork(this.MergedWordDocument);
-            this.EndMerge(this.GetLocalizedDocName(this.DocIndex2Use));
-          
+        {
+            this._pluginWord.EndWork();
+            this.EndMerge(this.GetLocalizedDocName(this._pluginWord.DocIndex2Use));
+
         }
         public void EndMerge(string docname)//plugin Word
         {
             this.ActivatePdfViewer();
-           //this._generateDocumentDialog.UpdateListViewItemImageIndex(docname);
+            //this._generateDocumentDialog.UpdateListViewItemImageIndex(docname);
             string pdfFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
             this.LoadPdfFile(pdfFilePath);
 
@@ -143,10 +142,10 @@ namespace Schmidt.TechnicalPlan
 
         }
         private void ActivatePdfViewer() //plugin Word
-        {          
+        {
             //this.ViewContainer_SPC.Panel2.Show();
-            this.PdfDocumentView_SyncPDFV.Enabled = true;
-            this.PdfDocumentView_SyncPDFV.Visible = true;
+            this.pdfDocumentView_SyncPDFV.Enabled = true;
+            this.pdfDocumentView_SyncPDFV.Visible = true;
             return;
         }
 
@@ -154,9 +153,9 @@ namespace Schmidt.TechnicalPlan
         {
             ListViewItem lvi = null;
 
-            for (int iDoc = 0; iDoc < MyListView_MLV.Items.Count; iDoc++)
+            for (int iDoc = 0; iDoc < myListView_MLV.Items.Count; iDoc++)
             {
-                lvi = MyListView_MLV.Items[iDoc];
+                lvi = myListView_MLV.Items[iDoc];
                 if (this.GetDocNameFromListViewItem(lvi) == docName)
                 {
                     return lvi;
@@ -199,8 +198,8 @@ namespace Schmidt.TechnicalPlan
             {
                 // Set cursor as hourglass
                 Cursor.Current = Cursors.WaitCursor;
-                PdfDocumentView_SyncPDFV.Load(pdfFilePath);  //BR\\ pdfDocumentView replace this.pdfDocumentView1
-                                                    // Set cursor as default arrow
+                pdfDocumentView_SyncPDFV.Load(pdfFilePath);  //BR\\ pdfDocumentView replace this.pdfDocumentView1
+                                                             // Set cursor as default arrow
                 Cursor.Current = Cursors.Default;
 
                 //// first load fit page
@@ -300,15 +299,15 @@ namespace Schmidt.TechnicalPlan
                 for (int iSubDoc = 1; iSubDoc <= nbSubDoc; iSubDoc++)
                 {
                     rank = (iSubDoc + (iDoc * 12) + iDoc);
-                    string name = this._pluginWord.CurrentAppli.DocGetInfo( rank, KD.SDK.AppliEnum.DocInfo.NAME);
+                    string name = this._pluginWord.CurrentAppli.DocGetInfo(rank, KD.SDK.AppliEnum.DocInfo.NAME);
 
                     if (name.Contains(subDocName))
                     {
                         break;
                     }
-                }               
+                }
             }
-            return rank;            
+            return rank;
         }
         private int ComboIndex(string customId)
         {
@@ -340,12 +339,12 @@ namespace Schmidt.TechnicalPlan
         {
             if (lviSelectedRowIndex != -1)
             {
-                foreach (ColumnHeader column in this.MyListView_MLV.Columns)
+                foreach (ColumnHeader column in this.myListView_MLV.Columns)
                 {
                     if (column.Index != (int)MyListView.Enum.ListViewColumnIndex.Select && column.Index != (int)MyListView.Enum.ListViewColumnIndex.Overview)
                     {
-                        int columnPosition = this.MyListView_MLV.Items[lviSelectedRowIndex].SubItems[column.Index].Bounds.X;
-                        int columnWidth = this.MyListView_MLV.Columns[column.Index].Width;
+                        int columnPosition = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[column.Index].Bounds.X;
+                        int columnWidth = this.myListView_MLV.Columns[column.Index].Width;
 
                         if (columnPosition <= x && x <= (columnPosition + columnWidth))
                         {
@@ -364,7 +363,7 @@ namespace Schmidt.TechnicalPlan
                 case (char)(int)Keys.Escape:
                     {
                         // Reset the original text value, and then hide the ComboBox.
-                         //= comboBox.Items[comboBox.SelectedIndex].ToString();                       
+                        //= comboBox.Items[comboBox.SelectedIndex].ToString();                       
                         comboBox.Visible = false;
                         break;
                     }
@@ -383,13 +382,13 @@ namespace Schmidt.TechnicalPlan
         }
         private void SetTextInItem(ComboBox comboBox)
         {
-            this.MyListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag = comboBox.Text;
-            this.MyListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Text = comboBox.Text;
+            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag = comboBox.Text;
+            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Text = comboBox.Text;
         }
         private void SetTagAndTextInComboBox(ComboBox comboBox)
         {
-            comboBox.Tag = this.MyListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Text;
-            comboBox.Text =  this.MyListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Text;
+            comboBox.Tag = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Text;
+            comboBox.Text = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Text;
         }
 
         private void LoadCustomInfo(ComboBox comboBox, string customID)
@@ -470,8 +469,8 @@ namespace Schmidt.TechnicalPlan
             comboBox.Items.Add(this._dico.GetTranslate(IdentifyConstanteId.FormatA3ID));
         }
         private void OrientationItems(ComboBox comboBox)
-        {           
-            comboBox.Items.Add(this._dico.GetTranslate(IdentifyConstanteId.PortraitID)); 
+        {
+            comboBox.Items.Add(this._dico.GetTranslate(IdentifyConstanteId.PortraitID));
             comboBox.Items.Add(this._dico.GetTranslate(IdentifyConstanteId.LandscapeID));
         }
 
@@ -479,7 +478,7 @@ namespace Schmidt.TechnicalPlan
         {
             //this.DisableListViewEvent();
             int index = 0;
-            
+
             int nbDoc = _pluginWord.CurrentAppli.GetDocsNb();
             for (int iDoc = 0; iDoc < nbDoc; iDoc++)
             {
@@ -519,14 +518,14 @@ namespace Schmidt.TechnicalPlan
                 string docName = this.GetLocalizedDocName(iDoc);
                 // if item does not exists, create a new one 
                 if (this.FindListViewItemFromDocName(docName) == null)
-                {                    
+                {
                     AddListViewItem(docName, iDoc, index++);
                 }
-            }          
-           
-            this.MyListView_MLV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            this.MyListView_MLV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-            this.MyListView_MLV.Refresh();
+            }
+
+            this.myListView_MLV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            this.myListView_MLV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            this.myListView_MLV.Refresh();
             //this.UpdateStatusBar(String.Empty);
 
             //this.EnableListViewEvent();
@@ -540,7 +539,7 @@ namespace Schmidt.TechnicalPlan
                 lvItem = this.FindListViewItemFromDocName(docName);
 
                 if (lvItem != null)
-                { 
+                {
                     foreach (Control control in this.Controls) //ViewContainer_SPC.Panel1.Controls)
                     {
                         if (control.GetType().Equals(typeof(ComboBox)))
@@ -565,7 +564,7 @@ namespace Schmidt.TechnicalPlan
         }
 
         private void AddListViewItem(string docName, int iDoc, int index)
-        {            
+        {
             lvItem = new ListViewItem(docName, iDoc);
 
             lvItem.SubItems.Add(docName);
@@ -580,11 +579,11 @@ namespace Schmidt.TechnicalPlan
                                      //    string subDocName = this.GetLocalizedDocName(iDoc + iSubDoc + 1);
                                      //    lvItem.SubItems.Add(subDocName);
                                      //}
-                lvItem.SubItems.Add(this.ScaleList_CBX.Items[(int)MyListView.Enum.ListScale.Scale120].ToString());
-                lvItem.SubItems.Add(this.PaperList_CBX.Items[(int)MyListView.Enum.ListPaper.A4].ToString());
-                lvItem.SubItems.Add(this.OrientationList_CBX.Items[(int)MyListView.Enum.ListOrientation.Portrait].ToString());
+                lvItem.SubItems.Add(this.scaleList_CBX.Items[(int)MyListView.Enum.ScaleFactor.Scale120].ToString());
+                lvItem.SubItems.Add(this.paperList_CBX.Items[(int)MyListView.Enum.PaperFormat.A4].ToString());
+                lvItem.SubItems.Add(this.orientationList_CBX.Items[(int)MyListView.Enum.PageOrientation.Portrait].ToString());
 
-                lvItem.SubItems.Add("");                
+                lvItem.SubItems.Add("");
                 // Create two ImageList objects.
                 //ImageList imageListSmall = new ImageList();
                 //ImageList imageListLarge = new ImageList();
@@ -607,28 +606,31 @@ namespace Schmidt.TechnicalPlan
                 lvItem.ImageIndex = -1; // Convert.ToInt32(ImageListIconsIndex.SubDir);
                 lvItem.SubItems[KD.Plugin.Word.ConstListView.ColumnIndexDate].Text = String.Empty;
             }
-            this.MyListView_MLV.Items.Add(lvItem);           
+            this.myListView_MLV.Items.Add(lvItem);
             lvItem.Text = String.Empty;
         }
         private void AddTwinButton()
         {
-            for (int lineIndex = 0; lineIndex < this.MyListView_MLV.Items.Count; lineIndex++)
-            {              
-                Rectangle subItemImageButton = this.MyListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds;
-                subItemImageButton.Y = this.MyListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds.Y;// + this.myListView.Top;
-                subItemImageButton.X = this.MyListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds.X + this.MyListView_MLV.Left;
-                subItemImageButton.Height = this.MyListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds.Height + 4;
-                subItemImageButton.Width = this.MyListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds.Height + 4;
+            for (int lineIndex = 0; lineIndex < this.myListView_MLV.Items.Count; lineIndex++)
+            {
+                Rectangle subItemImageButton = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds;
+                subItemImageButton.Y = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds.Y;// + this.myListView.Top;
+                subItemImageButton.X = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds.X + this.myListView_MLV.Left;
+                subItemImageButton.Height = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds.Height + 4;
+                subItemImageButton.Width = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ListViewColumnIndex.Overview].Bounds.Height + 4;
                 // Assign calculated bounds to the ComboBox.
                 myOverViewButton = new MyImageButton();
-                MyListView_MLV.Controls.Add(myOverViewButton);                
+                myListView_MLV.Controls.Add(myOverViewButton);
                 myOverViewButton.Bounds = subItemImageButton;
                 myOverViewButton.Location = new Point(subItemImageButton.X + 10, subItemImageButton.Y - 2);
-               
+
                 // Set default text for ComboBox to match the item that is clicked.                 
                 myOverViewButton.Visible = true;
-                myOverViewButton.BringToFront(); 
+                myOverViewButton.BringToFront();
+                myOverViewButton.Tag = lineIndex;//.ToString();
+                myOverViewButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.myOverViewButton_MouseDown);
             }
+           
         }
 
         private void GenerateViewDialogForm_Load(object sender, EventArgs e)
@@ -637,7 +639,7 @@ namespace Schmidt.TechnicalPlan
             this.ClearComboBoxListView();
             this.AssignItemsInComboBox();
             this.UpdateListViewStandardInfo();
-            this.UpdateListViewCustomInfo();           
+            this.UpdateListViewCustomInfo();
         }
         private void GenerateViewDialogForm_Shown(object sender, EventArgs e)
         {
@@ -645,20 +647,20 @@ namespace Schmidt.TechnicalPlan
         }
         private void GenerateViewDialogForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            PdfDocumentView_SyncPDFV.Unload();
+            pdfDocumentView_SyncPDFV.Unload();
         }
 
         private void MyListView_MLV_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvItem != null)
             {
-                lviSelectedRowIndex = lvItem.Index; //MyListView.SelectedItems.IndexOf(lvItem);
+                lviSelectedRowIndex = lvItem.Index;
             }
         }
         private void MyListView_MLV_MouseUp(object sender, MouseEventArgs e)
         {
             // Get the item on the row that is clicked.
-            lvItem = this.MyListView_MLV.GetItemAt(e.X, e.Y);
+            lvItem = this.myListView_MLV.GetItemAt(e.X, e.Y);
 
             lviSelectedRowIndex = this.GetSelectedRowIndex();
             lviSelectedColumnIndex = this.GetSelectColumnIndex(e.X);
@@ -670,7 +672,7 @@ namespace Schmidt.TechnicalPlan
                 Rectangle ClickedItem = lvItem.Bounds;
 
                 // Verify that the column is completely scrolled off to the left.
-                if ((ClickedItem.Left + this.MyListView_MLV.Columns[lviSelectedColumnIndex].Width) < 0)
+                if ((ClickedItem.Left + this.myListView_MLV.Columns[lviSelectedColumnIndex].Width) < 0)
                 {
                     // If the cell is out of view to the left, do nothing.
                     return;
@@ -680,41 +682,41 @@ namespace Schmidt.TechnicalPlan
                 else if (ClickedItem.Left < 0)
                 {
                     // Determine if column extends beyond right side of ListView.
-                    if ((ClickedItem.Left + this.MyListView_MLV.Columns[lviSelectedColumnIndex].Width) > this.MyListView_MLV.Width)
+                    if ((ClickedItem.Left + this.myListView_MLV.Columns[lviSelectedColumnIndex].Width) > this.myListView_MLV.Width)
                     {
                         // Set width of column to match width of ListView.
-                        ClickedItem.Width = this.MyListView_MLV.Width;                       
+                        ClickedItem.Width = this.myListView_MLV.Width;
                         ClickedItem.X = 0;
                     }
                     else
                     {
                         // Right side of cell is in view.
-                        ClickedItem.Width = this.MyListView_MLV.Columns[lviSelectedColumnIndex].Width + ClickedItem.Left;                       
+                        ClickedItem.Width = this.myListView_MLV.Columns[lviSelectedColumnIndex].Width + ClickedItem.Left;
                         ClickedItem.X = 2;
                     }
                 }
-                else if (this.MyListView_MLV.Columns[lviSelectedColumnIndex].Width > this.MyListView_MLV.Width)
+                else if (this.myListView_MLV.Columns[lviSelectedColumnIndex].Width > this.myListView_MLV.Width)
                 {
-                    ClickedItem.Width = this.MyListView_MLV.Width;                  
+                    ClickedItem.Width = this.myListView_MLV.Width;
                 }
                 else
                 {
-                    ClickedItem.Width = this.MyListView_MLV.Columns[lviSelectedColumnIndex].Width;                   
+                    ClickedItem.Width = this.myListView_MLV.Columns[lviSelectedColumnIndex].Width;
                     ClickedItem.X = 2;
                 }
 
                 // Adjust the top to account for the location of the ListView.
-                ClickedItem.Y = this.MyListView_MLV.Items[lviSelectedRowIndex].Bounds.Y + this.MyListView_MLV.Top;                
-                ClickedItem.X = this.MyListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Bounds.X + this.MyListView_MLV.Left;
+                ClickedItem.Y = this.myListView_MLV.Items[lviSelectedRowIndex].Bounds.Y + this.myListView_MLV.Top;
+                ClickedItem.X = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Bounds.X + this.myListView_MLV.Left;
                 ClickedItem.Height = lvItem.Bounds.Height;
 
                 this.AssignComboBox(ClickedItem);
             }
-           
+
         }
         private void MyListView_MLV_MouseDown(object sender, MouseEventArgs e)
         {
-            lvItem = this.MyListView_MLV.GetItemAt(e.X, e.Y);
+            lvItem = this.myListView_MLV.GetItemAt(e.X, e.Y);
         }
         private void AssignComboBox(Rectangle clickedItem)
         {
@@ -724,16 +726,16 @@ namespace Schmidt.TechnicalPlan
             switch (lviSelectedColumnIndex)
             {
                 case (int)MyListView.Enum.ListViewColumnIndex.Scale:
-                    comboBox = this.ScaleList_CBX;
+                    comboBox = this.scaleList_CBX;
                     break;
                 case (int)MyListView.Enum.ListViewColumnIndex.Paper:
-                    comboBox = this.PaperList_CBX;
+                    comboBox = this.paperList_CBX;
                     break;
                 case (int)MyListView.Enum.ListViewColumnIndex.Orientation:
-                    comboBox = this.OrientationList_CBX;
+                    comboBox = this.orientationList_CBX;
                     break;
                 case (int)MyListView.Enum.ListViewColumnIndex.Overview:
-                    button = this.MyImageButton;
+                    button = this.myImageButton;
                     break;
                 default:
                     return;
@@ -762,80 +764,99 @@ namespace Schmidt.TechnicalPlan
             if (e.Item.Index != -1 && lvItem.Index != -1)
             {
                 if (lvItem.Checked)
-                {                   
-                     //here make method to delete, send SM2, Print ect...               
+                {
+                    //here make method to delete, send SM2, Print ect...               
                 }
             }
         }
 
-        private void ScaleList_CBX_KeyPress(object sender, KeyPressEventArgs e)
+        private void scaleList_CBX_KeyPress(object sender, KeyPressEventArgs e)
         {
             // Verify that the user presses ESC.
-            this.KeyPressEvent(e, this.ScaleList_CBX);
-           
+            this.KeyPressEvent(e, this.scaleList_CBX);
+
         }
-        private void ScaleList_CBX_Leave(object sender, EventArgs e)
+        private void scaleList_CBX_Leave(object sender, EventArgs e)
         {
-            this.SetTextInItem(this.ScaleList_CBX);
-            this.HideComboBox(this.ScaleList_CBX);
+            this.SetTextInItem(this.scaleList_CBX);
+            this.HideComboBox(this.scaleList_CBX);
         }
-        private void ScaleList_CBX_SelectedValueChanged(object sender, EventArgs e)
+        private void scaleList_CBX_SelectedValueChanged(object sender, EventArgs e)
         {
             this.SaveCustomInfo((ComboBox)sender, ConstCustomName.ScaleID);
-            this.HideComboBox(this.ScaleList_CBX);
+            this.HideComboBox(this.scaleList_CBX);
         }
-        private void ScaleList_CBX_Enter(object sender, EventArgs e)
+        private void scaleList_CBX_Enter(object sender, EventArgs e)
         {
-            this.SetTagAndTextInComboBox(this.ScaleList_CBX);
+            this.SetTagAndTextInComboBox(this.scaleList_CBX);
         }
 
-        private void PaperList_CBX_KeyPress(object sender, KeyPressEventArgs e)
-        {           
-            this.KeyPressEvent(e, this.PaperList_CBX);
-        }
-        private void PaperList_CBX_Leave(object sender, EventArgs e)
+        private void paperList_CBX_KeyPress(object sender, KeyPressEventArgs e)
         {
-            this.SetTextInItem(this.PaperList_CBX);
-            this.HideComboBox(this.PaperList_CBX);
+            this.KeyPressEvent(e, this.paperList_CBX);
         }
-        private void PaperList_CBX_SelectedValueChanged(object sender, EventArgs e)
-        {            
+        private void paperList_CBX_Leave(object sender, EventArgs e)
+        {
+            this.SetTextInItem(this.paperList_CBX);
+            this.HideComboBox(this.paperList_CBX);
+        }
+        private void paperList_CBX_SelectedValueChanged(object sender, EventArgs e)
+        {
             this.SaveCustomInfo((ComboBox)sender, ConstCustomName.PaperID);
-            this.HideComboBox(this.PaperList_CBX);
+            this.HideComboBox(this.paperList_CBX);
         }
-        private void PaperList_CBX_Enter(object sender, EventArgs e)
+        private void paperList_CBX_Enter(object sender, EventArgs e)
         {
-            this.SetTagAndTextInComboBox(this.PaperList_CBX);
+            this.SetTagAndTextInComboBox(this.paperList_CBX);
         }
 
-        private void OrientationList_CBX_KeyPress(object sender, KeyPressEventArgs e)
-        {            
-            this.KeyPressEvent(e, this.OrientationList_CBX);
-        }
-        private void OrientationList_CBX_Leave(object sender, EventArgs e)
+        private void orientationList_CBX_KeyPress(object sender, KeyPressEventArgs e)
         {
-            this.SetTextInItem(this.OrientationList_CBX);
-            this.HideComboBox(this.OrientationList_CBX);
+            this.KeyPressEvent(e, this.orientationList_CBX);
         }
-        private void OrientationList_CBX_SelectedValueChanged(object sender, EventArgs e)
+        private void orientationList_CBX_Leave(object sender, EventArgs e)
+        {
+            this.SetTextInItem(this.orientationList_CBX);
+            this.HideComboBox(this.orientationList_CBX);
+        }
+        private void orientationList_CBX_SelectedValueChanged(object sender, EventArgs e)
         {
             this.SaveCustomInfo((ComboBox)sender, ConstCustomName.OrientationID);
-            this.HideComboBox(this.OrientationList_CBX);
+            this.HideComboBox(this.orientationList_CBX);
         }
-        private void OrientationList_CBX_Enter(object sender, EventArgs e)
+        private void orientationList_CBX_Enter(object sender, EventArgs e)
         {
-            this.SetTagAndTextInComboBox(this.OrientationList_CBX);
+            this.SetTagAndTextInComboBox(this.orientationList_CBX);
         }
 
-        private void MyImageButton_Click(object sender, EventArgs e)
-        {
-            if (lvItem.Index != -1)
-            {                                  
+        private void myOverViewButton_MouseDown(object sender, MouseEventArgs e)
+        {            
+            Button overViewButton = (Button)sender;
+            //int index = Convert.ToInt32(overViewButton.Tag.ToString());
+            lvItem = this.myListView_MLV.Items[(int)overViewButton.Tag];
+
+            if (lvItem != null)
+            {
+                lviSelectedRowIndex = lvItem.Index;
+                MessageBox.Show(lvItem.Tag.ToString());
                 this.BuildDocument(lvItem.Index);
-                this.EndWork();                
+                this.EndWork();
             }
+
         }
-    
+        //private void myOverViewButton_Click(object sender, EventArgs e)
+        //{
+        //    //Button overViewButton = (Button)sender;            
+        //    //lvItem = this.myListView_MLV.GetItemAt(overViewButton.Bounds.X, overViewButton.Bounds.Y);
+        //    lvItem = this.myListView_MLV.Items[lviSelectedRowIndex];
+            
+        //    if (lvItem != null && lvItem.Index != -1)
+        //    {
+        //        MessageBox.Show(lvItem.Tag.ToString());
+        //        //this.BuildDocument(lvItem.Index);
+        //        //this.EndWork();
+        //    }            
+        //}      
     }
 
     //public class ConstListView
@@ -890,20 +911,20 @@ namespace Schmidt.TechnicalPlan
                 Orientation = 4,
                 Overview = 5
             }
-            public enum ListScale
+            public enum ScaleFactor
             {
                 UnKnown = -1,
-                Scale120 = 0,
-                Scale150 = 1,
-                ScaleAuto = 2                
+                Scale120 = 0,       //20
+                Scale150 = 1,   //50
+                ScaleAuto = 2      //0          
             }
-            public enum ListPaper
+            public enum PaperFormat //remplace PageMediaSizeName.enum
             {
                 UnKnown = -1,
                 A4 = 0,
                 A3 = 1               
             }
-            public enum ListOrientation
+            public enum PageOrientation //remplacer par system.printing.pageorientation
             {
                 UnKnown = -1,
                 Portrait = 0,
@@ -967,8 +988,7 @@ namespace Schmidt.TechnicalPlan
     }
 
     public class MyImageButton : System.Windows.Forms.Button
-    {             
-
+    {
         public MyImageButton()
         {
             // This call is required by the Windows.Forms Form Designer.
