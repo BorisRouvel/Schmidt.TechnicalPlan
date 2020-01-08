@@ -9,10 +9,10 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Drawing;
 
-using Syncfusion.DocIO;
-using Syncfusion.DocIO.DLS;
-using Syncfusion.DocToPDFConverter;
-using Syncfusion.Pdf;
+//using Syncfusion.DocIO;
+//using Syncfusion.DocIO.DLS;
+//using Syncfusion.DocToPDFConverter;
+using Syncfusion.Licensing;
 
 using KD.Plugin;
 using KD.Model;
@@ -50,6 +50,9 @@ namespace Schmidt.TechnicalPlan
 
         public Plugin()
         {
+            SyncfusionLicenseProvider.RegisterLicense("MTkzMDk4QDMxMzcyZTM0MmUzMEJjQmV2NjRGRzhPVHVnZ3hzd1RCT09vNEZIOTQvZ3lNdnIrV1N4Ui9pQWc9");
+            SyncfusionLicenseProvider.RegisterLicense("MTkzMDk5QDMxMzcyZTM0MmUzMGJRQ09tR1JiSU9Td1BtTEpzOWJHTFRSelFHaVNkT2xMd0VlcmxmbVZhcFU9");
+
             pluginWord = new KD.Plugin.Word.Plugin();
 
             this.InitializeDico();
@@ -161,7 +164,7 @@ namespace Schmidt.TechnicalPlan
         }
         private void ShowGenerateViewDialogForm()
         {
-            viewDialogForm.ShowDialog(this.CurrentAppli.GetNativeIWin32Window());
+            viewDialogForm.Show();// (this.CurrentAppli.GetNativeIWin32Window());
         }
     }
 

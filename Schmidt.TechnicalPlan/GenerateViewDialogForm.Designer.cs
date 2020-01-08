@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GenerateViewDialogForm));
+            Syncfusion.Windows.Forms.PdfViewer.MessageBoxSettings messageBoxSettings1 = new Syncfusion.Windows.Forms.PdfViewer.MessageBoxSettings();
+            Syncfusion.Windows.PdfViewer.PdfViewerPrinterSettings pdfViewerPrinterSettings1 = new Syncfusion.Windows.PdfViewer.PdfViewerPrinterSettings();
+            Syncfusion.Windows.Forms.PdfViewer.TextSearchSettings textSearchSettings1 = new Syncfusion.Windows.Forms.PdfViewer.TextSearchSettings();
             this.iconBar_TSP = new System.Windows.Forms.ToolStrip();
             this.transferSM2_BTN = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -57,6 +60,7 @@
             this.iconBar_TSP.Name = "iconBar_TSP";
             this.iconBar_TSP.Size = new System.Drawing.Size(984, 35);
             this.iconBar_TSP.TabIndex = 0;
+            this.iconBar_TSP.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.iconBar_TSP_ItemClicked);
             // 
             // transferSM2_BTN
             // 
@@ -134,17 +138,48 @@
             // 
             // pdfDocumentView_SyncPDFV
             // 
+            this.pdfDocumentView_SyncPDFV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pdfDocumentView_SyncPDFV.AutoScroll = true;
+            this.pdfDocumentView_SyncPDFV.AutoSize = true;
             this.pdfDocumentView_SyncPDFV.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(237)))), ((int)(((byte)(237)))), ((int)(((byte)(237)))));
-            this.pdfDocumentView_SyncPDFV.Location = new System.Drawing.Point(438, 101);
+            this.pdfDocumentView_SyncPDFV.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pdfDocumentView_SyncPDFV.CursorMode = Syncfusion.Windows.Forms.PdfViewer.PdfViewerCursorMode.SelectTool;
+            this.pdfDocumentView_SyncPDFV.EnableContextMenu = true;
+            this.pdfDocumentView_SyncPDFV.HorizontalScrollOffset = 0;
+            this.pdfDocumentView_SyncPDFV.IsTextSearchEnabled = true;
+            this.pdfDocumentView_SyncPDFV.IsTextSelectionEnabled = true;
+            this.pdfDocumentView_SyncPDFV.Location = new System.Drawing.Point(405, 62);
+            messageBoxSettings1.EnableNotification = true;
+            this.pdfDocumentView_SyncPDFV.MessageBoxSettings = messageBoxSettings1;
+            this.pdfDocumentView_SyncPDFV.MinimumZoomPercentage = 50;
             this.pdfDocumentView_SyncPDFV.Name = "pdfDocumentView_SyncPDFV";
+            this.pdfDocumentView_SyncPDFV.PageBorderThickness = 1;
+            pdfViewerPrinterSettings1.PageOrientation = Syncfusion.Windows.PdfViewer.PdfViewerPrintOrientation.Auto;
+            pdfViewerPrinterSettings1.PageSize = Syncfusion.Windows.PdfViewer.PdfViewerPrintSize.ActualSize;
+            pdfViewerPrinterSettings1.PrintLocation = ((System.Drawing.PointF)(resources.GetObject("pdfViewerPrinterSettings1.PrintLocation")));
+            pdfViewerPrinterSettings1.ShowPrintStatusDialog = true;
+            this.pdfDocumentView_SyncPDFV.PrinterSettings = pdfViewerPrinterSettings1;
+            this.pdfDocumentView_SyncPDFV.ReferencePath = null;
             this.pdfDocumentView_SyncPDFV.ScrollDisplacementValue = 0;
-            this.pdfDocumentView_SyncPDFV.Size = new System.Drawing.Size(484, 482);
+            this.pdfDocumentView_SyncPDFV.ShowHorizontalScrollBar = true;
+            this.pdfDocumentView_SyncPDFV.ShowVerticalScrollBar = true;
+            this.pdfDocumentView_SyncPDFV.Size = new System.Drawing.Size(567, 527);
+            this.pdfDocumentView_SyncPDFV.SpaceBetweenPages = 8;
             this.pdfDocumentView_SyncPDFV.TabIndex = 0;
-            this.pdfDocumentView_SyncPDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.Default;
+            textSearchSettings1.CurrentInstanceColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(255)))), ((int)(((byte)(171)))), ((int)(((byte)(64)))));
+            textSearchSettings1.HighlightAllInstance = true;
+            textSearchSettings1.OtherInstanceColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(254)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.pdfDocumentView_SyncPDFV.TextSearchSettings = textSearchSettings1;
+            this.pdfDocumentView_SyncPDFV.ThemeName = "Office2016Black";
+            this.pdfDocumentView_SyncPDFV.VerticalScrollOffset = 0;
+            this.pdfDocumentView_SyncPDFV.VisualStyle = Syncfusion.Windows.Forms.PdfViewer.VisualStyle.Office2016Black;
+            this.pdfDocumentView_SyncPDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.FitPage;
             // 
             // myImageButton
             // 
+            this.myImageButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("myImageButton.BackgroundImage")));
             this.myImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.myImageButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.myImageButton.Location = new System.Drawing.Point(216, 130);
@@ -155,13 +190,11 @@
             this.myImageButton.Tag = "";
             this.myImageButton.UseVisualStyleBackColor = true;
             this.myImageButton.Visible = false;
-           
             // 
             // myListView_MLV
             // 
-            this.myListView_MLV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.myListView_MLV.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.myListView_MLV.CheckBoxes = true;
             this.myListView_MLV.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.myListView_MLV.FullRowSelect = true;
@@ -169,7 +202,7 @@
             this.myListView_MLV.HideSelection = false;
             this.myListView_MLV.Location = new System.Drawing.Point(12, 62);
             this.myListView_MLV.Name = "myListView_MLV";
-            this.myListView_MLV.Size = new System.Drawing.Size(387, 521);
+            this.myListView_MLV.Size = new System.Drawing.Size(387, 527);
             this.myListView_MLV.TabIndex = 8;
             this.myListView_MLV.UseCompatibleStateImageBehavior = false;
             this.myListView_MLV.View = System.Windows.Forms.View.Details;
@@ -182,7 +215,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(984, 761);
+            this.ClientSize = new System.Drawing.Size(984, 601);
             this.Controls.Add(this.scaleList_CBX);
             this.Controls.Add(this.pdfDocumentView_SyncPDFV);
             this.Controls.Add(this.myImageButton);
