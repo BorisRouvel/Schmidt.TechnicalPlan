@@ -50,13 +50,13 @@ namespace Schmidt.TechnicalPlan
         private void Ok_BTN_Click(object sender, EventArgs e)
         {
             this.ValidButton = true;
-            this.Hide();
+            this.Close();
         }
 
         private void Cancel_BTN_Click(object sender, EventArgs e)
         {
             this.ValidButton = false;
-            this.Hide();
+            this.Close();
         }
 
         private void SellerResponsabilityMessageForm_Load(object sender, EventArgs e)

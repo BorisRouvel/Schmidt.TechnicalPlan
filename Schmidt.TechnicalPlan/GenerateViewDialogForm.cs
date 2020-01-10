@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using KD.Plugin.Word;
+using System.Xml;
 
 
 namespace Schmidt.TechnicalPlan
@@ -17,10 +12,12 @@ namespace Schmidt.TechnicalPlan
     {
         private KD.Plugin.Word.Plugin _pluginWord = null;        
         private Dico _dico = null;
+        private TechnicalDocument _technicalDocument = null;
         private MyImageButton myOverViewButton = null;
 
         const int InitialZoomValue = 99;
-        private double _zoom;
+        private double _zoom = 99;
+        Syncfusion.Pdf.Parsing.PdfLoadedDocument _loadedDocument = null;
 
         private ListViewItem lvItem = null;
 
@@ -53,26 +50,22 @@ namespace Schmidt.TechnicalPlan
             }
         }
 
-        ComboBoxScale120 comboBoxScale120 = null;
-        ComboBoxScale150 comboBoxScale150 = null;
-        ComboBoxScaleAjusted comboBoxScaleAjusted = null;
-
-        ComboBoxPaperA4 ComboBoxPaperA4 = null;
+        TechnicalDocument.PaperFormat paperFormat = null;
+        TechnicalDocument.PaperOrientation paperOrientation = null;
+        TechnicalDocument.ScaleFactor scaleFactor = null;
 
 
-        public GenerateViewDialogForm(Plugin plugin, KD.Plugin.Word.Plugin pluginWord, Dico dico)
+        public GenerateViewDialogForm(Plugin plugin, KD.Plugin.Word.Plugin pluginWord, Dico dico, TechnicalDocument technicalDocument)
         {
             InitializeComponent();
 
             _plugin = plugin;
             _pluginWord = pluginWord;          
             _dico = dico;
+            _technicalDocument = technicalDocument;
 
-            comboBoxScale120 = new ComboBoxScale120(this._dico);
-            comboBoxScale150 = new ComboBoxScale150(this._dico);
-            comboBoxScaleAjusted = new ComboBoxScaleAjusted(this._dico);
-
-            ComboBoxPaperA4 = new ComboBoxPaperA4(this._dico);
+            this.InitializeTechnicalDocument();
+         
         }
 
         private void InitializeListView()
@@ -111,7 +104,12 @@ namespace Schmidt.TechnicalPlan
                 ch.Width = -2;
             }
         }
-
+        private void InitializeTechnicalDocument()
+        {
+            paperFormat = new TechnicalDocument.PaperFormat();
+            paperOrientation = new TechnicalDocument.PaperOrientation();
+            scaleFactor = new TechnicalDocument.ScaleFactor();
+        }
         //
         public void Build(bool preview)
         {
@@ -124,14 +122,14 @@ namespace Schmidt.TechnicalPlan
 
             if (preview)
             {
-                this.LoadPdfFile(this.MoveFile(pdfFilePath, dotFilePath));
+                this.LoadPdfFile(this.MoveFile(pdfFilePath, dotFilePath, 0));
             }
             else
             {
                this.SaveViewCustomInfo(pdfFilePath);
             }
         }
-        private string MoveFile(string pdfFilePath, string dotFilePath)
+        private string MoveFile(string pdfFilePath, string dotFilePath, int time)
         {
             string currentDir = System.IO.Path.GetDirectoryName(pdfFilePath);
             if (!System.IO.Directory.Exists(System.IO.Path.Combine(currentDir, ConstFile.TechnicalPlanPreviewDirName)))
@@ -144,8 +142,28 @@ namespace Schmidt.TechnicalPlan
 
             try
             {
-                System.IO.File.Move(pdfFilePath, previewPdfFilePath);
-                System.IO.File.Move(dotFilePath, previewDotFilePath);
+                System.Windows.Forms.Application.DoEvents();
+                System.Threading.Thread.Sleep(500);
+                if (System.IO.File.Exists(pdfFilePath))
+                {
+                    System.IO.File.Move(pdfFilePath, previewPdfFilePath);
+                }
+                else
+                {
+                    if (time <= 5)
+                    {
+                        MoveFile(pdfFilePath, dotFilePath, time++);
+                    }
+                    else
+                    {
+                        time = 0;
+                        return pdfFilePath;
+                    }
+                }
+                if (System.IO.File.Exists(dotFilePath))
+                {
+                    System.IO.File.Move(dotFilePath, previewDotFilePath);
+                }                
 
                 return previewPdfFilePath;
             }
@@ -162,14 +180,18 @@ namespace Schmidt.TechnicalPlan
             {
                 // Set cursor as hourglass
                 Cursor.Current = Cursors.WaitCursor;
-                System.Threading.Thread.Sleep(1000);
-                pdfDocumentView_PDFV.Load(pdfFilePath); // @"D:\Ic90dev\Scenes\5DE66AB8_0226_01\DocTechnicalPlan\TECHNICAL_PLAN_PREVIEW\Elévation du mur.pdf"); 
+
+                if (_loadedDocument != null)
+                {
+                    _loadedDocument.Close();
+                }
+                this._loadedDocument = new Syncfusion.Pdf.Parsing.PdfLoadedDocument(pdfFilePath);
+                pdfDocumentView_PDFV.Load(_loadedDocument); // @"D:\Ic90dev\Scenes\5DE66AB8_0226_01\DocTechnicalPlan\TECHNICAL_PLAN_PREVIEW\Elévation du mur.pdf"); 
 
                 // Set cursor as default arrow
                 Cursor.Current = Cursors.Default;
-
-                // first load fit page
-                _zoom = 20;
+               
+                // first load fit page                
                 if (_zoom == InitialZoomValue)
                 {
                     pdfDocumentView_PDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.FitPage;
@@ -316,15 +338,26 @@ namespace Schmidt.TechnicalPlan
         }
         private void SaveViewCustomInfo(string pdfFilePath)
         {
+            
             //
             string xmlCustomInfo = String.Empty;
             string xmlInfoKey = String.Empty;
+
+            _technicalDocument = new TechnicalDocument(pdfFilePath);
+            string scf = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text;
+            string pf = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Text;
+            string of = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Text;
+
+             _technicalDocument.WriteToXml(scf, pf, of);
+
+            //xmlInfoKey = "Vues"; //|Vue|NomFichier
+            //xmlCustomInfo = System.IO.Path.GetFileName(pdfFilePath);
+            //this._pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(xmlCustomInfo, xmlInfoKey);
+
+            ;
             //< Vues >
             //< Vue >
             //< NomFichier > toto.pdf </ NomFichier > => {ViewMode}_{Number}_{ObjectId}.pdf
-            xmlInfoKey = "Vues"; //|Vue|NomFichier
-            xmlCustomInfo = System.IO.Path.GetFileName(pdfFilePath);
-            this._pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(xmlCustomInfo, xmlInfoKey);
             //< Nom > Vue de dessus de toto</ Nom >
             //< Type > Dessus </ Type >
             //< Format > A3 </ Format >
@@ -389,20 +422,19 @@ namespace Schmidt.TechnicalPlan
         }
         private void ScaleItems(ComboBox comboBox)
         {
-            
-            comboBox.Items.Add(comboBoxScale120.Name);            
-            comboBox.Items.Add(comboBoxScale150.Name);
-            comboBox.Items.Add(comboBoxScaleAjusted.Name);
+            comboBox.Items.Add(scaleFactor.Name_1_20);            
+            comboBox.Items.Add(scaleFactor.Name_1_50);
+            comboBox.Items.Add(scaleFactor.Name_Auto);
         }
         private void PaperItems(ComboBox comboBox)
-        {
-            comboBox.Items.Add(ComboBoxPaperA4.Name);
-            comboBox.Items.Add(this._dico.GetTranslate(IdentifyConstanteId.FormatA3ID));
+        {            
+            comboBox.Items.Add(paperFormat.ISOA4Name);
+            comboBox.Items.Add(paperFormat.ISOA3Name);
         }
         private void OrientationItems(ComboBox comboBox)
         {
-            comboBox.Items.Add(this._dico.GetTranslate(IdentifyConstanteId.PortraitID));
-            comboBox.Items.Add(this._dico.GetTranslate(IdentifyConstanteId.LandscapeID));
+            comboBox.Items.Add(paperOrientation.PortraitName);
+            comboBox.Items.Add(paperOrientation.LandscapeName);
         }
 
         private ListViewItem FindListViewItemFromDocName(string docName)
@@ -580,34 +612,24 @@ namespace Schmidt.TechnicalPlan
            
         }
 
-        public void toto()
-        {          
+        //public void toto()
+        //{
+        //    if (_loadedDocument != null)
+        //    {
+        //        _loadedDocument.Close();
+        //    }
+        //    this._loadedDocument = new Syncfusion.Pdf.Parsing.PdfLoadedDocument(@"D:\A.pdf");           
 
-            byte[] doc = this.GetDocument();
-            Syncfusion.Pdf.Parsing.PdfLoadedDocument pdf = new Syncfusion.Pdf.Parsing.PdfLoadedDocument(doc);
-           
-            this.pdfDocumentView_PDFV.Load(pdf);
-            //this.pdfViewerControl1.Load(@"D:\A.pdf");
+        //    this.pdfDocumentView_PDFV.Load(_loadedDocument);
+        //    this.pdfDocumentView_PDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.FitPage;
+        //    //this.pdfDocumentView_PDFV.ZoomTo(100);
+        //    this.pdfDocumentView_PDFV.Update();
 
-            this.pdfDocumentView_PDFV.ZoomTo(100);
-            this.pdfDocumentView_PDFV.Update();
-
-            this.ShowDialog();//this.Plugin.CurrentAppli.GetNativeIWin32Window()
-        }
-        public byte[] GetDocument()
-        {
-            var docBytes = System.IO.File.ReadAllBytes(@"D:\A.pdf");
-           // string docBase64 =  Convert.ToBase64String(docBytes); //"data:application/pdf;base64," +
-            return docBytes;
-        }
+        //    this.Show();//this.Plugin.CurrentAppli.GetNativeIWin32Window()
+        //}       
 
         private void GenerateViewDialogForm_Load(object sender, EventArgs e)
         {
-            //this.pdfDocumentView_PDFV.Load(@"D:\Ic90dev\Scenes\5DE66AB8_0226_01\DocTechnicalPlan\TECHNICAL_PLAN_PREVIEW\Elévation du mur.pdf");
-            //this.pdfDocumentView_PDFV.Load(@"D:\A.pdf");
-            //this.pdfDocumentView_PDFV.ZoomTo(100);
-            //this.pdfDocumentView_PDFV.Update();
-
             this.InitializeListView();
             this.ClearComboBoxListView();
             this.AssignItemsInComboBox();
@@ -818,7 +840,11 @@ namespace Schmidt.TechnicalPlan
             }
 
         }
-       
+
+        private void pdfDocumentView_PDFV_ZoomChanged(object sender, int zoomFactor)
+        {
+            _zoom = zoomFactor;
+        }
     }
 
     //public class ConstListView
@@ -844,7 +870,7 @@ namespace Schmidt.TechnicalPlan
 
     //}
 
-        public class ConstFile
+    public class ConstFile
     {
         public const string TechnicalPlanPreviewDirName = "TECHNICAL_PLAN_PREVIEW";
     }
@@ -886,110 +912,110 @@ namespace Schmidt.TechnicalPlan
             Landscape = 1
         }
     }
-    public class ComboBoxScale120
-    {
-        private Dico _dico = null;
+    //public class ComboBoxScale120
+    //{
+    //    private Dico _dico = null;
 
-        public ComboBoxScale120(Dico dico)
-        {
-            _dico = dico;
-        }
+    //    public ComboBoxScale120(Dico dico)
+    //    {
+    //        _dico = dico;
+    //    }
 
-        public string Name
-        {
-            get
-            {
-                return this._dico.GetTranslate(IdentifyConstanteId.Scale120ID);
-            }
-        }
-        public int ScaleFactor
-        {
-            get
-            {
-                return 20;
-            }
-        }
-    }
-    public class ComboBoxScale150
-    {
-        private Dico _dico = null;
+    //    public string Name
+    //    {
+    //        get
+    //        {
+    //            return this._dico.GetTranslate(IdentifyConstanteId.Scale120ID);
+    //        }
+    //    }
+    //    public int ScaleFactor
+    //    {
+    //        get
+    //        {
+    //            return 20;
+    //        }
+    //    }
+    //}
+    //public class ComboBoxScale150
+    //{
+    //    private Dico _dico = null;
 
-        public ComboBoxScale150(Dico dico)
-        {
-            _dico = dico;
-        }
+    //    public ComboBoxScale150(Dico dico)
+    //    {
+    //        _dico = dico;
+    //    }
 
-        public string Name
-        {
-            get
-            {
-                return this._dico.GetTranslate(IdentifyConstanteId.Scale150ID);
-            }
-        }
-        public int ScaleFactor
-        {
-            get
-            {
-                return 50;
-            }
-        }
-    }
-    public class ComboBoxScaleAjusted
-    {
-        private Dico _dico = null;
+    //    public string Name
+    //    {
+    //        get
+    //        {
+    //            return this._dico.GetTranslate(IdentifyConstanteId.Scale150ID);
+    //        }
+    //    }
+    //    public int ScaleFactor
+    //    {
+    //        get
+    //        {
+    //            return 50;
+    //        }
+    //    }
+    //}
+    //public class ComboBoxScaleAjusted
+    //{
+    //    private Dico _dico = null;
 
-        public ComboBoxScaleAjusted(Dico dico)
-        {
-            _dico = dico;
-        }
+    //    public ComboBoxScaleAjusted(Dico dico)
+    //    {
+    //        _dico = dico;
+    //    }
 
-        public string Name
-        {
-            get
-            {
-                return this._dico.GetTranslate(IdentifyConstanteId.ScaleAjustedID);
-            }
-        }
-        public int ScaleFactor
-        {
-            get
-            {
-                return 0;
-            }
-        }
-    }
+    //    public string Name
+    //    {
+    //        get
+    //        {
+    //            return this._dico.GetTranslate(IdentifyConstanteId.ScaleAutoID);
+    //        }
+    //    }
+    //    public int ScaleFactor
+    //    {
+    //        get
+    //        {
+    //            return 0;
+    //        }
+    //    }
+    //}
 
-    public class ComboBoxPaperA4
-    {
-        private Dico _dico = null;
+    //public class ComboBoxPaperA4
+    //{
+    //    private Dico _dico = null;
 
-        public ComboBoxPaperA4(Dico dico)
-        {
-            _dico = dico;
-        }
+    //    public ComboBoxPaperA4(Dico dico)
+    //    {
+    //        _dico = dico;
+    //    }
 
-        public string Name
-        {
-            get
-            {
-                return this._dico.GetTranslate(IdentifyConstanteId.FormatA4ID);
-            }
-        }
-        public string A4
-        {
-            get
-            {
-                return System.Printing.PageMediaSizeName.ISOA4.ToString();
-            }
-        }
-        public int PaperFormat // System.Printing.PageMediaSizeName
-        {
-            get
-            {
-                return (int)System.Printing.PageMediaSizeName.ISOA4;
-            }
-        }
-    }
+    //    public string Name
+    //    {
+    //        get
+    //        {
+    //            return this._dico.GetTranslate(IdentifyConstanteId.FormatA4ID);
+    //        }
+    //    }
+    //    public string A4
+    //    {
+    //        get
+    //        {
+    //            return System.Printing.PageMediaSizeName.ISOA4.ToString();
+    //        }
+    //    }
+    //    public int PaperFormat // System.Printing.PageMediaSizeName
+    //    {
+    //        get
+    //        {
+    //            return (int)System.Printing.PageMediaSizeName.ISOA4;
+    //        }
+    //    }
+    //}
 
     public class MyListView : System.Windows.Forms.ListView
     {       
@@ -1081,5 +1107,291 @@ namespace Schmidt.TechnicalPlan
             this.Visible = false;
             this.Tag = String.Empty;
         }
+    }
+
+    public class TechnicalDocument
+    {
+        private static Dico _dico = null;
+        private XmlDocument xmlDocument = null;
+
+        private string _fileName;
+        public string FileName
+        {
+            get
+            {
+                return _fileName;
+            }
+        }
+
+        public TechnicalDocument(Dico dico)
+        {
+            _dico = dico;           
+        }
+        public TechnicalDocument(string fileName)
+        {
+            _fileName = System.IO.Path.GetFileName(fileName);           
+        }
+
+
+        public void ReadFromXml(XmlNode xmlNode)
+        {
+
+        }
+        public void WriteToXml(string scale, string format, string orientation )//XmlNode xmlNode
+        {
+            //String filename = @"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml";
+            //System.IO.FileStream myFileStream = new System.IO.FileStream(filename, System.IO.FileMode.OpenOrCreate);
+            XmlReaderSettings settingsR = new XmlReaderSettings();
+            //XmlReader reader = XmlReader.Create(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml", settingsR);
+
+            //XmlWriterSettings settingsW = new XmlWriterSettings();
+            //settingsW.Indent = true;
+            //settingsW.NewLineOnAttributes = true;
+            //settingsW.IndentChars = "\t";
+
+            //XmlWriter writer = XmlWriter.Create(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml", settingsW);
+
+
+            xmlDocument = new XmlDocument();
+            try
+            {
+                xmlDocument.Load(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml");
+            }
+            catch (Exception)
+            {
+   //             XmlWriter writer = XmlWriter.Create(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml");
+   //             writer.WriteStartElement("<? xml version = "1.0" encoding = "UTF-8" ?>");
+
+                
+   //< Scene Code = "" Name = "TECHNICAL DOCUMENT" Version = "1" >
+                    
+            }
+            
+            XmlNode root = xmlDocument.DocumentElement;
+
+            //
+            //< NomFichier > toto.pdf </ NomFichier > => {ViewMode}_{Number}_{ObjectId}.pdf
+            //< Nom > Vue de dessus de toto</ Nom >
+            //< Type > Dessus </ Type >
+            //< Format > A3 </ Format >
+            //< Date > 20191217100254 </ Date >
+            //
+
+            //Create a new node.
+            XmlElement elem = xmlDocument.CreateElement("NomFichier");
+            elem.InnerText = this.ToString();
+            root.AppendChild(elem);
+
+            elem = xmlDocument.CreateElement("Nom");
+            elem.InnerText = "Toto";
+            root.AppendChild(elem);
+
+            elem = xmlDocument.CreateElement("Type");
+            elem.InnerText = "Dessus";
+            root.AppendChild(elem);
+
+            elem = xmlDocument.CreateElement("Scale");
+            elem.InnerText = scale;
+            root.AppendChild(elem);
+
+            elem = xmlDocument.CreateElement("Format");
+            elem.InnerText = format;
+            root.AppendChild(elem);
+
+            elem = xmlDocument.CreateElement("Orientation");
+            elem.InnerText = orientation;
+            root.AppendChild(elem);
+
+            elem = xmlDocument.CreateElement("Date");
+            elem.InnerText = DateTime.Now.ToString();
+            root.AppendChild(elem);
+
+            xmlDocument.Save(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml");
+           
+           
+        }
+
+        public override string ToString()
+        {
+            //return base.ToString();
+            return FileName;
+        }
+
+        public class ScaleFactor
+        {
+            public ScaleFactor()
+            {                
+            }
+
+            private string _name_1_20;
+            public string Name_1_20
+            {
+                get
+                {
+                    return _dico.GetTranslate(IdentifyConstanteId.Scale120ID);
+                }
+                set
+                {
+                    _name_1_20 = value;
+                }
+
+            }
+
+            public int Scale_1_20_Enum
+            {
+                get
+                {
+                    return 20;
+                }
+            }
+
+            private string _name_1_50;
+            public string Name_1_50
+            {
+                get
+                {
+                    return _dico.GetTranslate(IdentifyConstanteId.Scale150ID);
+                }
+                set
+                {
+                    _name_1_50 = value;
+                }
+            }
+
+            public int Scale_1_50_Enum
+            {
+                get
+                {
+                    return 50;
+                }
+            }
+
+            private string _name_Auto;
+            public string Name_Auto
+            {
+                get
+                {
+                    return _dico.GetTranslate(IdentifyConstanteId.ScaleAutoID);
+                }
+                set
+                {
+                    _name_Auto = value;
+                }
+
+            }
+
+            public int Scale_Auto_Enum
+            {
+                get
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public class PaperFormat
+        {
+            public PaperFormat()
+            {
+                
+            }
+
+            private string _iSOA4Name;
+            public string ISOA4Name
+            {
+                get
+                {
+                    return _dico.GetTranslate(IdentifyConstanteId.FormatA4ID);
+                }
+                set
+                {
+                    _iSOA4Name = value;
+                }
+
+            }
+
+            public int PageMediaSizeNameISOA4Enum
+            {
+                get
+                {
+                    return (int)System.Printing.PageMediaSizeName.ISOA4;
+                }
+            }
+
+            private string _iSOA3Name;
+            public string ISOA3Name
+            {
+                get
+                {
+                    return _dico.GetTranslate(IdentifyConstanteId.FormatA3ID);
+                }
+                set
+                {
+                    _iSOA3Name = value;
+                }
+
+            }
+
+            public int PageMediaSizeNameISOA3Enum
+            {
+                get
+                {
+                    return (int)System.Printing.PageMediaSizeName.ISOA3;
+                }
+            }
+        }
+
+        public class PaperOrientation
+        {
+            public PaperOrientation()
+            {
+               
+            }
+
+            private string _portraitName;
+            public string PortraitName
+            {
+                get
+                {
+                    return _dico.GetTranslate(IdentifyConstanteId.PortraitID);
+                }
+                set
+                {
+                    _portraitName = value;
+                }
+
+            }
+
+            public int PageOrientationPortraitEnum
+            {
+                get
+                {
+                    return (int)System.Printing.PageOrientation.Portrait;
+                }
+            }
+
+            private string _landscapeName;
+            public string LandscapeName
+            {
+                get
+                {
+                    return _dico.GetTranslate(IdentifyConstanteId.LandscapeID);
+                }
+                set
+                {
+                    _landscapeName = value;
+                }
+
+            }
+
+            public int PageOrientationLandscapeEnum
+            {
+                get
+                {
+                    return (int)System.Printing.PageOrientation.Landscape;
+                }
+            }
+        }
+      
     }
 }

@@ -37,6 +37,7 @@ namespace Schmidt.TechnicalPlan
     }
     public class Plugin : KD.Plugin.PluginBase
     {
+        private TechnicalDocument technicalDocument = null;
         private MainAppMenuItem _menu = null;
         private SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
         private Dico dico = null;
@@ -53,8 +54,6 @@ namespace Schmidt.TechnicalPlan
 
             this.InitializeDico();
             this.InitializeMenuItem();
-            this.InitializeMessageForm();
-
         }
 
         public new bool OnPluginLoad(int iCallParamsBlock)
@@ -76,12 +75,13 @@ namespace Schmidt.TechnicalPlan
         public bool OnFileOpenBefore(int lCallParamsBlock)
         {
             this.ActiveMenu(true);
-
+            this.technicalDocument = new TechnicalDocument(this.dico);
             return true;
         }
         public bool OnFileNewBefore(int lCallParamsBlock)
         {
             this.ActiveMenu(true);
+            this.technicalDocument = new TechnicalDocument(this.dico);
             return true;
         }
         public bool OnFileCloseAfter(int lCallParamsBlock)
@@ -122,23 +122,28 @@ namespace Schmidt.TechnicalPlan
         {
             if (viewDialogForm == null)
             {                
-                viewDialogForm = new GenerateViewDialogForm(this, pluginWord, dico);   // generateDocumentDialog,            
+                viewDialogForm = new GenerateViewDialogForm(this, pluginWord, dico, technicalDocument);          
             }
-        }      
+        }
 
+        private void DisableMessageForm()
+        {
+            this.sellerResponsabilityMessageForm = null;
+        }
 
         public bool Main(int lCallParamsBlock)
         {
+            this.InitializeMessageForm();
             this.ShowSellerResponsabilityMessage();
             if (!sellerResponsabilityMessageForm.IsSellerResponsabilityMessage())
-            {
+            {                
                 return false;
             }
-            // Do work here     
+            //// Do work here 
+            this.DisableMessageForm();
             this.InitializeViewDialogForm();
-            pluginWord.InitializeAll(lCallParamsBlock);          
-            
-            //this.viewDialogForm.toto();
+
+            pluginWord.InitializeAll(lCallParamsBlock);            
             this.ShowGenerateViewDialogForm();      
 
             return true;
@@ -146,20 +151,11 @@ namespace Schmidt.TechnicalPlan
 
         private void ShowSellerResponsabilityMessage()
         {            
-            sellerResponsabilityMessageForm.ShowDialog(this.CurrentAppli.GetNativeIWin32Window());
+            sellerResponsabilityMessageForm.ShowDialog();
         }
         private void ShowGenerateViewDialogForm()
         {
-            if (viewDialogForm.Visible)
-            {
-                viewDialogForm.WindowState = FormWindowState.Normal;
-                viewDialogForm.Activate();
-                viewDialogForm.BringToFront();
-            }
-            else
-            {
-                viewDialogForm.Show(this.CurrentAppli.GetNativeIWin32Window());
-            }
+            viewDialogForm.ShowDialog(this.CurrentAppli.GetNativeIWin32Window());           
         }
     }
 
@@ -297,7 +293,7 @@ namespace Schmidt.TechnicalPlan
         public const string LandscapeID = "LandscapeID";
         public const string Scale120ID = "Scale120ID";
         public const string Scale150ID = "Scale150ID";
-        public const string ScaleAjustedID = "ScaleAjustedID";
+        public const string ScaleAutoID = "ScaleAutoID";
         public const string FormatA4ID = "FormatA4ID";
         public const string FormatA3ID = "FormatA3ID";
     }

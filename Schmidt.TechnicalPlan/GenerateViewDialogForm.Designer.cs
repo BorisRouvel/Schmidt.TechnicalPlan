@@ -202,7 +202,8 @@
             this.pdfDocumentView_PDFV.ThemeName = "Default";
             this.pdfDocumentView_PDFV.VerticalScrollOffset = 0;
             this.pdfDocumentView_PDFV.VisualStyle = Syncfusion.Windows.Forms.PdfViewer.VisualStyle.Default;
-            this.pdfDocumentView_PDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.Default;
+            this.pdfDocumentView_PDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.FitPage;
+            this.pdfDocumentView_PDFV.ZoomChanged += new Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView.ZoomChangedEventHandler(this.pdfDocumentView_PDFV_ZoomChanged);
             // 
             // myImageButton
             // 
