@@ -23,9 +23,6 @@ using KD.FilterBuilder;
 
 namespace Schmidt.TechnicalPlan
 {
-    //BR\\ do this recently
-    //B__R\\ change as before but ensure that
-
     public class Const
     {       
         public const string IconeFileName = "ico.png";
@@ -43,9 +40,8 @@ namespace Schmidt.TechnicalPlan
         private MainAppMenuItem _menu = null;
         private SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
         private Dico dico = null;
-        private GenerateViewDialogForm viewDialogForm = null;
-        private KD.Plugin.Word.GenerateDocumentDialog generateDocumentDialog = null;
-
+        public GenerateViewDialogForm viewDialogForm = null;
+        
         public static KD.Plugin.Word.Plugin pluginWord = null;
 
         public Plugin()
@@ -126,16 +122,9 @@ namespace Schmidt.TechnicalPlan
         {
             if (viewDialogForm == null)
             {                
-                viewDialogForm = new GenerateViewDialogForm(pluginWord, dico);   // generateDocumentDialog,            
+                viewDialogForm = new GenerateViewDialogForm(this, pluginWord, dico);   // generateDocumentDialog,            
             }
-        }
-        private void InitializeGenerateDocumentDialog()
-        {
-            if (generateDocumentDialog == null)
-            {
-                generateDocumentDialog = new KD.Plugin.Word.GenerateDocumentDialog(pluginWord);
-            }
-        }
+        }      
 
 
         public bool Main(int lCallParamsBlock)
@@ -146,14 +135,11 @@ namespace Schmidt.TechnicalPlan
                 return false;
             }
             // Do work here     
-
-            pluginWord.InitializeAll(lCallParamsBlock);
-
-            //this.InitializeGenerateDocumentDialog();
             this.InitializeViewDialogForm();
-
-            this.ShowGenerateViewDialogForm();            
-
+            pluginWord.InitializeAll(lCallParamsBlock);          
+            
+            //this.viewDialogForm.toto();
+            this.ShowGenerateViewDialogForm();      
 
             return true;
         }
@@ -164,7 +150,16 @@ namespace Schmidt.TechnicalPlan
         }
         private void ShowGenerateViewDialogForm()
         {
-            viewDialogForm.Show();// (this.CurrentAppli.GetNativeIWin32Window());
+            if (viewDialogForm.Visible)
+            {
+                viewDialogForm.WindowState = FormWindowState.Normal;
+                viewDialogForm.Activate();
+                viewDialogForm.BringToFront();
+            }
+            else
+            {
+                viewDialogForm.Show(this.CurrentAppli.GetNativeIWin32Window());
+            }
         }
     }
 
