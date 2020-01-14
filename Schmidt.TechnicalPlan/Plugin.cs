@@ -40,7 +40,7 @@ namespace Schmidt.TechnicalPlan
         private TechnicalDocument technicalDocument = null;
         private MainAppMenuItem _menu = null;
         private SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
-        private Dico dico = null;
+        private Dico _dico = null;
         public GenerateViewDialogForm viewDialogForm = null;
         
         public static KD.Plugin.Word.Plugin pluginWord = null;
@@ -54,6 +54,22 @@ namespace Schmidt.TechnicalPlan
 
             this.InitializeDico();
             this.InitializeMenuItem();
+
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION, _dico.GetTranslate(IdentifyConstanteId.WallID));
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.TOP, _dico.GetTranslate(IdentifyConstanteId.TopViewID));
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION + 100, _dico.GetTranslate(IdentifyConstanteId.WallElevation));
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.TOP + 100, _dico.GetTranslate(IdentifyConstanteId.TopView));
+
+            PageOrientationUI.Dico.Add((int)System.Printing.PageOrientation.Portrait, _dico.GetTranslate(IdentifyConstanteId.PortraitID));
+            PageOrientationUI.Dico.Add((int)System.Printing.PageOrientation.Landscape, _dico.GetTranslate(IdentifyConstanteId.LandscapeID));        
+
+            PageMediaSizeNameUI.Dico.Add((int)System.Printing.PageMediaSizeName.ISOA4, _dico.GetTranslate(IdentifyConstanteId.FormatA4ID));
+            PageMediaSizeNameUI.Dico.Add((int)System.Printing.PageMediaSizeName.ISOA3, _dico.GetTranslate(IdentifyConstanteId.FormatA3ID));
+
+            ScaleFactorUI.Dico.Add((int)ScaleFactorUI.ScaleFactorEnum.Scale120, _dico.GetTranslate(IdentifyConstanteId.Scale120ID));
+            ScaleFactorUI.Dico.Add((int)ScaleFactorUI.ScaleFactorEnum.Scale150, _dico.GetTranslate(IdentifyConstanteId.Scale150ID));
+            ScaleFactorUI.Dico.Add((int)ScaleFactorUI.ScaleFactorEnum.ScaleAuto, _dico.GetTranslate(IdentifyConstanteId.ScaleAutoID));          
+
         }
 
         public new bool OnPluginLoad(int iCallParamsBlock)
@@ -75,13 +91,13 @@ namespace Schmidt.TechnicalPlan
         public bool OnFileOpenBefore(int lCallParamsBlock)
         {
             this.ActiveMenu(true);
-            this.technicalDocument = new TechnicalDocument(this.dico);
+            this.technicalDocument = new TechnicalDocument();
             return true;
         }
         public bool OnFileNewBefore(int lCallParamsBlock)
         {
             this.ActiveMenu(true);
-            this.technicalDocument = new TechnicalDocument(this.dico);
+            this.technicalDocument = new TechnicalDocument();
             return true;
         }
         public bool OnFileCloseAfter(int lCallParamsBlock)
@@ -99,30 +115,30 @@ namespace Schmidt.TechnicalPlan
         }
         private void InitializeDico()
         {
-            if (dico == null)
+            if (_dico == null)
             {
-                dico = new Dico(this.CurrentAppli, this.CurrentAppli.GetLanguage());
+                _dico = new Dico(this.CurrentAppli, this.CurrentAppli.GetLanguage());
             }
         }
         private void InitializeMessageForm()
         {
             if (sellerResponsabilityMessageForm == null)
             {
-                sellerResponsabilityMessageForm = new SellerResponsabilityMessageForm(dico);
+                sellerResponsabilityMessageForm = new SellerResponsabilityMessageForm(_dico);
             }
         }
         private void InitializeMenuItem()
         {
             if (_menu == null)
             {
-                _menu = new MainAppMenuItem((int)KD.SDK.AppliEnum.SceneMenuItemsId.INFO, dico.GetTranslate(IdentifyConstanteId.FunctionNameID), this.AssemblyFileName, KD.Plugin.Const.PluginClassName, "Main");
+                _menu = new MainAppMenuItem((int)KD.SDK.AppliEnum.SceneMenuItemsId.INFO, _dico.GetTranslate(IdentifyConstanteId.FunctionNameID), this.AssemblyFileName, KD.Plugin.Const.PluginClassName, "Main");
             }
         }
         private void InitializeViewDialogForm()
         {
             if (viewDialogForm == null)
             {                
-                viewDialogForm = new GenerateViewDialogForm(this, pluginWord, dico, technicalDocument);          
+                viewDialogForm = new GenerateViewDialogForm(this, pluginWord, _dico, technicalDocument); //         
             }
         }
 
@@ -288,6 +304,11 @@ namespace Schmidt.TechnicalPlan
         public const string ColumnHeaderPaperID = "ColumnHeaderPaperID";
         public const string ColumnHeaderOrientationID = "ColumnHeaderOrientationID";
         public const string ColumnHeaderOverviewID = "ColumnHeaderOverviewID";
+
+        public const string TopViewID = "TopViewID";
+        public const string WallID = "WallID";
+        public const string TopView = "TopView";
+        public const string WallElevation = "WallElevation";
 
         public const string PortraitID = "PortraitID";
         public const string LandscapeID = "LandscapeID";

@@ -42,9 +42,11 @@
             this.paperList_CBX = new System.Windows.Forms.ComboBox();
             this.scaleList_CBX = new System.Windows.Forms.ComboBox();
             this.splitContainer_SPC = new System.Windows.Forms.SplitContainer();
-            this.pdfDocumentView_PDFV = new Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView();
             this.myImageButton = new Schmidt.TechnicalPlan.MyImageButton();
             this.myListView_MLV = new Schmidt.TechnicalPlan.MyListView();
+            this.pdfDocumentView_PDFV = new Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView();
+            this.Ok_BTN = new System.Windows.Forms.Button();
+            this.Cancel_BTN = new System.Windows.Forms.Button();
             this.iconBar_TSP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_SPC)).BeginInit();
             this.splitContainer_SPC.Panel1.SuspendLayout();
@@ -160,9 +162,44 @@
             // splitContainer_SPC.Panel2
             // 
             this.splitContainer_SPC.Panel2.Controls.Add(this.pdfDocumentView_PDFV);
-            this.splitContainer_SPC.Size = new System.Drawing.Size(960, 711);
+            this.splitContainer_SPC.Size = new System.Drawing.Size(960, 671);
             this.splitContainer_SPC.SplitterDistance = 396;
             this.splitContainer_SPC.TabIndex = 18;
+            // 
+            // myImageButton
+            // 
+            this.myImageButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("myImageButton.BackgroundImage")));
+            this.myImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.myImageButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.myImageButton.Location = new System.Drawing.Point(202, 62);
+            this.myImageButton.Margin = new System.Windows.Forms.Padding(0);
+            this.myImageButton.Name = "myImageButton";
+            this.myImageButton.Size = new System.Drawing.Size(55, 55);
+            this.myImageButton.TabIndex = 17;
+            this.myImageButton.Tag = "";
+            this.myImageButton.UseVisualStyleBackColor = true;
+            this.myImageButton.Visible = false;
+            // 
+            // myListView_MLV
+            // 
+            this.myListView_MLV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.myListView_MLV.CheckBoxes = true;
+            this.myListView_MLV.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.myListView_MLV.FullRowSelect = true;
+            this.myListView_MLV.GridLines = true;
+            this.myListView_MLV.HideSelection = false;
+            this.myListView_MLV.Location = new System.Drawing.Point(3, 3);
+            this.myListView_MLV.Name = "myListView_MLV";
+            this.myListView_MLV.Size = new System.Drawing.Size(387, 665);
+            this.myListView_MLV.TabIndex = 8;
+            this.myListView_MLV.UseCompatibleStateImageBehavior = false;
+            this.myListView_MLV.View = System.Windows.Forms.View.Details;
+            this.myListView_MLV.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.MyListView_MLV_ItemChecked);
+            this.myListView_MLV.SelectedIndexChanged += new System.EventHandler(this.MyListView_MLV_SelectedIndexChanged);
+            this.myListView_MLV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MyListView_MLV_MouseDown);
+            this.myListView_MLV.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MyListView_MLV_MouseUp);
             // 
             // pdfDocumentView_PDFV
             // 
@@ -192,7 +229,7 @@
             this.pdfDocumentView_PDFV.ScrollDisplacementValue = 0;
             this.pdfDocumentView_PDFV.ShowHorizontalScrollBar = true;
             this.pdfDocumentView_PDFV.ShowVerticalScrollBar = true;
-            this.pdfDocumentView_PDFV.Size = new System.Drawing.Size(554, 705);
+            this.pdfDocumentView_PDFV.Size = new System.Drawing.Size(554, 665);
             this.pdfDocumentView_PDFV.SpaceBetweenPages = 8;
             this.pdfDocumentView_PDFV.TabIndex = 0;
             textSearchSettings1.CurrentInstanceColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(255)))), ((int)(((byte)(171)))), ((int)(((byte)(64)))));
@@ -205,46 +242,36 @@
             this.pdfDocumentView_PDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.FitPage;
             this.pdfDocumentView_PDFV.ZoomChanged += new Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView.ZoomChangedEventHandler(this.pdfDocumentView_PDFV_ZoomChanged);
             // 
-            // myImageButton
+            // Ok_BTN
             // 
-            this.myImageButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("myImageButton.BackgroundImage")));
-            this.myImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.myImageButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.myImageButton.Location = new System.Drawing.Point(202, 62);
-            this.myImageButton.Margin = new System.Windows.Forms.Padding(0);
-            this.myImageButton.Name = "myImageButton";
-            this.myImageButton.Size = new System.Drawing.Size(55, 55);
-            this.myImageButton.TabIndex = 17;
-            this.myImageButton.Tag = "";
-            this.myImageButton.UseVisualStyleBackColor = true;
-            this.myImageButton.Visible = false;
+            this.Ok_BTN.Location = new System.Drawing.Point(412, 726);
+            this.Ok_BTN.Name = "Ok_BTN";
+            this.Ok_BTN.Size = new System.Drawing.Size(75, 23);
+            this.Ok_BTN.TabIndex = 19;
+            this.Ok_BTN.Text = "Ok";
+            this.Ok_BTN.UseVisualStyleBackColor = true;
+            this.Ok_BTN.Click += new System.EventHandler(this.Ok_BTN_Click);
             // 
-            // myListView_MLV
+            // Cancel_BTN
             // 
-            this.myListView_MLV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.myListView_MLV.CheckBoxes = true;
-            this.myListView_MLV.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.myListView_MLV.FullRowSelect = true;
-            this.myListView_MLV.GridLines = true;
-            this.myListView_MLV.HideSelection = false;
-            this.myListView_MLV.Location = new System.Drawing.Point(3, 3);
-            this.myListView_MLV.Name = "myListView_MLV";
-            this.myListView_MLV.Size = new System.Drawing.Size(387, 1016);
-            this.myListView_MLV.TabIndex = 8;
-            this.myListView_MLV.UseCompatibleStateImageBehavior = false;
-            this.myListView_MLV.View = System.Windows.Forms.View.Details;
-            this.myListView_MLV.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.MyListView_MLV_ItemChecked);
-            this.myListView_MLV.SelectedIndexChanged += new System.EventHandler(this.MyListView_MLV_SelectedIndexChanged);
-            this.myListView_MLV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MyListView_MLV_MouseDown);
-            this.myListView_MLV.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MyListView_MLV_MouseUp);
+            this.Cancel_BTN.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.Cancel_BTN.Location = new System.Drawing.Point(493, 726);
+            this.Cancel_BTN.Name = "Cancel_BTN";
+            this.Cancel_BTN.Size = new System.Drawing.Size(75, 23);
+            this.Cancel_BTN.TabIndex = 20;
+            this.Cancel_BTN.Text = "Cancel";
+            this.Cancel_BTN.UseVisualStyleBackColor = true;
+            this.Cancel_BTN.Click += new System.EventHandler(this.Cancel_BTN_Click);
             // 
             // GenerateViewDialogForm
             // 
+            this.AcceptButton = this.Ok_BTN;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.CancelButton = this.Cancel_BTN;
             this.ClientSize = new System.Drawing.Size(984, 761);
+            this.Controls.Add(this.Cancel_BTN);
+            this.Controls.Add(this.Ok_BTN);
             this.Controls.Add(this.splitContainer_SPC);
             this.Controls.Add(this.iconBar_TSP);
             this.KeyPreview = true;
@@ -280,5 +307,7 @@
         public System.Windows.Forms.ComboBox scaleList_CBX;
         private System.Windows.Forms.SplitContainer splitContainer_SPC;
         private Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView pdfDocumentView_PDFV;
+        private System.Windows.Forms.Button Ok_BTN;
+        private System.Windows.Forms.Button Cancel_BTN;
     }
 }

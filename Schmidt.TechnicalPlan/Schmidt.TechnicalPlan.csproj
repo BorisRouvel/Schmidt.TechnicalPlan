@@ -155,6 +155,7 @@
     <Compile Include="SellerResponsabilityMessageForm.Designer.cs">
       <DependentUpon>SellerResponsabilityMessageForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TechnicalDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="GenerateViewDialogForm.resx">
