@@ -113,6 +113,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Plugins.Core\src\System\AssemblyHelper.cs">
@@ -136,11 +137,15 @@
     <Compile Include="..\..\Plugins.Core\src\System\StringsHelper.cs">
       <Link>src\System\StringsHelper.cs</Link>
     </Compile>
+    <Compile Include="Dico.cs" />
     <Compile Include="GenerateViewDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GenerateViewDialogForm.Designer.cs">
       <DependentUpon>GenerateViewDialogForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ListView.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

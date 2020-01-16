@@ -1,15 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Schmidt.TechnicalPlan
 {
     public class TechnicalDocument
     {
+        const string rootTag = "<Vues></Vues>";
+        const string viewTag = "Vue";
+        const string typeTag = "Type";
+        const string fileNameTag = "NomFichier";
+        const string scaleTag = "Scale";
+        const string formatTag = "Format";
+        const string orientationTag = "Orientation";
+        const string dateTag = "Date";
+
+
         static private Dictionary<int, string> _dico = new Dictionary<int, string>();
        
         private string _type;
-        private double _scaleFactor; // 0.05 if scale is 1/20
+        private string _scaleFactor; // 0.05 if scale is 1/20
         private System.Printing.PageOrientation _pageOrientation;
         private System.Printing.PageMediaSizeName _pageMediaSizeName;
         private string _fileName;
@@ -28,7 +39,7 @@ namespace Schmidt.TechnicalPlan
             get { return _type; }
             set { _type = value; }
         }
-        public double ScaleFactor
+        public string ScaleFactor
         {
             get { return _scaleFactor; }
             set { _scaleFactor = value; }
@@ -66,7 +77,7 @@ namespace Schmidt.TechnicalPlan
 
         private void InitMembers()
         {
-            _scaleFactor = 1.0 / 20.0;
+            _scaleFactor = ScaleFactorSubItem.Dico[(int)ScaleFactorSubItem.ScaleFactorEnum.Scale120];//1.0 / 20.0; //
             _pageOrientation = System.Printing.PageOrientation.Portrait;
             _pageMediaSizeName = System.Printing.PageMediaSizeName.ISOA4;
             _viewMode = KD.SDK.SceneEnum.ViewMode.UNKNOWN;
@@ -89,98 +100,72 @@ namespace Schmidt.TechnicalPlan
             return FileName;
         }
 
-        public void ReadFromXml(XmlNode xmlNode)
+        public void ReadFromXml(string xmlString, out XmlNodeList xmlNodeScaleList, out XmlNodeList xmlNodeFormatList, out XmlNodeList xmlNodeOrientationList)
         {
+            XmlDocument xmlDocument = null;
+            xmlNodeScaleList = null;
+            xmlNodeFormatList = null;
+            xmlNodeOrientationList = null;
 
+            try
+            {
+                xmlDocument = new XmlDocument(); //XDocument.Parse(xmlString,LoadOptions.PreserveWhitespace);
+                xmlDocument.LoadXml(xmlString);
+            }
+            catch (Exception)
+            {
+                ;
+            }
+
+            if (xmlDocument != null)
+            {               
+                xmlNodeScaleList = xmlDocument.GetElementsByTagName(scaleTag);
+                xmlNodeFormatList = xmlDocument.GetElementsByTagName(formatTag);
+                xmlNodeOrientationList = xmlDocument.GetElementsByTagName(orientationTag);
+            }
+           
         }
         public void WriteToXml(List<TechnicalDocument> documentList, out XmlNode xmlNode)
         {
-            
-
-            XmlDocument xmlDocument = new XmlDocument();
-            try
-            {
-                xmlDocument.Load(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml");
-            }
-            catch (Exception)
-            {
-                XmlWriter writer = XmlWriter.Create(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml");
-                writer.WriteComment("comment");
-
-                // Write an element (this one is the root).
-                writer.WriteStartElement("TechnicalDocument");
-
-                // Write the namespace declaration.
-                writer.WriteAttributeString("code", "");
-
-                // Write the genre attribute.
-                writer.WriteAttributeString("version", "1");
-
-                writer.WriteEndElement();
-
-                writer.Flush();
-                writer.Close();
-                writer.Dispose();
-
-                WriteToXml(documentList, out xmlNode);
-            }
-
-            XmlNode root = xmlDocument.DocumentElement;
-
-           
-            //
-            XmlNode xmlFirstNode = null;
-            XmlNode xmlSecondNode = null;
-            try
-            {
-                xmlDocument.SelectSingleNode("//Vues/Vue").InnerText = String.Empty;
-                xmlFirstNode = xmlDocument.SelectSingleNode("//Vues");
-                xmlSecondNode = xmlDocument.SelectSingleNode("//Vues/Vue");
-            }
-            catch (Exception)
-            {
-                xmlFirstNode = xmlDocument.CreateElement("Vues");
-                xmlFirstNode.InnerText = String.Empty;
-                root.AppendChild(xmlFirstNode);
-
-                xmlSecondNode = xmlDocument.CreateElement("Vue");
-                xmlSecondNode.InnerText = String.Empty;
-                xmlFirstNode.AppendChild(xmlSecondNode);
-            }
-
+            XmlDocument xmlDocument = new XmlDocument();           
+            xmlDocument.LoadXml(rootTag);
 
             foreach (TechnicalDocument doc in documentList)
             {
+                XmlNode root;               
+                root = xmlDocument.CreateElement(viewTag);
+                xmlDocument.DocumentElement.AppendChild(root);
+
                 XmlNode elem;
-                elem = xmlDocument.CreateElement("Type");
+                elem = xmlDocument.CreateElement(typeTag);
                 elem.InnerText = doc.Type;
-                xmlSecondNode.AppendChild(elem);
-
-                elem = xmlDocument.CreateElement("NomFichier");
-                elem.InnerText = doc.FileName;
-                xmlSecondNode.AppendChild(elem);
-
-                elem = xmlDocument.CreateElement("Scale");
-                elem.InnerText = doc.ScaleFactor.ToString();
-                xmlSecondNode.AppendChild(elem);
-
-                elem = xmlDocument.CreateElement("Format");
-                elem.InnerText = doc.PageMediaSizeName.ToString();
-                xmlSecondNode.AppendChild(elem);
-
-                elem = xmlDocument.CreateElement("Orientation");
-                elem.InnerText = doc.PageOrientation.ToString();
-                xmlSecondNode.AppendChild(elem);
-
-                elem = xmlDocument.CreateElement("Date");
-                elem.InnerText = DateTime.Now.ToString();
-                xmlSecondNode.AppendChild(elem);
+                root.AppendChild(elem);                
                 
+                elem = xmlDocument.CreateElement(fileNameTag);
+                elem.InnerText = doc.FileName;
+                root.AppendChild(elem);
+
+                elem = xmlDocument.CreateElement(scaleTag);
+                elem.InnerText = doc.ScaleFactor.ToString();
+                root.AppendChild(elem);
+
+                elem = xmlDocument.CreateElement(formatTag);
+                elem.InnerText = doc.PageMediaSizeName.ToString();
+                root.AppendChild(elem);
+
+                elem = xmlDocument.CreateElement(orientationTag);
+                elem.InnerText = doc.PageOrientation.ToString();
+                root.AppendChild(elem);
+
+                elem = xmlDocument.CreateElement(dateTag);
+                elem.InnerText = DateTime.Now.ToString();
+                root.AppendChild(elem);
+
             }
 
             xmlDocument.Save(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml");
 
-            xmlNode = xmlFirstNode;
+            xmlNode = xmlDocument.FirstChild; 
         }
 
         

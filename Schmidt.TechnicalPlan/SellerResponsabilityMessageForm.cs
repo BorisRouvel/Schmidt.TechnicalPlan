@@ -4,15 +4,7 @@ using System.Windows.Forms;
 namespace Schmidt.TechnicalPlan
 {
     public partial class SellerResponsabilityMessageForm : Form
-    {
-
-        public class SellerResponsabilityMessageConst
-        {
-            public const string OkButtonID = "OkButtonID";
-            public const string CancelButtonID = "CancelButtonID";
-            public const string SellerMessageID = "SellerMessageID";
-        }
-
+    {       
         private bool ValidButton = false;
 
         private Dico _dico = null;
@@ -37,9 +29,9 @@ namespace Schmidt.TechnicalPlan
 
         private void InitializeText()
         {
-            this.Ok_BTN.Text = this.Dico.GetTranslate(SellerResponsabilityMessageConst.OkButtonID);//, "Ok / Continuer");
-            this.Cancel_BTN.Text = this.Dico.GetTranslate(SellerResponsabilityMessageConst.CancelButtonID);//, "Retourner dans InSitu");
-            this.SellerResponsabilityText_LAB.Text = this.Dico.GetTranslate(SellerResponsabilityMessageConst.SellerMessageID);//, "Nous rappelons que Plan Technique engage la responsabilité du vendeur.");
+            this.Ok_BTN.Text = this.Dico.GetTranslate(TranslateIdentifyId.OkButtonID);//, "Ok / Continuer");
+            this.Cancel_BTN.Text = this.Dico.GetTranslate(TranslateIdentifyId.CancelButtonID);//, "Retourner dans InSitu");
+            this.SellerResponsabilityText_LAB.Text = this.Dico.GetTranslate(TranslateIdentifyId.SellerMessageID);//, "Nous rappelons que Plan Technique engage la responsabilité du vendeur.");
         }
 
         public bool IsSellerResponsabilityMessage()
