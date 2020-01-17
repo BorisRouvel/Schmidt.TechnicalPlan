@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Ic90dev\Plugins\TechnicalPlan\</OutputPath>
+    <OutputPath>..\..\..\..\Ic90dev\Plugins\Standard\word\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -55,10 +55,9 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="KD.Plugin.Word, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="KD.Plugin.Word, Version=1.19.12.11, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Ic90dev\Plugins\Standard\Word\KD.Plugin.Word.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="kd.sdk">
       <HintPath>..\..\..\..\Ic90dev\kd.sdk.dll</HintPath>
@@ -68,8 +67,8 @@
     <Reference Include="Syncfusion.Compression.Base, Version=17.4450.0.41, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
       <HintPath>..\packages\Syncfusion.Compression.Base.17.4.0.41\lib\net45\Syncfusion.Compression.Base.dll</HintPath>
     </Reference>
-    <Reference Include="Syncfusion.DocToPdfConverter.Base, Version=17.4450.0.41, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <HintPath>..\packages\Syncfusion.DocToPDFConverter.WinForms.17.4.0.41\lib\net45\Syncfusion.DocToPdfConverter.Base.dll</HintPath>
+    <Reference Include="Syncfusion.DocIO.Base, Version=17.4450.0.41, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
+      <HintPath>..\packages\Syncfusion.DocIO.WinForms.17.4.0.41\lib\net45\Syncfusion.DocIO.Base.dll</HintPath>
     </Reference>
     <Reference Include="Syncfusion.Grid.Base, Version=17.4450.0.41, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
       <HintPath>..\packages\Syncfusion.Grid.Base.17.4.0.41\lib\net45\Syncfusion.Grid.Base.dll</HintPath>
@@ -78,8 +77,7 @@
       <HintPath>..\packages\Syncfusion.Grid.Windows.17.4.0.41\lib\net45\Syncfusion.Grid.Windows.dll</HintPath>
     </Reference>
     <Reference Include="Syncfusion.Licensing, Version=17.4450.0.41, Culture=neutral, PublicKeyToken=632609b4d040f6b4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Plugins\packages\Syncfusion.Licensing.17.4.0.41\lib\net45\Syncfusion.Licensing.dll</HintPath>
+      <HintPath>..\packages\Syncfusion.Licensing.17.4.0.41\lib\net45\Syncfusion.Licensing.dll</HintPath>
     </Reference>
     <Reference Include="Syncfusion.OfficeChart.Base, Version=17.4450.0.41, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
       <HintPath>..\packages\Syncfusion.OfficeChart.Base.17.4.0.41\lib\net45\Syncfusion.OfficeChart.Base.dll</HintPath>
@@ -175,6 +173,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Resources\ico.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

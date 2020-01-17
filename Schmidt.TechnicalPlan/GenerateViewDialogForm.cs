@@ -10,7 +10,7 @@ namespace Schmidt.TechnicalPlan
 
     public partial class GenerateViewDialogForm : Form
     {
-        const string xmlInfoKey = "TechnicalDocument";      
+        const string xmlInfoKey = "TechnicalDocuments";      
 
         List<TechnicalDocument> _documentList = new List<TechnicalDocument>();
 
@@ -82,11 +82,28 @@ namespace Schmidt.TechnicalPlan
 
         private void InitializePreviewDirectory()
         {
+            string technicalPlanDir = String.Empty;
             string archiveFileDir = this._pluginWord.GetRootDir();
-
-            if (System.IO.Directory.Exists(System.IO.Path.Combine(archiveFileDir, ConstFile.DocTechnicalPlanDir, ConstFile.TechnicalPlanPreviewDirName)))
+            if (!archiveFileDir.Contains(ConstFile.DocTechnicalPlanDir))
             {
-                System.IO.Directory.Delete(System.IO.Path.Combine(archiveFileDir, ConstFile.DocTechnicalPlanDir, ConstFile.TechnicalPlanPreviewDirName), true);
+                technicalPlanDir = System.IO.Path.Combine(archiveFileDir, ConstFile.DocTechnicalPlanDir, ConstFile.TechnicalPlanPreviewDirName);
+            }
+            else
+            {
+                technicalPlanDir = System.IO.Path.Combine(archiveFileDir, ConstFile.TechnicalPlanPreviewDirName);
+            }
+          
+
+            if (System.IO.Directory.Exists(technicalPlanDir))
+            {
+                IEnumerable<string> technicalPlanFiles = System.IO.Directory.EnumerateFiles(technicalPlanDir);
+                foreach (string technicalPlanFile in technicalPlanFiles)
+                {
+                    if (System.IO.File.Exists(technicalPlanFile))
+                    {
+                        System.IO.File.Delete(technicalPlanFile);
+                    }
+                }
             }
         }
         private void InitializeListView()
@@ -131,26 +148,26 @@ namespace Schmidt.TechnicalPlan
             this.Cancel_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.CancelButtonUIID);
         }
      
-        public void Build(bool preview)
+        public void Build(bool preview, int lviIndex)
         {
+            Cursor.Current = Cursors.WaitCursor;
+
+            this._pluginWord.DocIndex2Use = FindDocNameFromChoice(lviIndex);
+            this._pluginWord.GenerateDocument(false);
+
+            string docname = this._pluginWord.GetLocalizedDocName(this._pluginWord.DocIndex2Use);
+            string pdfFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
+            string dotFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Dot);
+
+            string dirPdfPath = this.MoveFileToDocPlanDir(pdfFilePath, dotFilePath, 0);
+            string dirDotPath = dirPdfPath.Replace(KD.IO.File.Extension.Pdf, KD.IO.File.Extension.Dot);
+
             if (preview)
             {
-                this._pluginWord.DocIndex2Use = FindDocNameFromChoice(lvItem.Index);
-                this._pluginWord.GenerateDocument(false);
-
-                string docname = this._pluginWord.GetLocalizedDocName(this._pluginWord.DocIndex2Use);
-                string pdfFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
-                string dotFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Dot);
-
-                string dirPdfPath = this.MoveFileToDocPlanDir(pdfFilePath, dotFilePath, 0);
-                string dirDotPath = dirPdfPath.Replace(KD.IO.File.Extension.Pdf, KD.IO.File.Extension.Dot);
-           
                 this.LoadPdfFile(this.MoveFileToPreviewDir(dirPdfPath, dirDotPath, 0));
             }
-            else
-            {               
-                this.SaveCustomInfo("");
-            }
+
+            Cursor.Current = Cursors.Arrow;
         }
         private string MoveFileToDocPlanDir(string pdfFilePath, string dotFilePath, int time)
         {
@@ -162,7 +179,7 @@ namespace Schmidt.TechnicalPlan
                 {                
                     System.IO.Directory.CreateDirectory(currentPdfDir);
                 }
-                //string newDir = System.IO.Path.Combine(currentDir, ConstFile.DocTechnicalPlanDir);
+              
                 string newPdfFilePath = System.IO.Path.Combine(currentPdfDir, System.IO.Path.GetFileName(pdfFilePath));
                 string newDotFilePath = System.IO.Path.Combine(currentPdfDir, System.IO.Path.GetFileName(dotFilePath));
 
@@ -278,6 +295,10 @@ namespace Schmidt.TechnicalPlan
             // can Update member only after load
             _currentPdfFilePath = pdfFilePath;
         }
+        private void UnLoadPdfFile()
+        {
+            pdfDocumentView_PDFV.Unload();
+        }
         private void ActivatePdfViewer()
         {
             this.splitContainer_SPC.Panel2.Show();
@@ -294,14 +315,16 @@ namespace Schmidt.TechnicalPlan
                 string scale = lvItem.SubItems[2].Text.Replace(KD.StringTools.Const.Slatch, String.Empty);
                 string subDocName = scale + KD.StringTools.Const.MinusSign + lvItem.SubItems[3].Text + KD.StringTools.Const.MinusSign + lvItem.SubItems[4].Text;      //subDocList[2].Tag.ToString();
 
-                int nbSubDoc = this._pluginWord.CurrentAppli.GetDocItemsNb((iDoc * 12) + iDoc);
+                //int nbSubDoc = this._pluginWord.CurrentAppli.GetDocItemsNb((iDoc * 12) + iDoc);
+                int nbSubDoc = this._pluginWord.CurrentAppli.GetDocsNb();
 
                 for (int iSubDoc = 1; iSubDoc <= nbSubDoc; iSubDoc++)
                 {
-                    rank = (iSubDoc + (iDoc * 12) + iDoc);
+                    //rank = (iSubDoc + (iDoc * 12) + iDoc);
+                    rank = iSubDoc;
                     string name = this._pluginWord.CurrentAppli.DocGetInfo(rank, KD.SDK.AppliEnum.DocInfo.NAME);
 
-                    if (name.Contains(subDocName))
+                    if (name.ToUpper().Contains(subDocName.ToUpper()))
                     {
                         break;
                     }
@@ -684,6 +707,12 @@ namespace Schmidt.TechnicalPlan
                 this.myListView_MLV.Items.Add(lvItem);
             }
             this.myListView_MLV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            int columnHeaderSize = 0;
+            foreach (ColumnHeader ch in this.myListView_MLV.Columns)
+            {
+                columnHeaderSize += ch.Width;
+            }
+            this.splitContainer_SPC.SplitterDistance = this.splitContainer_SPC.Location.X + columnHeaderSize;
             this.myListView_MLV.Refresh();
         }
         private void UpdateListViewItemFromDocument(TechnicalDocument doc, ListViewItem lvItem)
@@ -777,6 +806,48 @@ namespace Schmidt.TechnicalPlan
         //    lvItem.Text = String.Empty;
 
         //}
+       
+        private void AssignComboBox(Rectangle clickedItem)
+        {
+            ComboBox comboBox = null;
+            Button button = null;
+
+            switch (lviSelectedColumnIndex)
+            {
+                case (int)MyListView.Enum.ColumnIndex.Scale:
+                    comboBox = this.scaleList_CBX;
+                    break;
+                case (int)MyListView.Enum.ColumnIndex.Paper:
+                    comboBox = this.paperList_CBX;
+                    break;
+                case (int)MyListView.Enum.ColumnIndex.Orientation:
+                    comboBox = this.orientationList_CBX;
+                    break;
+                case (int)MyListView.Enum.ColumnIndex.Overview:
+                    button = this.myImageButton;
+                    break;
+                default:
+                    return;
+            }
+
+            if (comboBox != null)
+            {
+                // Assign calculated bounds to the ComboBox.
+                comboBox.Bounds = clickedItem;
+                // Set default text for ComboBox to match the item that is clicked.
+                comboBox.Text = lvItem.Text;
+                // Display the ComboBox, and make sure that it is on top with focus.
+                comboBox.Visible = true;
+                comboBox.BringToFront();
+                comboBox.Focus();
+            }
+            if (button != null)
+            {
+                button.Visible = true;
+                button.BringToFront();
+                button.Focus();
+            }
+        }
         private void AddTwinButton()
         {
             for (int lineIndex = 0; lineIndex < this.myListView_MLV.Items.Count; lineIndex++)
@@ -795,14 +866,28 @@ namespace Schmidt.TechnicalPlan
                 // Set default text for ComboBox to match the item that is clicked.                 
                 myOverViewButton.Visible = true;
                 myOverViewButton.BringToFront();
+                myOverViewButton.Name = "myOverViewButton" + lineIndex;
                 myOverViewButton.Tag = lineIndex;//.ToString();
                 myOverViewButton.Click += new System.EventHandler(this.myOverViewButton_Click);
             }
 
         }
+        private void TwinButtonLocation()
+        {
+            foreach (ListViewItem lvi in this.myListView_MLV.Items)
+            {
+                int x1 = this.myListView_MLV.Items[lvi.Index].SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Bounds.X + this.myListView_MLV.Left + 10;
+                int y1 = this.myListView_MLV.Items[lvi.Index].SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Bounds.Y - 2;
 
-      
+                Control[] controls = myListView_MLV.Controls.Find("myOverViewButton" + lvi.Index, true);
+                foreach (Control control in controls)
+                {
+                    control.Location = new Point(x1, y1);
+                }
+            }
+        }
 
+        // Form
         private void GenerateViewDialogForm_Load(object sender, EventArgs e)
         {
             this.InitializePreviewDirectory();
@@ -820,8 +905,12 @@ namespace Schmidt.TechnicalPlan
         }
         private void GenerateViewDialogForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.pdfDocumentView_PDFV.Unload();
-            this.Hide();
+            this.UnLoadPdfFile();           
+            this.Plugin.viewDialogForm = null;
+        }
+        private void GenerateViewDialogForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.UnLoadPdfFile();
             this.Plugin.viewDialogForm = null;
         }
 
@@ -892,58 +981,20 @@ namespace Schmidt.TechnicalPlan
         private void MyListView_MLV_MouseDown(object sender, MouseEventArgs e)
         {
             lvItem = this.myListView_MLV.GetItemAt(e.X, e.Y);
-        }
-        private void AssignComboBox(Rectangle clickedItem)
-        {
-            ComboBox comboBox = null;
-            Button button = null;
-
-            switch (lviSelectedColumnIndex)
-            {
-                case (int)MyListView.Enum.ColumnIndex.Scale:
-                    comboBox = this.scaleList_CBX;
-                    break;
-                case (int)MyListView.Enum.ColumnIndex.Paper:
-                    comboBox = this.paperList_CBX;
-                    break;
-                case (int)MyListView.Enum.ColumnIndex.Orientation:
-                    comboBox = this.orientationList_CBX;
-                    break;
-                case (int)MyListView.Enum.ColumnIndex.Overview:
-                    button = this.myImageButton;
-                    break;
-                default:
-                    return;
-            }
-
-            if (comboBox != null)
-            {
-                // Assign calculated bounds to the ComboBox.
-                comboBox.Bounds = clickedItem;
-                // Set default text for ComboBox to match the item that is clicked.
-                comboBox.Text = lvItem.Text;
-                // Display the ComboBox, and make sure that it is on top with focus.
-                comboBox.Visible = true;
-                comboBox.BringToFront();
-                comboBox.Focus();
-            }
-            if (button != null)
-            {
-                button.Visible = true;
-                button.BringToFront();
-                button.Focus();
-            }
-        }
+        }       
         private void MyListView_MLV_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
             if (lvItem != null && e.Item.Index != -1 && lvItem.Index != -1)
             {
                 if (lvItem.Checked)
-                {
-                    //here make method to delete, send SM2, Print ect...                   
+                {                                   
                     lviSelectedRowIndex = lvItem.Index;                    
                 }
             }
+        }    
+        private void myListView_MLV_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            this.TwinButtonLocation();            
         }
 
         private void scaleList_CBX_KeyPress(object sender, KeyPressEventArgs e)
@@ -960,9 +1011,8 @@ namespace Schmidt.TechnicalPlan
         private void scaleList_CBX_SelectedValueChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
-            //scaleFactorChoice = (ScaleFactorSubItem)comboBox.SelectedItem;
-            comboBox.Tag = comboBox.SelectedItem; //scaleFactorChoice.ToString();
-            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag = comboBox.SelectedItem; //scaleFactorChoice.ToString();
+            comboBox.Tag = comboBox.SelectedItem;
+            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag = comboBox.SelectedItem;
             this.HideComboBox(this.scaleList_CBX);
             this.UpdateDocumentListFromListView();
         }
@@ -983,9 +1033,8 @@ namespace Schmidt.TechnicalPlan
         private void paperList_CBX_SelectedValueChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
-            //pageMediaSizeNameChoice = (PageMediaSizeNameSubItem)comboBox.SelectedItem;
-            comboBox.Tag = comboBox.SelectedItem; // pageMediaSizeNameChoice;
-            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag = comboBox.SelectedItem; // pageMediaSizeNameChoice;
+            comboBox.Tag = comboBox.SelectedItem; 
+            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag = comboBox.SelectedItem;
             this.HideComboBox(this.paperList_CBX);
             this.UpdateDocumentListFromListView();
         }
@@ -1005,10 +1054,9 @@ namespace Schmidt.TechnicalPlan
         }
         private void orientationList_CBX_SelectedValueChanged(object sender, EventArgs e)
         {
-            ComboBox comboBox = (ComboBox)sender;
-            //pageOrientationChoice = (PageOrientationSubItem)comboBox.SelectedItem;
-            comboBox.Tag = comboBox.SelectedItem; // pageMediaSizeNameChoice;
-            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag = comboBox.SelectedItem; //pageMediaSizeNameChoice;
+            ComboBox comboBox = (ComboBox)sender;           
+            comboBox.Tag = comboBox.SelectedItem;
+            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag = comboBox.SelectedItem; 
             this.HideComboBox(this.orientationList_CBX);
             this.UpdateDocumentListFromListView();           
         }
@@ -1025,7 +1073,7 @@ namespace Schmidt.TechnicalPlan
             if (lvItem != null)
             {
                 lviSelectedRowIndex = lvItem.Index;
-                this.Build(true);
+                this.Build(true, lviSelectedRowIndex);
             }
 
         }
@@ -1036,16 +1084,30 @@ namespace Schmidt.TechnicalPlan
         }
 
         private void Cancel_BTN_Click(object sender, EventArgs e)
-        {
-            this.InitializePreviewDirectory();
+        {          
             this.Close();
         }
 
         private void Ok_BTN_Click(object sender, EventArgs e)
         {
-            this.Build(false);
-            //this.Close();
+            this.SaveCustomInfo(String.Empty);
+            this.UnLoadPdfFile();
+            this.Close();
         }
+
+        private void transferSM2_BTN_Click(object sender, EventArgs e)
+        {
+
+            foreach (ListViewItem lvi in myListView_MLV.Items)
+            {
+                if (lvi.Checked)
+                {
+                    this.Build(false, lvi.Index);
+                }                
+            }
+        }
+
+       
     }
 
     public class ConstFile

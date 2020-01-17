@@ -7,8 +7,8 @@ namespace Schmidt.TechnicalPlan
 {
     public class TechnicalDocument
     {
-        const string rootTag = "<Vues></Vues>";
-        const string viewTag = "Vue";
+        const string rootTag = "<TechnicalDocument></TechnicalDocument>";
+        const string documentTag = "Vue";
         const string typeTag = "Type";
         const string fileNameTag = "NomFichier";
         const string scaleTag = "Scale";
@@ -133,7 +133,7 @@ namespace Schmidt.TechnicalPlan
             foreach (TechnicalDocument doc in documentList)
             {
                 XmlNode root;               
-                root = xmlDocument.CreateElement(viewTag);
+                root = xmlDocument.CreateElement(documentTag);
                 xmlDocument.DocumentElement.AppendChild(root);
 
                 XmlNode elem;

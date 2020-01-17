@@ -75,6 +75,7 @@
             this.transferSM2_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.transferSM2_BTN.Name = "transferSM2_BTN";
             this.transferSM2_BTN.Size = new System.Drawing.Size(32, 32);
+            this.transferSM2_BTN.Click += new System.EventHandler(this.transferSM2_BTN_Click);
             // 
             // toolStripSeparator1
             // 
@@ -196,6 +197,7 @@
             this.myListView_MLV.TabIndex = 8;
             this.myListView_MLV.UseCompatibleStateImageBehavior = false;
             this.myListView_MLV.View = System.Windows.Forms.View.Details;
+            this.myListView_MLV.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.myListView_MLV_ColumnWidthChanging);
             this.myListView_MLV.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.MyListView_MLV_ItemChecked);
             this.myListView_MLV.SelectedIndexChanged += new System.EventHandler(this.MyListView_MLV_SelectedIndexChanged);
             this.myListView_MLV.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MyListView_MLV_MouseDown);
@@ -244,6 +246,7 @@
             // 
             // Ok_BTN
             // 
+            this.Ok_BTN.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.Ok_BTN.Location = new System.Drawing.Point(412, 726);
             this.Ok_BTN.Name = "Ok_BTN";
             this.Ok_BTN.Size = new System.Drawing.Size(75, 23);
@@ -254,6 +257,7 @@
             // 
             // Cancel_BTN
             // 
+            this.Cancel_BTN.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.Cancel_BTN.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_BTN.Location = new System.Drawing.Point(493, 726);
             this.Cancel_BTN.Name = "Cancel_BTN";
@@ -279,6 +283,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GenerateViewDialogForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GenerateViewDialogForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.GenerateViewDialogForm_FormClosed);
             this.Load += new System.EventHandler(this.GenerateViewDialogForm_Load);
             this.Shown += new System.EventHandler(this.GenerateViewDialogForm_Shown);
             this.iconBar_TSP.ResumeLayout(false);
