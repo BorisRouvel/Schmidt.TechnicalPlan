@@ -20,13 +20,15 @@ namespace Schmidt.TechnicalPlan
         static private Dictionary<int, string> _dico = new Dictionary<int, string>();
        
         private string _type;
-        private string _scaleFactor; // 0.05 if scale is 1/20
+        private string _fileName;
+        private string _scaleFactorAsString; // 0.05 if scale is 1/20
+        private double _scaleFactor; // 0.05 if scale is 1/20
         private System.Printing.PageOrientation _pageOrientation;
         private System.Printing.PageMediaSizeName _pageMediaSizeName;
-        private string _fileName;
+        private string _viewName;
         private KD.SDK.SceneEnum.ViewMode _viewMode;
         private int _objectID;
-        private string _marq;
+        private string _number;
 
         public static Dictionary<int, string> Dico
         {
@@ -39,10 +41,20 @@ namespace Schmidt.TechnicalPlan
             get { return _type; }
             set { _type = value; }
         }
-        public string ScaleFactor
+        public string FileName
+        {
+            get { return _fileName; }
+            set { _fileName = value; }
+        }
+        public double ScaleFactor
         {
             get { return _scaleFactor; }
             set { _scaleFactor = value; }
+        }
+        public string ScaleFactorAsString
+        {
+            get { return _scaleFactorAsString; }
+            set { _scaleFactorAsString = value; }
         }
         public System.Printing.PageOrientation PageOrientation
         {
@@ -54,9 +66,10 @@ namespace Schmidt.TechnicalPlan
             get { return _pageMediaSizeName; }
             set { _pageMediaSizeName = value; }
         }
-        public string FileName
+        public string ViewName
         {
-            get { return TechnicalDocument.Dico[(int)this._viewMode + 100] + KD.StringTools.Const.WhiteSpace + this._marq; }
+            get { return TechnicalDocument.Dico[(int)this._viewMode + 100] + KD.StringTools.Const.WhiteSpace + this._number; }
+           
         }
         public KD.SDK.SceneEnum.ViewMode ViewMode
         {
@@ -69,15 +82,16 @@ namespace Schmidt.TechnicalPlan
             get { return _objectID; }
             set { _objectID = value; }
         }
-        public string Marq
+        public string Number
         {
-            get { return _marq; }
-            set { _marq = value; }
+            get { return _number; }
+            set { _number = value; }
         }
 
         private void InitMembers()
         {
-            _scaleFactor = ScaleFactorSubItem.Dico[(int)ScaleFactorSubItem.ScaleFactorEnum.Scale120];//1.0 / 20.0; //
+            _fileName = String.Empty;           
+            _scaleFactorAsString = ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_20];
             _pageOrientation = System.Printing.PageOrientation.Portrait;
             _pageMediaSizeName = System.Printing.PageMediaSizeName.ISOA4;
             _viewMode = KD.SDK.SceneEnum.ViewMode.UNKNOWN;
@@ -89,15 +103,15 @@ namespace Schmidt.TechnicalPlan
         {            
             InitMembers();
         }
-        public TechnicalDocument(string filePath)
-        {
-            _fileName = System.IO.Path.GetFileName(filePath);
-           // InitMembers();
-        }
+        //public TechnicalDocument(string filePath)
+        //{
+        //    _fileName = System.IO.Path.GetFileName(filePath);
+        //   // InitMembers();
+        //}
      
         public override string ToString()
         {
-            return FileName;
+            return ViewName;
         }
 
         public void ReadFromXml(string xmlString, out XmlNodeList xmlNodeScaleList, out XmlNodeList xmlNodeFormatList, out XmlNodeList xmlNodeOrientationList)
@@ -146,7 +160,7 @@ namespace Schmidt.TechnicalPlan
                 root.AppendChild(elem);
 
                 elem = xmlDocument.CreateElement(scaleTag);
-                elem.InnerText = doc.ScaleFactor.ToString();
+                elem.InnerText = doc.ScaleFactorAsString;
                 root.AppendChild(elem);
 
                 elem = xmlDocument.CreateElement(formatTag);
@@ -162,9 +176,9 @@ namespace Schmidt.TechnicalPlan
                 root.AppendChild(elem);
 
             }
-
-            xmlDocument.Save(@"D:\ic90dev\plugins\TechnicalPlan\TechnicalPlan.xml");
-
+#if DEBUG
+            xmlDocument.Save(@"D:\ic90dev\plugins\TechnicalPlan.xml");
+#endif
             xmlNode = xmlDocument.FirstChild; 
         }
 

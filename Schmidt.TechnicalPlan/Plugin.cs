@@ -7,7 +7,7 @@ using KD.Plugin;
 
 namespace Schmidt.TechnicalPlan
 {
-    public class Const
+    public class RessourceNames
     {       
         public const string IconeFileName = "ico.png";
         public const string IconeResourceDir = "Resources";
@@ -15,9 +15,6 @@ namespace Schmidt.TechnicalPlan
         public const string TextResourceSubDir = @"data\text";
         public const string MessageRulesResourceFileName = "messagesrules.csv";
         public static string MessageDialogResourceFileName = "messagesdialogsSchmidt.TechnicalPlan.csv";        
-
-        public const int Decimal = 2; //  1 / 100
-
     }
 
     public class Plugin : KD.Plugin.PluginBase
@@ -51,15 +48,15 @@ namespace Schmidt.TechnicalPlan
             PageMediaSizeNameSubItem.Dico.Add((int)System.Printing.PageMediaSizeName.ISOA4, _dico.GetTranslate(TranslateIdentifyId.FormatA4ID));
             PageMediaSizeNameSubItem.Dico.Add((int)System.Printing.PageMediaSizeName.ISOA3, _dico.GetTranslate(TranslateIdentifyId.FormatA3ID));
 
-            ScaleFactorSubItem.Dico.Add((int)ScaleFactorSubItem.ScaleFactorEnum.Scale120, _dico.GetTranslate(TranslateIdentifyId.Scale120ID));
-            ScaleFactorSubItem.Dico.Add((int)ScaleFactorSubItem.ScaleFactorEnum.Scale150, _dico.GetTranslate(TranslateIdentifyId.Scale150ID));
-            ScaleFactorSubItem.Dico.Add((int)ScaleFactorSubItem.ScaleFactorEnum.ScaleAuto, _dico.GetTranslate(TranslateIdentifyId.ScaleAutoID));          
+            ScaleFactorSubItem.Dico.Add(SubItemsConst.scaleFactor1_20, _dico.GetTranslate(TranslateIdentifyId.Scale120ID));
+            ScaleFactorSubItem.Dico.Add(SubItemsConst.scaleFactor1_50, _dico.GetTranslate(TranslateIdentifyId.Scale150ID));
+            ScaleFactorSubItem.Dico.Add(SubItemsConst.scaleFactorAuto, _dico.GetTranslate(TranslateIdentifyId.ScaleAutoID));          
 
         }
 
         public new bool OnPluginLoad(int iCallParamsBlock)
         {            
-            _menu.IconFileName = Path.Combine(Directory.GetCurrentDirectory(), Const.IconeResourceDir, Const.IconeFileName);
+            _menu.IconFileName = Path.Combine(Directory.GetCurrentDirectory(), RessourceNames.IconeResourceDir, RessourceNames.IconeFileName);
             _menu.Insert(this.CurrentAppli);            
             this.ActiveMenu(false);
             return true;
