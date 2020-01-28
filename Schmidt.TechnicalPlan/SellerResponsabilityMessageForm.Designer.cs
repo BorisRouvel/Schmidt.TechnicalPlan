@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.SellerResponsabilityMessage_GBX = new System.Windows.Forms.GroupBox();
+            this.SellerResponsabilityText_LAB = new System.Windows.Forms.Label();
             this.Cancel_BTN = new System.Windows.Forms.Button();
             this.Ok_BTN = new System.Windows.Forms.Button();
-            this.SellerResponsabilityText_LAB = new System.Windows.Forms.Label();
             this.SellerResponsabilityMessage_GBX.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,25 +44,6 @@
             this.SellerResponsabilityMessage_GBX.TabIndex = 0;
             this.SellerResponsabilityMessage_GBX.TabStop = false;
             // 
-            // Cancel_BTN
-            // 
-            this.Cancel_BTN.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel_BTN.Location = new System.Drawing.Point(54, 150);
-            this.Cancel_BTN.Name = "Cancel_BTN";
-            this.Cancel_BTN.Size = new System.Drawing.Size(93, 38);
-            this.Cancel_BTN.TabIndex = 1;
-            this.Cancel_BTN.UseVisualStyleBackColor = true;
-            this.Cancel_BTN.Click += new System.EventHandler(this.Cancel_BTN_Click);
-            // 
-            // Ok_BTN
-            // 
-            this.Ok_BTN.Location = new System.Drawing.Point(153, 150);
-            this.Ok_BTN.Name = "Ok_BTN";
-            this.Ok_BTN.Size = new System.Drawing.Size(93, 38);
-            this.Ok_BTN.TabIndex = 2;
-            this.Ok_BTN.UseVisualStyleBackColor = true;
-            this.Ok_BTN.Click += new System.EventHandler(this.Ok_BTN_Click);
-            // 
             // SellerResponsabilityText_LAB
             // 
             this.SellerResponsabilityText_LAB.Location = new System.Drawing.Point(6, 16);
@@ -71,6 +52,25 @@
             this.SellerResponsabilityText_LAB.TabIndex = 0;
             this.SellerResponsabilityText_LAB.Text = "Info";
             this.SellerResponsabilityText_LAB.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // Cancel_BTN
+            // 
+            this.Cancel_BTN.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.Cancel_BTN.Location = new System.Drawing.Point(55, 150);
+            this.Cancel_BTN.Name = "Cancel_BTN";
+            this.Cancel_BTN.Size = new System.Drawing.Size(93, 38);
+            this.Cancel_BTN.TabIndex = 1;
+            this.Cancel_BTN.UseVisualStyleBackColor = true;
+            this.Cancel_BTN.Click += new System.EventHandler(this.Cancel_BTN_Click);
+            // 
+            // Ok_BTN
+            // 
+            this.Ok_BTN.Location = new System.Drawing.Point(154, 150);
+            this.Ok_BTN.Name = "Ok_BTN";
+            this.Ok_BTN.Size = new System.Drawing.Size(93, 38);
+            this.Ok_BTN.TabIndex = 2;
+            this.Ok_BTN.UseVisualStyleBackColor = true;
+            this.Ok_BTN.Click += new System.EventHandler(this.Ok_BTN_Click);
             // 
             // SellerResponsabilityMessageForm
             // 

@@ -159,6 +159,12 @@
       <DependentUpon>SellerResponsabilityMessageForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TechnicalDocument.cs" />
+    <Compile Include="TechnicalPlanDocumentFileNameForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TechnicalPlanDocumentFileNameForm.Designer.cs">
+      <DependentUpon>TechnicalPlanDocumentFileNameForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="GenerateViewDialogForm.resx">
@@ -170,6 +176,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SellerResponsabilityMessageForm.resx">
       <DependentUpon>SellerResponsabilityMessageForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TechnicalPlanDocumentFileNameForm.resx">
+      <DependentUpon>TechnicalPlanDocumentFileNameForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +209,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\SDK\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SM2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

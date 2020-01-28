@@ -47,6 +47,8 @@
             this.pdfDocumentView_PDFV = new Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView();
             this.Ok_BTN = new System.Windows.Forms.Button();
             this.Cancel_BTN = new System.Windows.Forms.Button();
+            this.selectAll_CHB = new System.Windows.Forms.CheckBox();
+            this.generikPaperList_CBX = new System.Windows.Forms.ComboBox();
             this.iconBar_TSP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_SPC)).BeginInit();
             this.splitContainer_SPC.Panel1.SuspendLayout();
@@ -56,6 +58,7 @@
             // 
             // iconBar_TSP
             // 
+            this.iconBar_TSP.AutoSize = false;
             this.iconBar_TSP.ImageScalingSize = new System.Drawing.Size(28, 28);
             this.iconBar_TSP.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.transferSM2_BTN,
@@ -71,7 +74,7 @@
             // transferSM2_BTN
             // 
             this.transferSM2_BTN.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.transferSM2_BTN.Image = ((System.Drawing.Image)(resources.GetObject("transferSM2_BTN.Image")));
+            this.transferSM2_BTN.Image = global::Schmidt.TechnicalPlan.Properties.Resources.SM2;
             this.transferSM2_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.transferSM2_BTN.Name = "transferSM2_BTN";
             this.transferSM2_BTN.Size = new System.Drawing.Size(32, 32);
@@ -89,6 +92,8 @@
             this.print_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.print_BTN.Name = "print_BTN";
             this.print_BTN.Size = new System.Drawing.Size(32, 32);
+            this.print_BTN.Tag = "1";
+            this.print_BTN.Click += new System.EventHandler(this.print_BTN_Click);
             // 
             // toolStripSeparator2
             // 
@@ -102,6 +107,8 @@
             this.openFolder_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openFolder_BTN.Name = "openFolder_BTN";
             this.openFolder_BTN.Size = new System.Drawing.Size(32, 32);
+            this.openFolder_BTN.Tag = "1";
+            this.openFolder_BTN.Click += new System.EventHandler(this.openFolder_BTN_Click);
             // 
             // orientationList_CBX
             // 
@@ -149,7 +156,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer_SPC.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer_SPC.Location = new System.Drawing.Point(12, 38);
+            this.splitContainer_SPC.Location = new System.Drawing.Point(12, 72);
             this.splitContainer_SPC.Name = "splitContainer_SPC";
             // 
             // splitContainer_SPC.Panel1
@@ -163,7 +170,7 @@
             // splitContainer_SPC.Panel2
             // 
             this.splitContainer_SPC.Panel2.Controls.Add(this.pdfDocumentView_PDFV);
-            this.splitContainer_SPC.Size = new System.Drawing.Size(960, 671);
+            this.splitContainer_SPC.Size = new System.Drawing.Size(960, 637);
             this.splitContainer_SPC.SplitterDistance = 396;
             this.splitContainer_SPC.TabIndex = 18;
             // 
@@ -193,7 +200,7 @@
             this.myListView_MLV.HideSelection = false;
             this.myListView_MLV.Location = new System.Drawing.Point(3, 3);
             this.myListView_MLV.Name = "myListView_MLV";
-            this.myListView_MLV.Size = new System.Drawing.Size(387, 665);
+            this.myListView_MLV.Size = new System.Drawing.Size(387, 631);
             this.myListView_MLV.TabIndex = 8;
             this.myListView_MLV.UseCompatibleStateImageBehavior = false;
             this.myListView_MLV.View = System.Windows.Forms.View.Details;
@@ -231,7 +238,7 @@
             this.pdfDocumentView_PDFV.ScrollDisplacementValue = 0;
             this.pdfDocumentView_PDFV.ShowHorizontalScrollBar = true;
             this.pdfDocumentView_PDFV.ShowVerticalScrollBar = true;
-            this.pdfDocumentView_PDFV.Size = new System.Drawing.Size(554, 665);
+            this.pdfDocumentView_PDFV.Size = new System.Drawing.Size(554, 631);
             this.pdfDocumentView_PDFV.SpaceBetweenPages = 8;
             this.pdfDocumentView_PDFV.TabIndex = 0;
             textSearchSettings1.CurrentInstanceColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(255)))), ((int)(((byte)(171)))), ((int)(((byte)(64)))));
@@ -267,6 +274,26 @@
             this.Cancel_BTN.UseVisualStyleBackColor = true;
             this.Cancel_BTN.Click += new System.EventHandler(this.Cancel_BTN_Click);
             // 
+            // selectAll_CHB
+            // 
+            this.selectAll_CHB.AutoSize = true;
+            this.selectAll_CHB.Location = new System.Drawing.Point(24, 49);
+            this.selectAll_CHB.Name = "selectAll_CHB";
+            this.selectAll_CHB.Size = new System.Drawing.Size(108, 17);
+            this.selectAll_CHB.TabIndex = 21;
+            this.selectAll_CHB.Text = "Tout sélectionner";
+            this.selectAll_CHB.UseVisualStyleBackColor = true;
+            this.selectAll_CHB.CheckedChanged += new System.EventHandler(this.selectAll_CHB_CheckedChanged);
+            // 
+            // generikPaperList_CBX
+            // 
+            this.generikPaperList_CBX.FormattingEnabled = true;
+            this.generikPaperList_CBX.Location = new System.Drawing.Point(214, 47);
+            this.generikPaperList_CBX.Name = "generikPaperList_CBX";
+            this.generikPaperList_CBX.Size = new System.Drawing.Size(84, 21);
+            this.generikPaperList_CBX.TabIndex = 22;
+            this.generikPaperList_CBX.SelectedIndexChanged += new System.EventHandler(this.generikPaperList_CBX_SelectedIndexChanged);
+            // 
             // GenerateViewDialogForm
             // 
             this.AcceptButton = this.Ok_BTN;
@@ -274,6 +301,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.Cancel_BTN;
             this.ClientSize = new System.Drawing.Size(984, 761);
+            this.Controls.Add(this.generikPaperList_CBX);
+            this.Controls.Add(this.selectAll_CHB);
             this.Controls.Add(this.Cancel_BTN);
             this.Controls.Add(this.Ok_BTN);
             this.Controls.Add(this.splitContainer_SPC);
@@ -314,5 +343,7 @@
         private Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView pdfDocumentView_PDFV;
         private System.Windows.Forms.Button Ok_BTN;
         private System.Windows.Forms.Button Cancel_BTN;
+        private System.Windows.Forms.CheckBox selectAll_CHB;
+        private System.Windows.Forms.ComboBox generikPaperList_CBX;
     }
 }

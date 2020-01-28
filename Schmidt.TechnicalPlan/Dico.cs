@@ -132,6 +132,10 @@ namespace Schmidt.TechnicalPlan
 
         public const string OkButtonUIID = "OkButtonUIID";
         public const string CancelButtonUIID = "CancelButtonUIID";
+        public const string SelectAllViewCheckBoxUIID = "SelectAllViewCheckBoxUIID";
+
+        public const string OkTechPlanButtonUIID = "OkTechPlanButtonUIID";
+        public const string CancelTechPlanButtonUIID = "CancelTechPlanButtonUIID";
 
         public const string ColumnHeaderSelectID = "ColumnHeaderSelectID";
         public const string ColumnHeaderViewID = "ColumnHeaderViewID";

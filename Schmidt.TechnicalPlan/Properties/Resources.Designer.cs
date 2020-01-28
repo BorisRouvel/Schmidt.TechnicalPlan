@@ -113,6 +113,16 @@ namespace Schmidt.TechnicalPlan.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap SM2 {
+            get {
+                object obj = ResourceManager.GetObject("SM2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap twin {
             get {
                 object obj = ResourceManager.GetObject("twin", resourceCulture);
