@@ -136,6 +136,7 @@ namespace Schmidt.TechnicalPlan
 
         public const string OkTechPlanButtonUIID = "OkTechPlanButtonUIID";
         public const string CancelTechPlanButtonUIID = "CancelTechPlanButtonUIID";
+        public const string TitleTechPlanButtonUIID = "TitleTechPlanButtonUIID";
 
         public const string ColumnHeaderSelectID = "ColumnHeaderSelectID";
         public const string ColumnHeaderViewID = "ColumnHeaderViewID";
@@ -148,6 +149,7 @@ namespace Schmidt.TechnicalPlan
         public const string WallID = "WallID";
         public const string TopView = "TopView";
         public const string WallElevation = "WallElevation";
+        public const string ElevationSymbol = "ElevationSymbol";
 
         public const string PortraitID = "PortraitID";
         public const string LandscapeID = "LandscapeID";

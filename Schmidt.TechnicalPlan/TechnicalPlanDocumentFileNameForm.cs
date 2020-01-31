@@ -39,6 +39,7 @@ namespace Schmidt.TechnicalPlan
         {
             this.ok_TechPlanUI_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.OkTechPlanButtonUIID);
             this.cancel_TechPlanUI_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.CancelTechPlanButtonUIID);
+            this.Text = _dico.GetTranslate(TranslateIdentifyId.TitleTechPlanButtonUIID);
             this.DialogResult = DialogResult.None;
         }
         private void SetTechnicalFileName()

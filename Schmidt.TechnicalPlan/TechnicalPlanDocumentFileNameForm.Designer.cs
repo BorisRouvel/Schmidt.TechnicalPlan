@@ -76,7 +76,7 @@
             this.Name = "TechnicalPlanDocumentFileNameForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "TechnicalPlanDocumentFileNameForm";
+            this.Text = "Title";
             this.Load += new System.EventHandler(this.TechnicalPlanDocumentFileNameForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

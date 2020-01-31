@@ -37,10 +37,11 @@ namespace Schmidt.TechnicalPlan
             this.InitializeDico();
             this.InitializeMenuItem();
 
-            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION, _dico.GetTranslate(TranslateIdentifyId.WallID));
-            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.TOP, _dico.GetTranslate(TranslateIdentifyId.TopViewID));
-            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION + 100, _dico.GetTranslate(TranslateIdentifyId.WallElevation));
-            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.TOP + 100, _dico.GetTranslate(TranslateIdentifyId.TopView));
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION, _dico.GetTranslate(TranslateIdentifyId.WallID)); //Elevation
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.TOP, _dico.GetTranslate(TranslateIdentifyId.TopViewID)); //Dessus
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION + 100, _dico.GetTranslate(TranslateIdentifyId.WallElevation)); //Elévation du mur...nb
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.TOP + 100, _dico.GetTranslate(TranslateIdentifyId.TopView)); //Vue de dessus
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION + 200, _dico.GetTranslate(TranslateIdentifyId.ElevationSymbol)); //Elévation...nb (Elevation symbol)
 
             PageOrientationSubItem.Dico.Add((int)System.Printing.PageOrientation.Portrait, _dico.GetTranslate(TranslateIdentifyId.PortraitID));
             PageOrientationSubItem.Dico.Add((int)System.Printing.PageOrientation.Landscape, _dico.GetTranslate(TranslateIdentifyId.LandscapeID));        
@@ -137,7 +138,7 @@ namespace Schmidt.TechnicalPlan
             {                
                 return false;
             }
-            //// Do work here 
+           
             this.DisableMessageForm();
             this.InitializeViewDialogForm();
 

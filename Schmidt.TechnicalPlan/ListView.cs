@@ -88,6 +88,7 @@ namespace Schmidt.TechnicalPlan
 
         private void InitializeComponent()
         {
+            this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = Properties.Resources.twin;
             this.BackgroundImageLayout = ImageLayout.Stretch;
             this.Visible = false;
