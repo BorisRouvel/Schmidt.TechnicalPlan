@@ -38,7 +38,7 @@
             this.ok_TechPlanUI_BTN.Location = new System.Drawing.Point(12, 38);
             this.ok_TechPlanUI_BTN.Name = "ok_TechPlanUI_BTN";
             this.ok_TechPlanUI_BTN.Size = new System.Drawing.Size(75, 23);
-            this.ok_TechPlanUI_BTN.TabIndex = 0;
+            this.ok_TechPlanUI_BTN.TabIndex = 1;
             this.ok_TechPlanUI_BTN.Text = "button1";
             this.ok_TechPlanUI_BTN.UseVisualStyleBackColor = true;
             this.ok_TechPlanUI_BTN.Click += new System.EventHandler(this.ok_TechPlanUI_BTN_Click);
@@ -49,7 +49,7 @@
             this.cancel_TechPlanUI_BTN.Location = new System.Drawing.Point(98, 38);
             this.cancel_TechPlanUI_BTN.Name = "cancel_TechPlanUI_BTN";
             this.cancel_TechPlanUI_BTN.Size = new System.Drawing.Size(75, 23);
-            this.cancel_TechPlanUI_BTN.TabIndex = 1;
+            this.cancel_TechPlanUI_BTN.TabIndex = 2;
             this.cancel_TechPlanUI_BTN.Text = "button2";
             this.cancel_TechPlanUI_BTN.UseVisualStyleBackColor = true;
             this.cancel_TechPlanUI_BTN.Click += new System.EventHandler(this.cancel_TechPlanUI_BTN_Click);
@@ -59,7 +59,7 @@
             this.technicalPlanFiileName_TBX.Location = new System.Drawing.Point(12, 12);
             this.technicalPlanFiileName_TBX.Name = "technicalPlanFiileName_TBX";
             this.technicalPlanFiileName_TBX.Size = new System.Drawing.Size(161, 20);
-            this.technicalPlanFiileName_TBX.TabIndex = 2;
+            this.technicalPlanFiileName_TBX.TabIndex = 0;
             this.technicalPlanFiileName_TBX.TextChanged += new System.EventHandler(this.technicalPlanFiileName_TBX_TextChanged);
             // 
             // TechnicalPlanDocumentFileNameForm
@@ -87,6 +87,6 @@
 
         private System.Windows.Forms.Button ok_TechPlanUI_BTN;
         private System.Windows.Forms.Button cancel_TechPlanUI_BTN;
-        private System.Windows.Forms.TextBox technicalPlanFiileName_TBX;
+        public System.Windows.Forms.TextBox technicalPlanFiileName_TBX;
     }
 }

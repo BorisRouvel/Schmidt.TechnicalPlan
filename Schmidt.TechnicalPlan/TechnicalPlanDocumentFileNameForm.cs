@@ -37,9 +37,9 @@ namespace Schmidt.TechnicalPlan
         // Event
         private void InitializeForm()
         {
-            this.ok_TechPlanUI_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.OkTechPlanButtonUIID);
-            this.cancel_TechPlanUI_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.CancelTechPlanButtonUIID);
-            this.Text = _dico.GetTranslate(TranslateIdentifyId.TitleTechPlanButtonUIID);
+            this.ok_TechPlanUI_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.TechnicalPlanOkButton_ID);
+            this.cancel_TechPlanUI_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.TechnicalPlanCancelButton_ID);
+            this.Text = _dico.GetTranslate(TranslateIdentifyId.TechnicalPlanTitle_ID);
             this.DialogResult = DialogResult.None;
         }
         private void SetTechnicalFileName()
@@ -50,20 +50,21 @@ namespace Schmidt.TechnicalPlan
 
         // Form              
         private void TechnicalPlanDocumentFileNameForm_Load(object sender, EventArgs e)
-        {            
+        {
+            //this.technicalPlanFiileName_TBX.Focus();
+            this.technicalPlanFiileName_TBX.Select(0, 0);
         }
 
         private void ok_TechPlanUI_BTN_Click(object sender, EventArgs e)
         {
             this.SetTechnicalFileName();
-            this.DialogResult = DialogResult.OK;
-            //this.Close();
+            this.DialogResult = DialogResult.OK;           
         }
 
         private void cancel_TechPlanUI_BTN_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            //this.Close();
         }
 
         private void technicalPlanFiileName_TBX_TextChanged(object sender, EventArgs e)

@@ -28,17 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Syncfusion.Windows.Forms.PdfViewer.MessageBoxSettings messageBoxSettings3 = new Syncfusion.Windows.Forms.PdfViewer.MessageBoxSettings();
-            Syncfusion.Windows.PdfViewer.PdfViewerPrinterSettings pdfViewerPrinterSettings3 = new Syncfusion.Windows.PdfViewer.PdfViewerPrinterSettings();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GenerateViewDialogForm));
-            Syncfusion.Windows.Forms.PdfViewer.TextSearchSettings textSearchSettings3 = new Syncfusion.Windows.Forms.PdfViewer.TextSearchSettings();
+            Syncfusion.Windows.Forms.PdfViewer.MessageBoxSettings messageBoxSettings1 = new Syncfusion.Windows.Forms.PdfViewer.MessageBoxSettings();
+            Syncfusion.Windows.PdfViewer.PdfViewerPrinterSettings pdfViewerPrinterSettings1 = new Syncfusion.Windows.PdfViewer.PdfViewerPrinterSettings();
+            Syncfusion.Windows.Forms.PdfViewer.TextSearchSettings textSearchSettings1 = new Syncfusion.Windows.Forms.PdfViewer.TextSearchSettings();
             this.iconBar_TSP = new System.Windows.Forms.ToolStrip();
+            this.transferSM2_BTN = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.print_BTN = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.openFolder_BTN = new System.Windows.Forms.ToolStripButton();
             this.orientationList_CBX = new System.Windows.Forms.ComboBox();
             this.paperList_CBX = new System.Windows.Forms.ComboBox();
             this.scaleList_CBX = new System.Windows.Forms.ComboBox();
             this.splitContainer_SPC = new System.Windows.Forms.SplitContainer();
+            this.myImageButton = new Schmidt.TechnicalPlan.MyImageButton();
             this.myListView_MLV = new Schmidt.TechnicalPlan.MyListView();
             this.pdfDocumentView_PDFV = new Syncfusion.Windows.Forms.PdfViewer.PdfDocumentView();
             this.Ok_BTN = new System.Windows.Forms.Button();
@@ -46,10 +50,7 @@
             this.selectAll_CHB = new System.Windows.Forms.CheckBox();
             this.generikPaperList_CBX = new System.Windows.Forms.ComboBox();
             this.paper_LAB = new System.Windows.Forms.Label();
-            this.myImageButton = new Schmidt.TechnicalPlan.MyImageButton();
-            this.transferSM2_BTN = new System.Windows.Forms.ToolStripButton();
-            this.print_BTN = new System.Windows.Forms.ToolStripButton();
-            this.openFolder_BTN = new System.Windows.Forms.ToolStripButton();
+            this.InitCustomInfo_BTN = new System.Windows.Forms.Button();
             this.iconBar_TSP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_SPC)).BeginInit();
             this.splitContainer_SPC.Panel1.SuspendLayout();
@@ -72,15 +73,44 @@
             this.iconBar_TSP.Size = new System.Drawing.Size(984, 35);
             this.iconBar_TSP.TabIndex = 0;
             // 
+            // transferSM2_BTN
+            // 
+            this.transferSM2_BTN.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.transferSM2_BTN.Image = global::Schmidt.TechnicalPlan.Properties.Resources.SM2;
+            this.transferSM2_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.transferSM2_BTN.Name = "transferSM2_BTN";
+            this.transferSM2_BTN.Size = new System.Drawing.Size(32, 32);
+            this.transferSM2_BTN.Click += new System.EventHandler(this.transferSM2_BTN_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 35);
             // 
+            // print_BTN
+            // 
+            this.print_BTN.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.print_BTN.Image = ((System.Drawing.Image)(resources.GetObject("print_BTN.Image")));
+            this.print_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.print_BTN.Name = "print_BTN";
+            this.print_BTN.Size = new System.Drawing.Size(32, 32);
+            this.print_BTN.Tag = "1";
+            this.print_BTN.Click += new System.EventHandler(this.print_BTN_Click);
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
+            // 
+            // openFolder_BTN
+            // 
+            this.openFolder_BTN.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.openFolder_BTN.Image = ((System.Drawing.Image)(resources.GetObject("openFolder_BTN.Image")));
+            this.openFolder_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.openFolder_BTN.Name = "openFolder_BTN";
+            this.openFolder_BTN.Size = new System.Drawing.Size(32, 32);
+            this.openFolder_BTN.Tag = "1";
+            this.openFolder_BTN.Click += new System.EventHandler(this.openFolder_BTN_Click);
             // 
             // orientationList_CBX
             // 
@@ -146,6 +176,21 @@
             this.splitContainer_SPC.SplitterDistance = 358;
             this.splitContainer_SPC.TabIndex = 18;
             // 
+            // myImageButton
+            // 
+            this.myImageButton.BackColor = System.Drawing.SystemColors.WindowText;
+            this.myImageButton.BackgroundImage = global::Schmidt.TechnicalPlan.Properties.Resources.twin3;
+            this.myImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.myImageButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.myImageButton.Location = new System.Drawing.Point(202, 62);
+            this.myImageButton.Margin = new System.Windows.Forms.Padding(0);
+            this.myImageButton.Name = "myImageButton";
+            this.myImageButton.Size = new System.Drawing.Size(52, 55);
+            this.myImageButton.TabIndex = 17;
+            this.myImageButton.Tag = "";
+            this.myImageButton.UseVisualStyleBackColor = false;
+            this.myImageButton.Visible = false;
+            // 
             // myListView_MLV
             // 
             this.myListView_MLV.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -182,16 +227,16 @@
             this.pdfDocumentView_PDFV.IsTextSearchEnabled = true;
             this.pdfDocumentView_PDFV.IsTextSelectionEnabled = true;
             this.pdfDocumentView_PDFV.Location = new System.Drawing.Point(3, 3);
-            messageBoxSettings3.EnableNotification = true;
-            this.pdfDocumentView_PDFV.MessageBoxSettings = messageBoxSettings3;
+            messageBoxSettings1.EnableNotification = true;
+            this.pdfDocumentView_PDFV.MessageBoxSettings = messageBoxSettings1;
             this.pdfDocumentView_PDFV.MinimumZoomPercentage = 50;
             this.pdfDocumentView_PDFV.Name = "pdfDocumentView_PDFV";
             this.pdfDocumentView_PDFV.PageBorderThickness = 1;
-            pdfViewerPrinterSettings3.PageOrientation = Syncfusion.Windows.PdfViewer.PdfViewerPrintOrientation.Auto;
-            pdfViewerPrinterSettings3.PageSize = Syncfusion.Windows.PdfViewer.PdfViewerPrintSize.ActualSize;
-            pdfViewerPrinterSettings3.PrintLocation = ((System.Drawing.PointF)(resources.GetObject("pdfViewerPrinterSettings3.PrintLocation")));
-            pdfViewerPrinterSettings3.ShowPrintStatusDialog = true;
-            this.pdfDocumentView_PDFV.PrinterSettings = pdfViewerPrinterSettings3;
+            pdfViewerPrinterSettings1.PageOrientation = Syncfusion.Windows.PdfViewer.PdfViewerPrintOrientation.Auto;
+            pdfViewerPrinterSettings1.PageSize = Syncfusion.Windows.PdfViewer.PdfViewerPrintSize.ActualSize;
+            pdfViewerPrinterSettings1.PrintLocation = ((System.Drawing.PointF)(resources.GetObject("pdfViewerPrinterSettings1.PrintLocation")));
+            pdfViewerPrinterSettings1.ShowPrintStatusDialog = true;
+            this.pdfDocumentView_PDFV.PrinterSettings = pdfViewerPrinterSettings1;
             this.pdfDocumentView_PDFV.ReferencePath = null;
             this.pdfDocumentView_PDFV.ScrollDisplacementValue = 0;
             this.pdfDocumentView_PDFV.ShowHorizontalScrollBar = true;
@@ -199,10 +244,10 @@
             this.pdfDocumentView_PDFV.Size = new System.Drawing.Size(592, 631);
             this.pdfDocumentView_PDFV.SpaceBetweenPages = 8;
             this.pdfDocumentView_PDFV.TabIndex = 0;
-            textSearchSettings3.CurrentInstanceColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(255)))), ((int)(((byte)(171)))), ((int)(((byte)(64)))));
-            textSearchSettings3.HighlightAllInstance = true;
-            textSearchSettings3.OtherInstanceColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(254)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.pdfDocumentView_PDFV.TextSearchSettings = textSearchSettings3;
+            textSearchSettings1.CurrentInstanceColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(255)))), ((int)(((byte)(171)))), ((int)(((byte)(64)))));
+            textSearchSettings1.HighlightAllInstance = true;
+            textSearchSettings1.OtherInstanceColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(254)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.pdfDocumentView_PDFV.TextSearchSettings = textSearchSettings1;
             this.pdfDocumentView_PDFV.ThemeName = "Default";
             this.pdfDocumentView_PDFV.VerticalScrollOffset = 0;
             this.pdfDocumentView_PDFV.VisualStyle = Syncfusion.Windows.Forms.PdfViewer.VisualStyle.Default;
@@ -246,7 +291,7 @@
             // generikPaperList_CBX
             // 
             this.generikPaperList_CBX.FormattingEnabled = true;
-            this.generikPaperList_CBX.Location = new System.Drawing.Point(280, 47);
+            this.generikPaperList_CBX.Location = new System.Drawing.Point(258, 47);
             this.generikPaperList_CBX.Name = "generikPaperList_CBX";
             this.generikPaperList_CBX.Size = new System.Drawing.Size(84, 21);
             this.generikPaperList_CBX.TabIndex = 22;
@@ -256,55 +301,23 @@
             // paper_LAB
             // 
             this.paper_LAB.AutoSize = true;
-            this.paper_LAB.Location = new System.Drawing.Point(229, 50);
+            this.paper_LAB.Location = new System.Drawing.Point(180, 50);
             this.paper_LAB.Name = "paper_LAB";
-            this.paper_LAB.Size = new System.Drawing.Size(37, 13);
+            this.paper_LAB.Size = new System.Drawing.Size(72, 13);
             this.paper_LAB.TabIndex = 23;
-            this.paper_LAB.Text = "Papier";
+            this.paper_LAB.Text = "Format Papier";
             // 
-            // myImageButton
+            // InitCustomInfo_BTN
             // 
-            this.myImageButton.BackColor = System.Drawing.SystemColors.WindowText;
-            this.myImageButton.BackgroundImage = global::Schmidt.TechnicalPlan.Properties.Resources.twin3;
-            this.myImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.myImageButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.myImageButton.Location = new System.Drawing.Point(202, 62);
-            this.myImageButton.Margin = new System.Windows.Forms.Padding(0);
-            this.myImageButton.Name = "myImageButton";
-            this.myImageButton.Size = new System.Drawing.Size(52, 55);
-            this.myImageButton.TabIndex = 17;
-            this.myImageButton.Tag = "";
-            this.myImageButton.UseVisualStyleBackColor = false;
-            this.myImageButton.Visible = false;
-            // 
-            // transferSM2_BTN
-            // 
-            this.transferSM2_BTN.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.transferSM2_BTN.Image = global::Schmidt.TechnicalPlan.Properties.Resources.SM2;
-            this.transferSM2_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.transferSM2_BTN.Name = "transferSM2_BTN";
-            this.transferSM2_BTN.Size = new System.Drawing.Size(32, 32);
-            this.transferSM2_BTN.Click += new System.EventHandler(this.transferSM2_BTN_Click);
-            // 
-            // print_BTN
-            // 
-            this.print_BTN.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.print_BTN.Image = ((System.Drawing.Image)(resources.GetObject("print_BTN.Image")));
-            this.print_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.print_BTN.Name = "print_BTN";
-            this.print_BTN.Size = new System.Drawing.Size(32, 32);
-            this.print_BTN.Tag = "1";
-            this.print_BTN.Click += new System.EventHandler(this.print_BTN_Click);
-            // 
-            // openFolder_BTN
-            // 
-            this.openFolder_BTN.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.openFolder_BTN.Image = ((System.Drawing.Image)(resources.GetObject("openFolder_BTN.Image")));
-            this.openFolder_BTN.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.openFolder_BTN.Name = "openFolder_BTN";
-            this.openFolder_BTN.Size = new System.Drawing.Size(32, 32);
-            this.openFolder_BTN.Tag = "1";
-            this.openFolder_BTN.Click += new System.EventHandler(this.openFolder_BTN_Click);
+            this.InitCustomInfo_BTN.Enabled = false;
+            this.InitCustomInfo_BTN.Location = new System.Drawing.Point(611, 38);
+            this.InitCustomInfo_BTN.Name = "InitCustomInfo_BTN";
+            this.InitCustomInfo_BTN.Size = new System.Drawing.Size(122, 23);
+            this.InitCustomInfo_BTN.TabIndex = 24;
+            this.InitCustomInfo_BTN.Text = "Init CustomInfo XML";
+            this.InitCustomInfo_BTN.UseVisualStyleBackColor = true;
+            this.InitCustomInfo_BTN.Visible = false;
+            this.InitCustomInfo_BTN.Click += new System.EventHandler(this.InitCustomInfo_BTN_Click);
             // 
             // GenerateViewDialogForm
             // 
@@ -313,6 +326,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.Cancel_BTN;
             this.ClientSize = new System.Drawing.Size(984, 761);
+            this.Controls.Add(this.InitCustomInfo_BTN);
             this.Controls.Add(this.paper_LAB);
             this.Controls.Add(this.generikPaperList_CBX);
             this.Controls.Add(this.selectAll_CHB);
@@ -359,5 +373,6 @@
         private System.Windows.Forms.CheckBox selectAll_CHB;
         private System.Windows.Forms.ComboBox generikPaperList_CBX;
         private System.Windows.Forms.Label paper_LAB;
+        private System.Windows.Forms.Button InitCustomInfo_BTN;
     }
 }

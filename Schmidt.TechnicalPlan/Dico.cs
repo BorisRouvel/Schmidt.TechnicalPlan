@@ -67,11 +67,11 @@ namespace Schmidt.TechnicalPlan
 
         private readonly KD.SDKComponent.AppliComponent CurrentAppli = null;
 
-        public Dico(KD.SDKComponent.AppliComponent appli, string language)
+        public Dico(KD.SDKComponent.AppliComponent appli, string language, string templateDocDir)
         {
             this.CurrentAppli = appli;
             this._language = language;
-            this._dicoFileDir = appli.DocDir;
+            this._dicoFileDir = templateDocDir; //appli.DocDir;
             this._dicoFileName = Const.name;
             this._dicoFilePath = Path.Combine(this.DicoFileDir, this.DicoFileName);
 
@@ -119,45 +119,48 @@ namespace Schmidt.TechnicalPlan
                 }
             }
             return translate;
-        }
+        }       
     }
 
     public class TranslateIdentifyId
     {
-        public const string FunctionNameID = "FunctionNameID";
+        public const string FunctionName_ID = "FunctionName_ID";
 
-        public const string OkButtonID = "OkButtonID";
-        public const string CancelButtonID = "CancelButtonID";
-        public const string SellerMessageID = "SellerMessageID";
+        public const string SellerMessageOkButton_ID = "SellerMessageOkButton_ID";
+        public const string SellerMessageCancelButton_ID = "SellerMessageCancelButton_ID";
+        public const string SellerMessageText_ID = "SellerMessageText_ID";
 
-        public const string OkButtonUIID = "OkButtonUIID";
-        public const string CancelButtonUIID = "CancelButtonUIID";
-        public const string SelectAllViewCheckBoxUIID = "SelectAllViewCheckBoxUIID";
+        public const string UITitle_ID = "UITitle_ID";
+        public const string UIOkButton_ID = "UIOkButton_ID";
+        public const string UICancelButton_ID = "UICancelButton_ID";
+        public const string UISelectAllViewCheckBox_ID = "UISelectAllViewCheckBox_ID";
 
-        public const string OkTechPlanButtonUIID = "OkTechPlanButtonUIID";
-        public const string CancelTechPlanButtonUIID = "CancelTechPlanButtonUIID";
-        public const string TitleTechPlanButtonUIID = "TitleTechPlanButtonUIID";
+        public const string TechnicalPlanOkButton_ID = "TechnicalPlanOkButton_ID";
+        public const string TechnicalPlanCancelButton_ID = "TechnicalPlanCancelButton_ID";
+        public const string TechnicalPlanTitle_ID = "TechnicalPlanTitle_ID";
 
-        public const string ColumnHeaderSelectID = "ColumnHeaderSelectID";
-        public const string ColumnHeaderViewID = "ColumnHeaderViewID";
-        public const string ColumnHeaderScaleID = "ColumnHeaderScaleID";
-        public const string ColumnHeaderPaperID = "ColumnHeaderPaperID";
-        public const string ColumnHeaderOrientationID = "ColumnHeaderOrientationID";
-        public const string ColumnHeaderOverviewID = "ColumnHeaderOverviewID";
+        public const string ColumnHeaderSelect_ID = "ColumnHeaderSelect_ID";
+        public const string ColumnHeaderView_ID = "ColumnHeaderView_ID";
+        public const string ColumnHeaderScale_ID = "ColumnHeaderScale_ID";
+        public const string ColumnHeaderPaper_ID = "ColumnHeaderPaper_ID";
+        public const string ColumnHeaderOrientation_ID = "ColumnHeaderOrientation_ID";
+        public const string ColumnHeaderOverview_ID = "ColumnHeaderOverview_ID";
 
-        public const string TopViewID = "TopViewID";
-        public const string WallID = "WallID";
-        public const string TopView = "TopView";
-        public const string WallElevation = "WallElevation";
-        public const string ElevationSymbol = "ElevationSymbol";
+       
+        public const string Top_ID = "Top_ID"; //Dessus (type)
+        public const string Elevation_ID = "Elevation_ID"; //Elévation (type)
+        public const string TopView_ID = "TopView_ID"; //Vue de dessus
+        public const string WallElevation_ID = "WallElevation_ID";  //Elévation du mur...nb
+        public const string SymbolElevation_ID = "SymbolElevation_ID"; //Elévation...nb (Elevation symbol)
 
-        public const string PortraitID = "PortraitID";
-        public const string LandscapeID = "LandscapeID";
-        public const string Scale120ID = "Scale120ID";
-        public const string Scale150ID = "Scale150ID";
-        public const string ScaleAutoID = "ScaleAutoID";
-        public const string FormatA4ID = "FormatA4ID";
-        public const string FormatA3ID = "FormatA3ID";
+        public const string Portrait_ID = "Portrait_ID";
+        public const string Landscape_ID = "Landscape_ID";
+        public const string _1_20_ID = "1_20_ID";
+        public const string _1_25_ID = "1_25_ID";
+        public const string _1_50_ID = "1_50_ID";
+        public const string Auto_ID = "Auto_ID";
+        public const string ISOA4_ID = "ISOA4_ID";
+        public const string ISOA3_ID = "ISOA3_ID";
 
     }
 }

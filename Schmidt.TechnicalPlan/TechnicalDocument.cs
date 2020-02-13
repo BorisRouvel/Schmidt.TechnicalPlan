@@ -4,13 +4,18 @@ using System.Xml;
 
 namespace Schmidt.TechnicalPlan
 {
+    public class TechnicalDocumentEnum
+    {
+        public enum viewTypeId { Top = 0, WallElevation = 1, SymbolElevation = 2 }
+    }
     public class TechnicalDocument
     {
         public const string technicalDocumentsTag = "TechnicalDocuments";
         public const string technicalPlanFileNameTag = "TechnicalPlanFileName";
         public const string rootTag = "<TechnicalDocument></TechnicalDocument>";
         public const string viewTag = "Vue";
-        public const string typeTag = "Type";       
+        public const string typeTag = "Type";
+        public const string typeIDTag = "TypeID";
         public const string fileNameTag = "FileName";
         public const string scaleFactorTag = "ScaleFactor";
         public const string scaleFactorValueTag = "ScaleFactorValue";
@@ -27,6 +32,7 @@ namespace Schmidt.TechnicalPlan
 
         private static string _technicalFileName;
         private string _type;
+        private int _typeID;
         private string _fileName;
         private string _scaleFactorAsString; //  1/20
         private double _scaleFactorValue; // 0.05 if scale is 1/20
@@ -34,7 +40,7 @@ namespace Schmidt.TechnicalPlan
         private int _pageOrientationID;
         private System.Printing.PageMediaSizeName _pageMediaSizeName;
         private int _pageMediaSizeNameID;
-        
+
         private KD.SDK.SceneEnum.ViewMode _viewMode;
         private int _objectID;
         private string _number;
@@ -54,6 +60,11 @@ namespace Schmidt.TechnicalPlan
         {
             get { return _type; }
             set { _type = value; }
+        }
+        public int TypeID
+        {
+            get { return _typeID; }
+            set { _typeID = value; }
         }
         public string FileName
         {
@@ -94,28 +105,39 @@ namespace Schmidt.TechnicalPlan
         {
             get
             {
-                string number = KD.StringTools.Const.WhiteSpace + this._number;
-                if (number == KD.StringTools.Const.WhiteSpace + KD.Const.UnknownId.ToString())
+                if (this._viewMode != KD.SDK.SceneEnum.ViewMode.UNKNOWN)
                 {
-                    number = String.Empty;
-                }
-                return TechnicalDocument.Dico[(int)this._viewMode + 100] + number;
-            }
-           
-        }
-        public string SymbolViewName
-        {
-            get
-            {               
-                return TechnicalDocument.Dico[(int)this._viewMode + 200] + KD.StringTools.Const.WhiteSpace + this._number;
-            }
+                    string number = KD.StringTools.Const.WhiteSpace + this._number;
+                    if (number == KD.StringTools.Const.WhiteSpace + KD.Const.UnknownId.ToString())
+                    {
+                        number = String.Empty;
+                    }
 
+                    KD.Model.Article article = new KD.Model.Article(Plugin.pluginWord.CurrentAppli, _objectID);
+                    if (article.Type == (int)KD.SDK.SceneEnum.ObjectType.ELEVATIONSYMBOL)
+                    {
+                        return TechnicalDocument.Dico[(int)this._viewMode + 200] + number;
+                    }
+                    else if (article.Type == (int)KD.SDK.SceneEnum.ObjectType.WALL)
+                    {
+                        return TechnicalDocument.Dico[(int)this._viewMode + 100] + number;
+                    }
+                    else
+                    {
+                        return TechnicalDocument.Dico[(int)this._viewMode];
+                    }
+                }
+                return String.Empty;
+            }
         }
+
         public KD.SDK.SceneEnum.ViewMode ViewMode
         {
-            get { return _viewMode ; }
-            set { _viewMode = value;
- }
+            get { return _viewMode; }
+            set
+            {
+                _viewMode = value;
+            }
         }
         public int ObjectID
         {
@@ -126,66 +148,64 @@ namespace Schmidt.TechnicalPlan
         {
             get { return _number; }
             set { _number = value; }
-            }
+        }
 
         private void InitMembers()
         {
             _technicalFileName = String.Empty;
-            _fileName = String.Empty;           
             _scaleFactorAsString = ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_20];
             _scaleFactorValue = SubItemsConst.scaleFactor1_20;
-            
-            _pageMediaSizeName = System.Printing.PageMediaSizeName.ISOA4;
-            _pageMediaSizeNameID = (int)System.Printing.PageMediaSizeName.ISOA4;
 
-            _pageOrientation = System.Printing.PageOrientation.Portrait;
-            _pageOrientationID = (int)System.Printing.PageOrientation.Portrait;
+            _pageMediaSizeName = System.Printing.PageMediaSizeName.ISOA3;
+            _pageMediaSizeNameID = (int)System.Printing.PageMediaSizeName.ISOA3;
+
+            _pageOrientation = System.Printing.PageOrientation.Landscape;
+            _pageOrientationID = (int)System.Printing.PageOrientation.Landscape;
 
             _viewMode = KD.SDK.SceneEnum.ViewMode.UNKNOWN;
             _objectID = KD.Const.UnknownId;
             _number = KD.Const.UnknownId.ToString();
+
+            _fileName = String.Empty;
+           // _fileName = Guid.NewGuid().ToString();
         }
 
         public TechnicalDocument()
-        {            
+        {
             InitMembers();
-        }       
+        }
 
         public override string ToString()
         {
             return ViewName;
-        }
-        public string ToSymbol()
-        {
-            return SymbolViewName;
         }
 
         public void ReadFromXml(string xmlString, out List<TechnicalDocument> documentList)
         {
             documentList = new List<TechnicalDocument>();
             XmlDocument xmlDocument = null;
-            XmlNode xmlNode = null;           
+            XmlNode xmlNode = null;
 
             try
             {
-                xmlDocument = new XmlDocument(); 
+                xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(xmlString);
             }
             catch (Exception)
-            {                
+            {
             }
 
             if (xmlDocument != null && xmlDocument.HasChildNodes)
             {
-                xmlNode = xmlDocument.FirstChild;               
+                xmlNode = xmlDocument.FirstChild;
                 XmlNodeList nodeList = xmlNode.SelectNodes(TechnicalDocument.viewTag);
 
                 // mettre 1 ligne vue de dessus et mur avec leur id , faut l 'ecrire dans xml  // Here todo          
                 int index = 0;
-                
+
                 foreach (XmlNode node in nodeList)
                 {
-                    TechnicalDocument docFromXml = new TechnicalDocument();                  
+                    TechnicalDocument docFromXml = new TechnicalDocument();
                     XmlNodeList childs = node.ChildNodes;
 
                     if (index == 0)
@@ -203,6 +223,10 @@ namespace Schmidt.TechnicalPlan
                         {
                             docFromXml.Type = child.InnerText;
                         }
+                        if (child.Name == TechnicalDocument.typeIDTag)
+                        {
+                            docFromXml.TypeID = System.Convert.ToInt32(child.InnerText);
+                        }
                         if (child.Name == TechnicalDocument.scaleFactorTag)
                         {
                             docFromXml.ScaleFactorAsString = child.InnerText;
@@ -212,16 +236,16 @@ namespace Schmidt.TechnicalPlan
                             docFromXml.ScaleFactorValue = System.Convert.ToDouble(child.InnerText);
                         }
                         if (child.Name == TechnicalDocument.formatTag)
-                        {                            
+                        {
                             docFromXml.PageMediaSizeName = new PageMediaSizeNameSubItem(child.InnerText).ToPageMediaSizeName();
-                            GenerateViewDialogForm.generikPaperSizeText = child.InnerText;                            
+                            GenerateViewDialogForm.generikPaperSizeText = child.InnerText;
                         }
                         if (child.Name == TechnicalDocument.formatIDTag)
                         {
                             docFromXml.PageMediaSizeNameID = System.Convert.ToInt32(child.InnerText);
                         }
                         if (child.Name == TechnicalDocument.orientationTag)
-                        {                           
+                        {
                             docFromXml.PageOrientation = new PageOrientationSubItem(child.InnerText).ToPageOrientation();
                         }
                         if (child.Name == TechnicalDocument.orientationIDTag)
@@ -244,24 +268,26 @@ namespace Schmidt.TechnicalPlan
         }
         public void WriteToXml(List<TechnicalDocument> documentList, out XmlNode xmlNode)
         {
-            XmlDocument xmlDocument = new XmlDocument();           
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(rootTag);
             this.ElementAdd(xmlDocument, xmlDocument.DocumentElement, technicalPlanFileNameTag, TechnicalDocument.TechnicalFileName);
 
             foreach (TechnicalDocument doc in documentList)
             {
-                XmlNode root;               
+                XmlNode root;
                 root = xmlDocument.CreateElement(viewTag);
                 xmlDocument.DocumentElement.AppendChild(root);
 
                 //XmlNode elem;
-                this.ElementAdd(xmlDocument, root, typeTag, doc.Type);                
+                this.ElementAdd(xmlDocument, root, typeTag, doc.Type);
+                this.ElementAdd(xmlDocument, root, typeIDTag, doc.TypeID.ToString());
                 this.ElementAdd(xmlDocument, root, fileNameTag, doc.FileName);
                 this.ElementAdd(xmlDocument, root, scaleFactorTag, doc.ScaleFactorAsString);
                 this.ElementAdd(xmlDocument, root, scaleFactorValueTag, doc.ScaleFactorValue.ToString());
                 this.ElementAdd(xmlDocument, root, formatTag, doc.PageMediaSizeName.ToString());
                 this.ElementAdd(xmlDocument, root, formatIDTag, doc.PageMediaSizeNameID.ToString());
-                this.ElementAdd(xmlDocument, root, orientationTag, doc.PageOrientation.ToString());
+                string po = PageOrientationSubItem.Dico[(int)doc.PageOrientation];
+                this.ElementAdd(xmlDocument, root, orientationTag, po); //doc.PageOrientation.ToString());
                 this.ElementAdd(xmlDocument, root, orientationIDTag, doc.PageOrientationID.ToString());
                 this.ElementAdd(xmlDocument, root, objectIDTag, doc.ObjectID.ToString());
                 this.ElementAdd(xmlDocument, root, numberTag, doc.Number);
@@ -272,7 +298,7 @@ namespace Schmidt.TechnicalPlan
 #if DEBUG
             xmlDocument.Save(@"D:\ic90dev\plugins\TechnicalPlan.xml");
 #endif
-            xmlNode = xmlDocument.FirstChild; 
+            xmlNode = xmlDocument.FirstChild;
         }
 
         private void ElementAdd(XmlDocument xmlDocument, XmlNode root, string name, string str)
@@ -282,6 +308,16 @@ namespace Schmidt.TechnicalPlan
             elem.InnerText = str;
             root.AppendChild(elem);
         }
-     
+
+        public void DeleteXml()
+        {
+#if DEBUG
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load(@"D:\ic90dev\plugins\TechnicalPlan.xml");
+            xmlDocument.LoadXml(rootTag);
+            xmlDocument.DocumentElement.RemoveAll();           
+            xmlDocument.Save(@"D:\ic90dev\plugins\TechnicalPlan.xml");
+#endif
+        }
     }
 }

@@ -35,7 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\..\Ic90dev\Plugins\TechnicalPlan\</OutputPath>
+    <OutputPath>..\..\..\..\Ic90dev\Plugins\Standard\Word\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -43,7 +43,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -152,6 +152,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\TechnicalPlan.cs" />
+    <Compile Include="Properties\TechnicalPlan.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TechnicalPlan.settings</DependentUpon>
+    </Compile>
     <Compile Include="SellerResponsabilityMessageForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -169,6 +175,7 @@
   <ItemGroup>
     <EmbeddedResource Include="GenerateViewDialogForm.resx">
       <DependentUpon>GenerateViewDialogForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -184,8 +191,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Resources\ico.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Include="Properties\TechnicalPlan.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>TechnicalPlan.Designer.cs</LastGenOutput>
     </None>
     <None Include="Schmidt.TechnicalPlan.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -211,13 +219,16 @@
     <Folder Include="src\SDK\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\SM2.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\twin2.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\twin3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\callplugin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SM2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

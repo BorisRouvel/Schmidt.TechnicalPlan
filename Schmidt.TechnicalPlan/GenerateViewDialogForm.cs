@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Xml;
+using System.IO;
 
 
 namespace Schmidt.TechnicalPlan
@@ -10,10 +11,15 @@ namespace Schmidt.TechnicalPlan
 
     public partial class GenerateViewDialogForm : Form
     {
-        public static string generikPaperSizeText = SubItemsConst.pageMediaSizeNameStringISOA4;
-        private Plugin _plugin;
+        public static string generikPaperSizeText = System.Printing.PageMediaSizeName.ISOA4.ToString();
+        private Plugin _plugin;      
+        Syncfusion.Pdf.Parsing.PdfLoadedDocument _blank = null;
+        string _blankFilePath = String.Empty;
         private string _currentPdfFilePath;
         private string _archiveFileDir = String.Empty;
+        private static string _currentScaleFactor;
+        private static string _currentPageMediaSizeName;
+        private static string _currentPageOrientation;
 
         private List<TechnicalDocument> _documentList = new List<TechnicalDocument>();
         private TechnicalPlanDocumentFileNameForm _technicalPlanDocumentFileNameForm = null;
@@ -30,11 +36,10 @@ namespace Schmidt.TechnicalPlan
 
         private MyImageButton myOverViewButton = null;
 
-        private int lviSelectedRowIndex = -1;
+        private int lviSelectedRowIndex = KD.Const.UnknownId;
         private int lviSelectedColumnIndex = (int)MyListView.Enum.ColumnIndex.UnKnown;
 
         string drawingSurface2D = String.Empty;
-
 
         public Plugin Plugin
         {
@@ -46,7 +51,29 @@ namespace Schmidt.TechnicalPlan
             {
                 _plugin = value;
             }
-        }      
+        }        
+        public Syncfusion.Pdf.Parsing.PdfLoadedDocument BlankPdf
+        {
+            get
+            {
+                return _blank;
+            }
+            set
+            {
+                _blank = value;
+            }
+        }
+        public string BlankPdfPath
+        {
+            get
+            {
+                return _blankFilePath;
+            }
+            set
+            {
+                _blankFilePath = value;
+            }
+        }
         public string CurrentPdfFilePath
         {
             get
@@ -69,11 +96,28 @@ namespace Schmidt.TechnicalPlan
                 _archiveFileDir = value;
             }
         }
+        public static string CurrentScaleFactor
+        {
+            get { return _currentScaleFactor; }
+            set { _currentScaleFactor = value; }
+        }
+        public static string CurrentPageMediaSizeName
+        {
+            get { return _currentPageMediaSizeName; }
+            set { _currentPageMediaSizeName = value; }
+        }
+        public static string CurrentPageOrientation
+        {
+            get { return _currentPageOrientation; }
+            set { _currentPageOrientation = value; }
+        }
+        
+
 
         //
         //Printer format setting
         double margeX = 20.0;
-        double margeY = 67.0;
+        double margeY = 55.0;
 
         private static System.Drawing.Printing.PaperKind ISOA4Portrait = System.Drawing.Printing.PaperKind.A4;
         private static System.Drawing.Printing.PaperKind ISOA4Landscape = System.Drawing.Printing.PaperKind.A4Rotated;
@@ -98,27 +142,19 @@ namespace Schmidt.TechnicalPlan
             _pluginWord = pluginWord;
             _dico = dico;
             _technicalDocument = technicalDocument;
-
+            
             this.InitializeForm();
+            this.CreateConfigDirectories();           
         }
 
+   
         private void InitializePreviewDirectory()
-        {
-            string technicalPlanDir = String.Empty;
-            this._archiveFileDir = this._pluginWord.GetRootDir();
-            if (!this.ArchiveFileDir.Contains(ConstFile.DocTechnicalPlanDir))
-            {
-                technicalPlanDir = System.IO.Path.Combine(this.ArchiveFileDir, ConstFile.DocTechnicalPlanDir, ConstFile.TechnicalPlanPreviewDirName);
-            }
-            else
-            {
-                technicalPlanDir = System.IO.Path.Combine(this.ArchiveFileDir, ConstFile.TechnicalPlanPreviewDirName);
-            }
-          
+        {            
+            _archiveFileDir = _pluginWord.Config.SceneDocDir;           
 
-            if (System.IO.Directory.Exists(technicalPlanDir))
+            if (System.IO.Directory.Exists(Plugin.PreviewDirectory))
             {
-                IEnumerable<string> technicalPlanFiles = System.IO.Directory.EnumerateFiles(technicalPlanDir);
+                IEnumerable<string> technicalPlanFiles = System.IO.Directory.EnumerateFiles(Plugin.PreviewDirectory);
                 foreach (string technicalPlanFile in technicalPlanFiles)
                 {
                     this.DeleteFileIfExist(technicalPlanFile);                   
@@ -143,16 +179,31 @@ namespace Schmidt.TechnicalPlan
             Font stdfont = new Font("Microsoft Sans Serif", 10.0f, FontStyle.Regular);
             this.Font = stdfont;
 
-            this.myListView_MLV.HideSelection = false;            
+            this.myListView_MLV.HideSelection = false;
+
+            //
+            string assemblyDirPath = KD.IO.Path.ExtractFileDir(Plugin.AssemblyFilePath);
+            if (Directory.Exists(assemblyDirPath))
+            {
+                string imageDirPath = System.IO.Path.Combine(assemblyDirPath, "img");
+
+                this.BlankPdfPath = System.IO.Path.Combine(imageDirPath, "blank.pdf");                
+                if (this.BlankPdf == null && System.IO.File.Exists(this.BlankPdfPath))
+                {
+                    this.BlankPdf = new Syncfusion.Pdf.Parsing.PdfLoadedDocument(this.BlankPdfPath);
+                }
+            }
+
+            //
 
             var header = new List<string>();
 
-            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderSelectID));
-            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderViewID));
-            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderScaleID));
-            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderPaperID));
-            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderOrientationID));
-            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderOverviewID));
+            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderSelect_ID));
+            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderView_ID));
+            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderScale_ID));
+            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderPaper_ID));
+            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderOrientation_ID));
+            header.Add(this._dico.GetTranslate(TranslateIdentifyId.ColumnHeaderOverview_ID));
             header.ForEach(name => this.myListView_MLV.Columns.Add(name));
 
             // Loop through and size each column header to fit the column header text.
@@ -167,24 +218,31 @@ namespace Schmidt.TechnicalPlan
         }
         private void InitializeForm()
         {
-            this.Ok_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.OkButtonUIID);
-            this.Cancel_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.CancelButtonUIID);
-            this.selectAll_CHB.Text = _dico.GetTranslate(TranslateIdentifyId.SelectAllViewCheckBoxUIID);
-            this.paper_LAB.Text = _dico.GetTranslate(TranslateIdentifyId.ColumnHeaderPaperID);
+            this.Text = _dico.GetTranslate(TranslateIdentifyId.UITitle_ID);
+            this.Ok_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.UIOkButton_ID);
+            this.Cancel_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.UICancelButton_ID);
+            this.selectAll_CHB.Text = _dico.GetTranslate(TranslateIdentifyId.UISelectAllViewCheckBox_ID);
+            this.paper_LAB.Text = _dico.GetTranslate(TranslateIdentifyId.ColumnHeaderPaper_ID);                      
 
-            this.ToolStripButtonVisible(this.openFolder_BTN);
-            this.ToolStripButtonVisible(this.print_BTN);
+            this.ToolStripButtonVisible(this.openFolder_BTN, Plugin.IsOpenFolderButtonVisible);
+            this.ToolStripButtonVisible(this.print_BTN, Plugin.IsPrintButtonVisible); 
+            
+        }
+        private void CreateConfigDirectories()
+        {
+            this.CreateDirIfNotExist(Plugin.SM2Directory);
+            this.CreateDirIfNotExist(Plugin.PreviewDirectory);
         }
 
-        private void ToolStripButtonVisible(ToolStripButton TSbutton)
+        private void ToolStripButtonVisible(ToolStripButton TSbutton, bool isVisible)
         {
-            TSbutton.Tag = 1; // take future info (here 0) in custom config xml
+            TSbutton.Tag = isVisible;      
 
-            if ((int)TSbutton.Tag == 0)
+            if (!(bool)TSbutton.Tag)
             {
                 TSbutton.Visible = false;
             }
-            else if ((int)TSbutton.Tag == 1)
+            else if ((bool)TSbutton.Tag)
             {
                 TSbutton.Visible = true;
             }
@@ -203,50 +261,139 @@ namespace Schmidt.TechnicalPlan
                 ch.TextAlign = HorizontalAlignment.Left;
             }
         }
-     
-        public void Build(bool preview, int lviIndex)
+        private void SizeAndPlaceControlInForm()
+        {
+            this.myListView_MLV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            int columnHeaderSize = 0;
+            foreach (ColumnHeader ch in this.myListView_MLV.Columns)
+            {
+                this.PaperColumnWidthToZero(ch);
+                columnHeaderSize += ch.Width;
+            }
+            this.splitContainer_SPC.SplitterDistance = this.splitContainer_SPC.Location.X + columnHeaderSize + 2;
+
+            int x = (this.splitContainer_SPC.SplitterDistance - this.generikPaperList_CBX.Width);
+            int y = this.selectAll_CHB.Location.Y;
+            this.generikPaperList_CBX.Location = new Point(x, y - 2);
+
+            
+            int x1 = (this.generikPaperList_CBX.Location.X - this.generikPaperList_CBX.Margin.Left - this.paper_LAB.Width - this.paper_LAB.Margin.Right); //this.splitContainer_SPC.Location.X
+            this.paper_LAB.Location = new Point(x1, y + 1);
+
+            this.myListView_MLV.Refresh();
+        }
+
+        private string GetTechnicalDocumentFileNameFromListViewItem(ListViewItem lvi)//int lvItemIndex
+        { 
+            //lvi.Tag = myListView_MLV.Items[lvItemIndex].Tag;
+            TechnicalDocument technicalDocument = (TechnicalDocument)lvi.Tag;
+
+            string technicalDocumentViewMode = this.GetViewMode((int)technicalDocument.ViewMode) + KD.StringTools.Const.MinusSign;
+
+            string scale = GetScaleStringForDocPartition(technicalDocument.ScaleFactorValue) + KD.StringTools.Const.MinusSign;//lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag.ToString()
+            string paper = technicalDocument.PageMediaSizeName.ToString() + KD.StringTools.Const.MinusSign;//lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Text
+            string orientation = technicalDocument.PageOrientation.ToString(); // GetOrientationStringForDocPartition(lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Text
+
+            return (technicalDocumentViewMode + scale + paper + orientation);           
+        }
+        public void Build(bool preview, ListViewItem lvi)//int lvItemIndex
         {
             this.DesactivatePdfViewer();
 
             Cursor.Current = Cursors.WaitCursor;
+      
+            TechnicalDocument technicalDocument = (TechnicalDocument)lvi.Tag;
+            
+            //System.Guid.NewGuid().ToString();
+            technicalDocument.FileName = this.TranslateTechnicalDocumentFileName(technicalDocument); 
 
-            this._pluginWord.DocIndex2Use = FindDocNameFromChoice(lviIndex);
-            if (this._pluginWord.DocIndex2Use != KD.Const.UnknownId)
+            // Optimize the generate doc, look at preview if exist
+            //string sceneNameDir = Path.Combine(_plugin.CurrentAppli.ScenesDir, _plugin.CurrentAppli.SceneName);
+            string previewPdfFilePath = Path.Combine(Plugin.PreviewDirectory, technicalDocument.FileName + KD.IO.File.Extension.Pdf);//sceneNameDir,ConstRessourceNames.DocTechnicalPlanDir, ConstRessourceNames.TechnicalPlanPreviewDirName
+            string previewDotFilePath = Path.Combine(Plugin.PreviewDirectory, technicalDocument.FileName + KD.IO.File.Extension.Dot);//sceneNameDir, ConstRessourceNames.DocTechnicalPlanDir, ConstRessourceNames.TechnicalPlanPreviewDirName
+
+            string SM2PdfFilePath = Path.Combine(Plugin.SM2Directory, technicalDocument.FileName + KD.IO.File.Extension.Pdf);//sceneNameDir, ConstRessourceNames.DocTechnicalPlanDir
+            string SM2DotFilePath = Path.Combine(Plugin.SM2Directory, technicalDocument.FileName + KD.IO.File.Extension.Dot);//sceneNameDir, ConstRessourceNames.DocTechnicalPlanDir
+            if (System.IO.File.Exists(previewDotFilePath) && !preview)
             {
-                this._pluginWord.GenerateDocument(false);
+                System.IO.File.Copy(previewDotFilePath, SM2DotFilePath);
+            }
 
-                string docname = this._pluginWord.GetLocalizedDocName(this._pluginWord.DocIndex2Use);
-                if (!String.IsNullOrEmpty(docname))
+            if (System.IO.File.Exists(previewPdfFilePath) && !preview)
+            {
+                System.IO.File.Copy(previewPdfFilePath, SM2PdfFilePath);
+            }
+            else
+            {
+                //
+                _pluginWord.DocIndex2Use = FindTemplateRankFromListView(lvi);//lvItemIndex
+
+                if (_pluginWord.DocIndex2Use != KD.Const.UnknownId)
                 {
-                    string pdfFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
-                    string dotFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Dot);
+                    _pluginWord.GenerateDocument(false);
 
-                    string dirPdfPath = this.MoveFileToDocPlanDir(lviIndex, pdfFilePath, dotFilePath, 0);
-                    string dirDotPath = dirPdfPath.Replace(KD.IO.File.Extension.Pdf, KD.IO.File.Extension.Dot);
-
-                    if (preview)
+                    string docname = _pluginWord.GetLocalizedDocName(_pluginWord.DocIndex2Use);
+                    if (!String.IsNullOrEmpty(docname))
                     {
-                        this.LoadPdfFile(this.MoveFileToPreviewDir(dirPdfPath, dirDotPath, 0));
-                    }                   
+                        string pdfFilePath = _pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
+                        string dotFilePath = _pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Dot);
+
+                        string idPdfFileName = technicalDocument.FileName + KD.IO.File.Extension.Pdf;
+                        string idPdfFilePath = System.IO.Path.Combine(Plugin.SM2Directory, idPdfFileName);//System.IO.Path.GetDirectoryName(pdfFilePath)
+                        if (System.IO.File.Exists(pdfFilePath) && !System.IO.File.Exists(idPdfFilePath))
+                        {
+                            System.IO.File.Copy(pdfFilePath, idPdfFilePath, true);
+                        }
+                        if (System.IO.File.Exists(idPdfFilePath))
+                        {
+                            this.DeleteFileIfExist(pdfFilePath);
+                        }
+
+                        string idDotFileName = technicalDocument.FileName + KD.IO.File.Extension.Dot;
+                        string idDotFilePath = System.IO.Path.Combine(Plugin.SM2Directory, idDotFileName);//System.IO.Path.GetDirectoryName(dotFilePath)
+                        if (System.IO.File.Exists(dotFilePath) && !System.IO.File.Exists(idDotFilePath))
+                        {
+                            System.IO.File.Copy(dotFilePath, idDotFilePath, true);
+                            
+                        }
+                        if (System.IO.File.Exists(idDotFilePath))
+                        {
+                            this.DeleteFileIfExist(dotFilePath);
+                        }
+
+                        string movePdfPath = this.MoveFileToDocPlanDir(lvi.Index, idPdfFilePath, idDotFilePath, 0);//lvItemIndex
+                        string moveDotPath = movePdfPath.Replace(KD.IO.File.Extension.Pdf, KD.IO.File.Extension.Dot);
+
+                        //string guidFileName = _documentList[lviIndex].FileName + KD.IO.File.Extension.Pdf; // this.GetViewFileName(lviIndex, System.IO.Path.GetFileName(pdfFilePath));                
+                        //string guidFilePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(dirPdfPath), guidFileName);
+
+                        //System.IO.File.Copy(dirPdfPath, guidFilePath);
+                        //System.IO.File.Delete(dirPdfPath);
+
+                        if (preview)
+                        {
+                            this.LoadPdfFile(this.MoveFileToPreviewDir(movePdfPath, moveDotPath, 0));
+                        }
+                    }
                 }
             }
             Cursor.Current = Cursors.Arrow;
         }
         private string MoveFileToDocPlanDir(int lviIndex, string pdfFilePath, string dotFilePath, int time)
-        {
-            System.Windows.Forms.Application.DoEvents();
-
+        {          
             string currentDir = System.IO.Path.GetDirectoryName(pdfFilePath);
-            if (!currentDir.Contains(ConstFile.DocTechnicalPlanDir))
+            string lastSubDir = KD.StringTools.Helper.SubStringAfterLast(currentDir, KD.StringTools.Const.BackSlatch);
+
+            if (!currentDir.Contains(lastSubDir))//ConstRessourceNames.DocTechnicalPlanDir
             {
-                string currentPdfDir = System.IO.Path.Combine(currentDir, ConstFile.DocTechnicalPlanDir);
+                string currentPdfDir = System.IO.Path.Combine(currentDir, lastSubDir);//ConstRessourceNames.DocTechnicalPlanDir
 
                 this.CreateDirIfNotExist(currentPdfDir);
 
-                string viewFileName = this.GetViewFileName(lviIndex, System.IO.Path.GetFileName(pdfFilePath));                
+                string viewFilePath = _documentList[lviIndex].FileName + KD.IO.File.Extension.Pdf; // this.GetViewFileName(lviIndex, System.IO.Path.GetFileName(pdfFilePath));                
 
-                string newPdfFilePath = System.IO.Path.Combine(currentPdfDir, viewFileName); // System.IO.Path.GetFileName(pdfFilePath));
-                string newDotFilePath = System.IO.Path.Combine(currentPdfDir, viewFileName.Replace(KD.IO.File.Extension.Pdf, KD.IO.File.Extension.Dot));
+                string newPdfFilePath = System.IO.Path.Combine(currentPdfDir, viewFilePath); // System.IO.Path.GetFileName(pdfFilePath));
+                string newDotFilePath = System.IO.Path.Combine(currentPdfDir, viewFilePath.Replace(KD.IO.File.Extension.Pdf, KD.IO.File.Extension.Dot));
 
                 try
                 {                   
@@ -276,7 +423,7 @@ namespace Schmidt.TechnicalPlan
 
                     return newPdfFilePath;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return pdfFilePath;
                 }
@@ -285,12 +432,10 @@ namespace Schmidt.TechnicalPlan
         }
         private string MoveFileToPreviewDir(string pdfFilePath, string dotFilePath, int time)
         {
-            System.Windows.Forms.Application.DoEvents();
-
             string currentDir = System.IO.Path.GetDirectoryName(pdfFilePath);
-            this.CreateDirIfNotExist(System.IO.Path.Combine(currentDir, ConstFile.TechnicalPlanPreviewDirName));
+            this.CreateDirIfNotExist(Plugin.PreviewDirectory);//System.IO.Path.Combine(currentDir, ConstRessourceNames.TechnicalPlanPreviewDirName)
 
-            string newDir = System.IO.Path.Combine(currentDir, ConstFile.TechnicalPlanPreviewDirName);
+            string newDir = Plugin.PreviewDirectory; // System.IO.Path.Combine(currentDir, ConstRessourceNames.TechnicalPlanPreviewDirName);
             string previewPdfFilePath = System.IO.Path.Combine(newDir, System.IO.Path.GetFileName(pdfFilePath));
             string previewDotFilePath = System.IO.Path.Combine(newDir, System.IO.Path.GetFileName(dotFilePath));
 
@@ -305,7 +450,8 @@ namespace Schmidt.TechnicalPlan
                 {
                     if (time <= 5)
                     {
-                        MoveFileToPreviewDir(pdfFilePath, dotFilePath, time++);
+                        time++;
+                        MoveFileToPreviewDir(pdfFilePath, dotFilePath, time);
                     }
                     else
                     {
@@ -363,26 +509,34 @@ namespace Schmidt.TechnicalPlan
                 {
                     _loadedDocument.Close();
                 }
-                this._loadedDocument = new Syncfusion.Pdf.Parsing.PdfLoadedDocument(pdfFilePath);
-                pdfDocumentView_PDFV.Load(_loadedDocument); // @"D:\Ic90dev\Scenes\5DE66AB8_0226_01\DocTechnicalPlan\TECHNICAL_PLAN_PREVIEW\Elévation du mur.pdf"); 
-
-                // Set cursor as default arrow
-                Cursor.Current = Cursors.Default;
+                if (System.IO.File.Exists(pdfFilePath))
+                {
+                    this._loadedDocument = new Syncfusion.Pdf.Parsing.PdfLoadedDocument(pdfFilePath);
+                    pdfDocumentView_PDFV.Load(_loadedDocument); // @"D:\Ic90dev\Scenes\5DE66AB8_0226_01\DocTechnicalPlan\TECHNICAL_PLAN_PREVIEW\Elévation du mur.pdf"); 
+               
+                
 
                 // first load fit page                
-                if (_zoom == InitialZoomValue)
-                {
+                //if (_zoom == InitialZoomValue)
+                //{
                     pdfDocumentView_PDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.FitPage;
+                    //}
+                    //else // take last zoom value                 
+                    //{
+                    //    pdfDocumentView_PDFV.ZoomTo(Convert.ToInt32(_zoom));
+                    //}
+                    // can Update member only after load
+                    _currentPdfFilePath = pdfFilePath;
                 }
-                else // take last zoom value                 
+                else
                 {
-                    pdfDocumentView_PDFV.ZoomTo(Convert.ToInt32(_zoom));
+                    this.DesactivatePdfViewer();
                 }
-
+                // Set cursor as default arrow
+                Cursor.Current = Cursors.Default;
             }
 
-            // can Update member only after load
-            _currentPdfFilePath = pdfFilePath;
+           
 
         }
         private void CreateAndLoadPdfLoadedDocument(String filepath)
@@ -410,9 +564,13 @@ namespace Schmidt.TechnicalPlan
                 // otherwise we can,'t Delete file with System.IO.Delete
                 // Releasing data is compulsory
                 if (_loadedDocument != null)
-                {
+                {                   
                     _loadedDocument.Close();
                 }
+                this._loadedDocument = new Syncfusion.Pdf.Parsing.PdfLoadedDocument(this.BlankPdfPath);
+                this.pdfDocumentView_PDFV.Load(_loadedDocument);
+                this.CurrentPdfFilePath = this.BlankPdfPath;
+
                 //// need to update CurrentPdfFilePath now for later use.
                 //// BUt can't use LoadPdfFile coz it can call DesactivatePdfViewer and makes infinite loop
                 //this.pdfDocumentView_PDFV.Load(String.Empty);
@@ -423,75 +581,79 @@ namespace Schmidt.TechnicalPlan
                 string msg = ex.Message;
             }
 
-            //this.pdfDocumentView_PDFV.Enabled = false;
+           this.pdfDocumentView_PDFV.Enabled = false;
             this.pdfDocumentView_PDFV.Visible = false;
             return;
         }
         private void ActivatePdfViewer()
         {
             this.splitContainer_SPC.Panel2.Show();
-            //this.pdfDocumentView_PDFV.Enabled = true;
+            this.pdfDocumentView_PDFV.Enabled = true;
             this.pdfDocumentView_PDFV.Visible = true;
             return;
         }
-        private int FindDocNameFromChoice(int iDoc)
-        {
-            int rank = -1;
+        private int FindTemplateRankFromListView(ListViewItem lvi)//int lvItemIndex
+        {           
+            string technicalDocumentName = this.GetTechnicalDocumentFileNameFromListViewItem(lvi);// technicalDocumentViewMode + scale + paper + orientation;                                                           
 
-            foreach (ListViewItem lvItem in myListView_MLV.Items)
-            {
-                if (lvItem != null && lvItem.Index == iDoc)
-                {
-                    KD.SDK.SceneEnum.ViewMode viewMode = _documentList[iDoc].ViewMode;
-                    string viewType = String.Empty;
+            int nbSubDoc = _pluginWord.CurrentAppli.GetDocsNb();
 
-                    if (viewMode == KD.SDK.SceneEnum.ViewMode.TOP)
-                    {
-                        viewType = "TOP" + KD.StringTools.Const.MinusSign;
-                    }
-                    else if (viewMode == KD.SDK.SceneEnum.ViewMode.VECTELEVATION)
-                    {
-                        viewType = "ELEV" + KD.StringTools.Const.MinusSign;
-                    }
+            for (int iSubDoc = 0; iSubDoc <= nbSubDoc; iSubDoc++)
+            {                      
+                string templateFileName = _pluginWord.CurrentAppli.DocGetInfo(iSubDoc, KD.SDK.AppliEnum.DocInfo.NAME);
 
-                    string scale = lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text.Replace(KD.StringTools.Const.Slatch, String.Empty) + KD.StringTools.Const.MinusSign;
-                    string subDocName = viewType + scale + lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Text + KD.StringTools.Const.MinusSign +
-                                                            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Text;
-
-                    int nbSubDoc = this._pluginWord.CurrentAppli.GetDocsNb();
-
-                    for (int iSubDoc = 0; iSubDoc <= nbSubDoc; iSubDoc++)
-                    {
-                        rank = iSubDoc;
-                        string name = this._pluginWord.CurrentAppli.DocGetInfo(rank, KD.SDK.AppliEnum.DocInfo.NAME);
-
-                        if (name.ToUpper().Equals(subDocName.ToUpper()))
-                        {                             
-                            _documentList[iDoc].FileName = this.GetViewFileName(iDoc, subDocName); ;                          
-                            break;
-                        }
-                    }
+                if (templateFileName.ToUpper().Equals(technicalDocumentName.ToUpper()))
+                {                           
+                    return iSubDoc;                           
                 }
             }
-            return rank;
+            return KD.Const.UnknownId;
         }
-        private string GetViewFileName(int lviIndex, string fileName)
+        private string GetViewMode(int viewMode)
         {
-            string[] stringSeparators = new string[] { KD.StringTools.Const.MinusSign };
-            string[] splitFileName = fileName.Split(stringSeparators, StringSplitOptions.None);
-
-            string fileNameEntete = _dico.GetTranslate(splitFileName[0]);
-
-            if (lviIndex > 0)
+            if (viewMode == (int)KD.SDK.SceneEnum.ViewMode.TOP)
             {
-                string wallName = fileNameEntete + _documentList[lviIndex].Number;
-                for (int i = 1; i <= splitFileName.Length - 1; i++)
-                {
-                    wallName += KD.StringTools.Const.MinusSign + splitFileName[i];
-                }
-                return wallName;
+                return ConstRessourceNames.TopViewFileNameHeader;
             }
-            return fileName;
+            else if (viewMode == (int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION)
+            {
+                return ConstRessourceNames.ElevationViewFileNameHeader;
+            }
+            return KD.SDK.SceneEnum.ViewMode.UNKNOWN.ToString();
+        }
+        private string TranslateTechnicalDocumentFileName(TechnicalDocument technicalDocument)
+        {                    
+            return technicalDocument.ViewName.Replace(KD.StringTools.Const.WhiteSpace, String.Empty) + KD.StringTools.Const.MinusSign + 
+                    GetScaleStringForDocPartition(technicalDocument.ScaleFactorValue) + KD.StringTools.Const.MinusSign +
+                    technicalDocument.PageMediaSizeName.ToString() + KD.StringTools.Const.MinusSign +
+                    PageOrientationSubItem.Dico[technicalDocument.PageOrientationID];
+        }
+        private string GetScaleStringForDocPartition(double scale)
+        {
+            if (scale == SubItemsConst.scaleFactor1_20) //"0.05"
+            {
+                return SubItemsConst.scaleFactorString1_20;
+            }
+            else if (scale == SubItemsConst.scaleFactor1_25) //"0.04"
+            {
+                return SubItemsConst.scaleFactorString1_25;
+            }
+            else if (scale == SubItemsConst.scaleFactor1_50) //"0.02"
+            {
+                return SubItemsConst.scaleFactorString1_50;
+            }
+            else if (scale == SubItemsConst.scaleFactorAuto) //"Auto"
+            {
+                return SubItemsConst.scaleFactorStringAuto;
+            }               
+           
+            return String.Empty; ;
+        }
+        private string GetOrientationStringForDocPartition(string orientation)
+        {
+            PageOrientationSubItem pageOrientation = new PageOrientationSubItem(orientation);
+            string result = pageOrientation.ToPageOrientation().ToString();
+            return result;
         }
 
         private int GetSelectedRowIndex()
@@ -500,11 +662,11 @@ namespace Schmidt.TechnicalPlan
             {
                 return lvItem.Index;
             }
-            return -1;
+            return KD.Const.UnknownId;
         }
         private int GetSelectColumnIndex(int x)
         {
-            if (lviSelectedRowIndex != -1)
+            if (lviSelectedRowIndex != KD.Const.UnknownId)
             {
                 foreach (ColumnHeader column in this.myListView_MLV.Columns)
                 {
@@ -553,110 +715,51 @@ namespace Schmidt.TechnicalPlan
         }
         private void SetItemTextInComboBox(ComboBox comboBox)
         {            
-            comboBox.Text = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Text;
+            comboBox.Text = this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Text;            
         }
-
-        #region // Keep it for instead // loadXMLin listview_ok
-        //XmlNodeList nodeList = xmlNode.SelectNodes(TechnicalDocument.viewTag);
-
-        //// mettre 1 ligne vue de dessus et mur avec leur id , faut l 'ecrire dans xml            
-        //int itemsNb = myListView_MLV.Items.Count;
-        //int itemNb = 0;
-
-        //foreach (XmlNode node in nodeList)
-        //{
-        //    if (itemNb == itemsNb) { return; }
-
-        //    XmlNodeList childs = node.ChildNodes;
-
-        //    foreach (XmlNode child in childs)
-        //    {
-        //        if (child.Name == TechnicalDocument.scaleFactorTag)
-        //        {
-        //            this.myListView_MLV.Items[itemNb].SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text = child.InnerText;
-        //        }
-        //        if (child.Name == TechnicalDocument.scaleFactorValueTag)
-        //        {
-        //            this.myListView_MLV.Items[itemNb].SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag = System.Convert.ToDouble(child.InnerText);
-        //        }                    
-        //        if (child.Name == TechnicalDocument.formatTag)
-        //        {
-        //            this.myListView_MLV.Items[itemNb].SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Text = child.InnerText;
-        //            this.generikPaperList_CBX.Text = child.InnerText;
-        //            this.generikPaperList_CBX.SelectedItem = child.InnerText;
-        //        }
-        //        if (child.Name == TechnicalDocument.formatIDTag)
-        //        { 
-        //            var oPmzn = (object)Convert.ChangeType(child.InnerText, typeof(object));                      
-
-        //            this.myListView_MLV.Items[itemNb].SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Tag = (System.Printing.PageMediaSizeName)oPmzn;
-        //        }
-        //        if (child.Name == TechnicalDocument.orientationTag)
-        //        {
-        //            this.myListView_MLV.Items[itemNb].SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Text = child.InnerText;
-        //        }
-        //        if (child.Name == TechnicalDocument.orientationIDTag)
-        //        {
-        //            var oPo = (object)Convert.ChangeType(child.InnerText, typeof(object));                       
-        //            this.myListView_MLV.Items[itemNb].SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag = (System.Printing.PageOrientation)oPo;
-        //        }
-        //    }
-        //    itemNb++;
-        //} 
-
-        //UpdateDocumentListFromListView();;
-        #endregion
-
+        private void SetItemTagInComboBox(ComboBox comboBox)
+        {
+            comboBox.Tag = new PageOrientationSubItem(comboBox.SelectedItem.ToString()).ToPageOrientation(); // this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[lviSelectedColumnIndex].Tag;
+        }
+    
         private void LoadCustomInfoOrCalculateBestFormat()
         {      
-            string xmlCustomInfo = this._pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(TechnicalDocument.technicalDocumentsTag);
-            _technicalDocument.ReadFromXml(xmlCustomInfo, out List<TechnicalDocument> documentList);
+            string xmlCustomInfo = _pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(TechnicalDocument.technicalDocumentsTag);
+            _technicalDocument.ReadFromXml(xmlCustomInfo, out List<TechnicalDocument> customInfoDocumentList);
 
-            if (documentList.Count > 0)
-            { 
-                this.SetGenerikPaperCombobox();
+            if (customInfoDocumentList.Count > 0)
+            {               
+                generikPaperSizeText = customInfoDocumentList[0].PageMediaSizeName.ToString();
 
-                List<int> elevationIds = new List<int>();
-                List<int> wallIds = this.GetWallID();
-                List<int> symbolIds = this.GetElevSymbolID();
-
-                elevationIds.Add(KD.Const.UnknownId); //id for the top view (-1)
-                elevationIds.AddRange(wallIds);
-                elevationIds.AddRange(symbolIds);
-
-                bool bFindDoc = false;
-                foreach (ListViewItem lvItem in myListView_MLV.Items)
+                foreach (ListViewItem lvi in myListView_MLV.Items)
                 {
-                    foreach (TechnicalDocument doc in documentList)
+                    TechnicalDocument technicalDocument = (TechnicalDocument)lvi.Tag;
+                    TechnicalDocument customInfoTechnicalDocument = customInfoDocumentList[0];                                                                
+
+                    if (technicalDocument.ObjectID == customInfoTechnicalDocument.ObjectID)
                     {
-                        for (int ids = 0; ids < elevationIds.Count; ids++)
-                        {
-                            if (doc.ObjectID == elevationIds[ids])
-                            {
-                                this.UpdateListViewItemFromDocument(doc, lvItem);
-                                elevationIds.RemoveAt(ids);
-                                bFindDoc = true;
-                                break;
-                            }
-                        }
-                        if (bFindDoc)
-                        {
-                            bFindDoc = false;
-                            break;
-                        }
-                        else
-                        {
-                            this.CalculateBestFormat(lvItem);
-                        }
-                    }
-                }                
+                        this.UpdateListViewItemFromDocument(customInfoTechnicalDocument, lvi);                         
+                        customInfoDocumentList.RemoveAt(0);
+                    }                       
+                    else
+                    {
+                        this.CalculateBestFormat(lvi, false);
+                    }                  
+                }
+               
+                this.SetGenerikPaperCombobox();
+                myListView_MLV.Refresh();
+                this.UpdateDocumentListFromListView();
             }
             else
             {
-                foreach (ListViewItem lvItem in myListView_MLV.Items)
+                foreach (ListViewItem lvi in myListView_MLV.Items)
                 {
-                    this.CalculateBestFormat(lvItem);
+                    this.CalculateBestFormat(lvi, true);
                 }
+                this.SetGenerikPaperCombobox();
+                myListView_MLV.Refresh();
+                this.UpdateDocumentListFromListView();
             }
         }    
         private void SaveCustomInfo()
@@ -664,7 +767,7 @@ namespace Schmidt.TechnicalPlan
             _technicalDocument.WriteToXml(this._documentList, out XmlNode xmlNode);
             string xmlCustomInfo = xmlNode.OuterXml;
             
-            this._pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(xmlCustomInfo, TechnicalDocument.technicalDocumentsTag);        
+            _pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(xmlCustomInfo, TechnicalDocument.technicalDocumentsTag);        
 
             #region Info
             //< Vues >
@@ -699,7 +802,7 @@ namespace Schmidt.TechnicalPlan
             //
             #endregion
         }
-        private void CalculateBestFormat(ListViewItem lvItem)
+        private void CalculateBestFormat(ListViewItem lvi, bool isFormat)
         {
             double paperA4PWidth = paperSizeA4P.Width - margeX; //margin 10 + 10
             double paperA4PHeight = paperSizeA4P.Height - margeY; // first line is line for drawing (297 - 67 = 230)
@@ -714,22 +817,22 @@ namespace Schmidt.TechnicalPlan
             double paperA3LHeight = paperSizeA3L.Height - margeY; // first line is line for drawing (297 - 67 = 230)
                       
             List<int> elevationIds = new List<int>();
-            List<int> wallIds = this.GetWallID();
-            List<int> symbolIds = this.GetElevSymbolID();
+            List<int> wallIds = this.GetWallIDs();
+            List<int> symbolIds = this.GetElevSymbolIDs();
 
             //elevationIds.Add(KD.Const.UnknownId); //id for the top view (-1)
             elevationIds.AddRange(wallIds);
             elevationIds.AddRange(symbolIds);
 
-            double sceneDimensionX = System.Convert.ToDouble(this._plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.DIMX));
-            double sceneDimensionY = System.Convert.ToDouble(this._plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.DIMY));
+            double sceneDimensionX = System.Convert.ToDouble(_plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.DIMX));
+            double sceneDimensionY = System.Convert.ToDouble(_plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.DIMY));
 
             Dictionary<int, double> elevationDimensionXDict = new Dictionary<int, double>();
             Dictionary<int, double> elevationDimensionYDict = new Dictionary<int, double>();
             for (int ids = 0; ids < elevationIds.Count; ids++)
             {
-                elevationDimensionXDict.Add(elevationIds[ids], System.Convert.ToDouble(this._plugin.CurrentAppli.Scene.ObjectGetInfo(elevationIds[ids], KD.SDK.SceneEnum.ObjectInfo.DIMX)));
-                elevationDimensionYDict.Add(elevationIds[ids], System.Convert.ToDouble(this._plugin.CurrentAppli.Scene.ObjectGetInfo(elevationIds[ids], KD.SDK.SceneEnum.ObjectInfo.DIMZ)));
+                elevationDimensionXDict.Add(elevationIds[ids], System.Convert.ToDouble(_plugin.CurrentAppli.Scene.ObjectGetInfo(elevationIds[ids], KD.SDK.SceneEnum.ObjectInfo.DIMX)));
+                elevationDimensionYDict.Add(elevationIds[ids], System.Convert.ToDouble(_plugin.CurrentAppli.Scene.ObjectGetInfo(elevationIds[ids], KD.SDK.SceneEnum.ObjectInfo.DIMZ)));
             }
                       
             double dimensionX = -1.0;
@@ -737,17 +840,19 @@ namespace Schmidt.TechnicalPlan
 
             double proportionX_1_20 = 0;
             double proportionY_1_20 = 0;
+            double proportionX_1_25 = 0;
+            double proportionY_1_25 = 0;
             double proportionX_1_50 = 0;
             double proportionY_1_50 = 0;
 
-            if (lvItem.Index == 0)
+            if (lvi.Index == 0)
             {
                 dimensionX = sceneDimensionX;
                 dimensionY = sceneDimensionY;                   
             }
-            else if (lvItem.Index > 0)
+            else if (lvi.Index > 0)
             {
-                TechnicalDocument infoTag = (TechnicalDocument)lvItem.Tag;
+                TechnicalDocument infoTag = (TechnicalDocument)lvi.Tag;
                 int id = infoTag.ObjectID;                    
 
                 foreach (KeyValuePair<int, double> kvp in elevationDimensionXDict)
@@ -771,62 +876,85 @@ namespace Schmidt.TechnicalPlan
             {
                 proportionX_1_20 = dimensionX * SubItemsConst.scaleFactor1_20; // 0.05
                 proportionY_1_20 = dimensionY * SubItemsConst.scaleFactor1_20; // 0.05
+                proportionX_1_25 = dimensionX * SubItemsConst.scaleFactor1_25; // 0.04
+                proportionY_1_25 = dimensionY * SubItemsConst.scaleFactor1_25; // 0.04
                 proportionX_1_50 = dimensionX * SubItemsConst.scaleFactor1_50; // 0.02
                 proportionY_1_50 = dimensionY * SubItemsConst.scaleFactor1_50; // 0.02
 
                 // 1_20
                 if (paperA3LWidth >= proportionX_1_20 && paperA3LHeight >= proportionY_1_20)
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactor1_20, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Landscape);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_20, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Landscape, isFormat);
                 }
                 else if (paperA4LWidth >= proportionX_1_20 && paperA4LHeight >= proportionY_1_20)
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactor1_20, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Landscape);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_20, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Landscape, isFormat);
                 }
                 else if (paperA3PWidth >= proportionX_1_20 && paperA3PHeight >= proportionY_1_20)
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactor1_20, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Portrait);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_20, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Portrait, isFormat);
                 }
                 else if (paperA4PWidth >= proportionX_1_20 && paperA4PHeight >= proportionY_1_20)
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactor1_20, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Portrait);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_20, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Portrait, isFormat);
+                }
+                // 1_25
+                else if (paperA3LWidth >= proportionX_1_25 && paperA3LHeight >= proportionY_1_25)
+                {
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_25, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Landscape, isFormat);
+                }
+                else if (paperA4LWidth >= proportionX_1_25 && paperA4LHeight >= proportionY_1_25)
+                {
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_25, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Landscape, isFormat);
+                }
+                else if (paperA3PWidth >= proportionX_1_25 && paperA3PHeight >= proportionY_1_25)
+                {
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_25, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Portrait, isFormat);
+                }
+                else if (paperA4PWidth >= proportionX_1_25 && paperA4PHeight >= proportionY_1_25)
+                {
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_25, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Portrait, isFormat);
                 }
                 // 1_50
                 else if (paperA3LWidth >= proportionX_1_50 && paperA3LHeight >= proportionY_1_50)
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactor1_50, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Landscape);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_50, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Landscape, isFormat);
                 }
                 else if (paperA4LWidth >= proportionX_1_50 && paperA4LHeight >= proportionY_1_50)
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactor1_50, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Landscape);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_50, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Landscape, isFormat);
                 }
                 else if (paperA3PWidth >= proportionX_1_50 && paperA3PHeight >= proportionY_1_50)
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactor1_50, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Portrait);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_50, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Portrait, isFormat);
                 }
                 else if (paperA4PWidth >= proportionX_1_50 && paperA4PHeight >= proportionY_1_50)
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactor1_50, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Portrait);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactor1_50, System.Printing.PageMediaSizeName.ISOA4, System.Printing.PageOrientation.Portrait, isFormat);
                 }
+                // Auto
                 else
                 {
-                    this.UpdateListViewItemFromCalculate(lvItem, SubItemsConst.scaleFactorAuto, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Landscape);
+                    this.UpdateListViewItemFromCalculate(lvi, SubItemsConst.scaleFactorAuto, System.Printing.PageMediaSizeName.ISOA3, System.Printing.PageOrientation.Landscape, isFormat);
                 }
             }
         }
-        private void UpdateListViewItemFromCalculate(ListViewItem lvItem, double scale, System.Printing.PageMediaSizeName pageMediaSizeName, System.Printing.PageOrientation pageOrientation)
+        private void UpdateListViewItemFromCalculate(ListViewItem lvi, double scale, System.Printing.PageMediaSizeName pageMediaSizeName, System.Printing.PageOrientation pageOrientation, bool isFormat)
         {
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text = new ScaleFactorSubItem(scale).ToString();
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag = scale;
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text = new ScaleFactorSubItem(scale).ToString();
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag = scale;            
 
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Text = pageMediaSizeName.ToString();
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Tag = pageMediaSizeName;
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Text = PageOrientationSubItem.Dico[(int)pageOrientation]; //pageOrientation.ToString();
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag = pageOrientation;
 
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Text = pageOrientation.ToString();
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag = pageOrientation;
+            if (isFormat)
+            {
+                lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Text = pageMediaSizeName.ToString();
+                lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Tag = pageMediaSizeName;
 
-            generikPaperSizeText = pageMediaSizeName.ToString();
-            this.SetGenerikPaperCombobox();
+                generikPaperSizeText = pageMediaSizeName.ToString();
+                this.SetGenerikPaperCombobox();
+            }
         }
 
         private void ClearComboBoxListView()
@@ -863,26 +991,29 @@ namespace Schmidt.TechnicalPlan
                     }
                 }               
             }
-            generikPaperList_CBX.Items.Add(System.Printing.PageMediaSizeName.ISOA4);
-            generikPaperList_CBX.Items.Add(System.Printing.PageMediaSizeName.ISOA3);
+            generikPaperList_CBX.Items.Add(System.Printing.PageMediaSizeName.ISOA4); //(PageMediaSizeNameSubItem.Dico[(int)System.Printing.PageMediaSizeName.ISOA4]); //
+            generikPaperList_CBX.Items.Add(System.Printing.PageMediaSizeName.ISOA3); //(PageMediaSizeNameSubItem.Dico[(int)System.Printing.PageMediaSizeName.ISOA3]); // 
 
-            generikPaperList_CBX.Text = System.Printing.PageMediaSizeName.ISOA4.ToString();
+            generikPaperList_CBX.Text = System.Printing.PageMediaSizeName.ISOA3.ToString();          
         }
         private void ScaleItems(ComboBox comboBox)
         {
             comboBox.Items.Add(ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_20]);
+            comboBox.Items.Add(ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_25]);
             comboBox.Items.Add(ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_50]);
             comboBox.Items.Add(ScaleFactorSubItem.Dico[SubItemsConst.scaleFactorAuto]);
         }
         private void PaperItems(ComboBox comboBox)
         {
-            comboBox.Items.Add(System.Printing.PageMediaSizeName.ISOA4);
-            comboBox.Items.Add(System.Printing.PageMediaSizeName.ISOA3);
+            comboBox.Items.Add(PageMediaSizeNameSubItem.Dico[(int)System.Printing.PageMediaSizeName.ISOA4]); // System.Printing.PageMediaSizeName.ISOA4);
+            comboBox.Items.Add(PageMediaSizeNameSubItem.Dico[(int)System.Printing.PageMediaSizeName.ISOA3]); // System.Printing.PageMediaSizeName.ISOA3);
         }
         private void OrientationItems(ComboBox comboBox)
         {
-            comboBox.Items.Add(System.Printing.PageOrientation.Portrait);
-            comboBox.Items.Add(System.Printing.PageOrientation.Landscape);  
+            //(new PageOrientationSubItem(PageOrientationSubItem.Dico[(int)System.Printing.PageOrientation.Portrait]).ToPageOrientation()); //
+            comboBox.Items.Add(PageOrientationSubItem.Dico[(int)System.Printing.PageOrientation.Portrait]); //(System.Printing.PageOrientation.Portrait);
+            //new PageOrientationSubItem(PageOrientationSubItem.Dico[(int)System.Printing.PageOrientation.Landscape]).ToPageOrientation()); //
+            comboBox.Items.Add(PageOrientationSubItem.Dico[(int)System.Printing.PageOrientation.Landscape]); //(System.Printing.PageOrientation.Landscape);  
         }
         private void SetGenerikPaperCombobox()
         {
@@ -904,41 +1035,47 @@ namespace Schmidt.TechnicalPlan
             }
             return null;
         }
-        private string GetDocNameFromListViewItem(ListViewItem lvItem)
+        private string GetDocNameFromListViewItem(ListViewItem lvi)
         {
-            if (lvItem == null)
+            if (lvi == null)
             {
                 return String.Empty;
             }
-            return lvItem.Tag.ToString();
+            return lvi.Tag.ToString();
         }
       
         private void SaveDrawingConfig()
         {
-            drawingSurface2D = this._plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
+            drawingSurface2D = _plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
         }
         private void SetDrawingConfig()
         {
-            this._plugin.CurrentAppli.Scene.SceneSetInfo("0", KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
+            _plugin.CurrentAppli.Scene.SceneSetInfo("0", KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
+            _plugin.CurrentAppli.Scene.ZoomAdjusted();
         }
         private void RestoreDrawingConfig()
         {
             if (!String.IsNullOrEmpty(drawingSurface2D))
             {
-                this._plugin.CurrentAppli.Scene.SceneSetInfo(drawingSurface2D, KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
+                _plugin.CurrentAppli.Scene.SceneSetInfo(drawingSurface2D, KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
             }
         }
+        private void SetCurrentFormat()
+        {
+            _currentScaleFactor = _documentList[lviSelectedRowIndex].ScaleFactorAsString;
+            _currentPageMediaSizeName = _documentList[lvItem.Index].PageMediaSizeName.ToString();
+            _currentPageOrientation = _documentList[lvItem.Index].PageOrientation.ToString();
+        }
 
-        //
         private void InitializeDocumentList()
         {
             this._documentList.Clear();
 
             this.AddDocTopViewToDocumentList();
-            this.AddDocElevationViewToDocumentList(GetWallID());
-            this.AddDocElevationViewToDocumentList(GetElevSymbolID());
+            this.AddDocElevationViewToDocumentList(GetWallIDs());
+            this.AddDocElevationViewToDocumentList(GetElevSymbolIDs());
         }
-        private List<int> GetWallID()
+        private List<int> GetWallIDs()
         {
             int nbObject = _plugin.CurrentAppli.Scene.SceneGetObjectsNb();           
             List<int> wallIds = new List<int>();           
@@ -953,7 +1090,7 @@ namespace Schmidt.TechnicalPlan
             }
             return wallIds;
         }
-        private List<int> GetElevSymbolID()
+        private List<int> GetElevSymbolIDs()
         {
             int nbObject = _plugin.CurrentAppli.Scene.SceneGetObjectsNb();
             List<int> elevationIds = new List<int>();
@@ -987,15 +1124,16 @@ namespace Schmidt.TechnicalPlan
         private void AddDocTopViewToDocumentList()
         {
             TechnicalDocument docTopView = new TechnicalDocument();
-            docTopView.Type = TechnicalDocument.Dico[(int)KD.SDK.SceneEnum.ViewMode.TOP];
-            docTopView.ScaleFactorAsString = new ScaleFactorSubItem(SubItemsConst.scaleFactor1_20).ToString();
-            docTopView.ScaleFactorValue = SubItemsConst.scaleFactor1_20; 
-            docTopView.PageMediaSizeName = System.Printing.PageMediaSizeName.ISOA4;
-            docTopView.PageMediaSizeNameID = (int)System.Printing.PageMediaSizeName.ISOA4;
-            docTopView.PageOrientation = System.Printing.PageOrientation.Portrait;
-            docTopView.PageOrientationID = (int)System.Printing.PageOrientation.Portrait;
-            docTopView.ViewMode = KD.SDK.SceneEnum.ViewMode.TOP;
             docTopView.ObjectID = KD.Const.UnknownId;
+            docTopView.Type = TechnicalDocument.Dico[(int)KD.SDK.SceneEnum.ViewMode.TOP];
+            docTopView.TypeID = (int)TechnicalDocumentEnum.viewTypeId.Top;
+            docTopView.ScaleFactorAsString = new ScaleFactorSubItem(SubItemsConst.scaleFactor1_20).ToString();
+            docTopView.ScaleFactorValue = SubItemsConst.scaleFactor1_20;            
+            docTopView.PageMediaSizeName = System.Printing.PageMediaSizeName.ISOA3;
+            docTopView.PageMediaSizeNameID = (int)System.Printing.PageMediaSizeName.ISOA3;
+            docTopView.PageOrientation = new PageOrientationSubItem(PageOrientationSubItem.Dico[(int)System.Printing.PageOrientation.Landscape]).ToPageOrientation(); // System.Printing.PageOrientation.Portrait;
+            docTopView.PageOrientationID = (int)System.Printing.PageOrientation.Landscape;
+            docTopView.ViewMode = KD.SDK.SceneEnum.ViewMode.TOP;            
             docTopView.Number = KD.Const.UnknownId.ToString(); 
             _documentList.Add(docTopView);
         }
@@ -1004,15 +1142,26 @@ namespace Schmidt.TechnicalPlan
             for (int iElevation = 0; iElevation < elevationListIds.Count; iElevation++)
             {
                 TechnicalDocument docElevationView = new TechnicalDocument();
+                docElevationView.ObjectID = elevationListIds[iElevation];
                 docElevationView.Type = TechnicalDocument.Dico[(int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION];
+
+                KD.Model.Article article = new KD.Model.Article(_plugin.CurrentAppli, docElevationView.ObjectID);
+                if (article.Type == (int)KD.SDK.SceneEnum.ObjectType.WALL)
+                {
+                    docElevationView.TypeID = (int)TechnicalDocumentEnum.viewTypeId.WallElevation;
+                }
+                else if (article.Type == (int)KD.SDK.SceneEnum.ObjectType.ELEVATIONSYMBOL)
+                {
+                    docElevationView.TypeID = (int)TechnicalDocumentEnum.viewTypeId.SymbolElevation;
+                }
+                
                 docElevationView.ScaleFactorAsString = new ScaleFactorSubItem(SubItemsConst.scaleFactor1_20).ToString();
                 docElevationView.ScaleFactorValue = SubItemsConst.scaleFactor1_20;
-                docElevationView.PageMediaSizeName = System.Printing.PageMediaSizeName.ISOA4;
-                docElevationView.PageMediaSizeNameID = (int)System.Printing.PageMediaSizeName.ISOA4;
-                docElevationView.PageOrientation = System.Printing.PageOrientation.Portrait;
-                docElevationView.PageOrientationID = (int)System.Printing.PageOrientation.Portrait;
-                docElevationView.ViewMode = KD.SDK.SceneEnum.ViewMode.VECTELEVATION;
-                docElevationView.ObjectID = elevationListIds[iElevation];
+                docElevationView.PageMediaSizeName = System.Printing.PageMediaSizeName.ISOA3;
+                docElevationView.PageMediaSizeNameID = (int)System.Printing.PageMediaSizeName.ISOA3;
+                docElevationView.PageOrientation = new PageOrientationSubItem(PageOrientationSubItem.Dico[(int)System.Printing.PageOrientation.Landscape]).ToPageOrientation(); // System.Printing.PageOrientation.Portrait;
+                docElevationView.PageOrientationID = (int)System.Printing.PageOrientation.Landscape;
+                docElevationView.ViewMode = KD.SDK.SceneEnum.ViewMode.VECTELEVATION;                
                 docElevationView.Number = _plugin.CurrentAppli.Scene.ObjectGetInfo(docElevationView.ObjectID, KD.SDK.SceneEnum.ObjectInfo.NUMBER);
                 _documentList.Add(docElevationView);
             }
@@ -1030,15 +1179,14 @@ namespace Schmidt.TechnicalPlan
                     }
                     else if (kvp.Value == (int)KD.SDK.SceneEnum.ObjectType.ELEVATIONSYMBOL)
                     {
-                        return doc.ToSymbol();
+                        return doc.ToString(); // ToSymbol();
                     }
                 }
             }
             return doc.ToString();
         }
 
-
-        public void UpdateListViewFromDocumentList()
+        private void UpdateListViewFromDocumentList()
         {
             int imageIndex = 0;
             myListView_MLV.Items.Clear();
@@ -1060,72 +1208,80 @@ namespace Schmidt.TechnicalPlan
                 this.UpdateListViewItemFromDocument(ithDoc, lvItem);
                 this.myListView_MLV.Items.Add(lvItem);
             }
-            this.myListView_MLV.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-            int columnHeaderSize = 0;
-            foreach (ColumnHeader ch in this.myListView_MLV.Columns)
-            {
-                this.PaperColumnWidthToZero(ch);
-                columnHeaderSize += ch.Width;
-            }
-            this.splitContainer_SPC.SplitterDistance = this.splitContainer_SPC.Location.X + columnHeaderSize;
-            this.myListView_MLV.Refresh();
+
+            //
+            this.SizeAndPlaceControlInForm();
         }
-        private void UpdateListViewItemFromDocument(TechnicalDocument doc, ListViewItem lvItem)
+        private void UpdateListViewItemFromDocument(TechnicalDocument doc, ListViewItem lvi)
         {
             string viewName = this.GetElevationViewName(doc);
 
-            lvItem.Tag = doc;
+            lvi.Tag = doc;
 
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Select].Text = String.Empty; // selected case with any string
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Select].Tag = String.Empty; // selected case with any string
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Select].Text = String.Empty; // selected case with any string
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Select].Tag = String.Empty; // selected case with any string
 
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.View].Text = viewName; //Select between 'Top view', 'Wall view' and 'Symbol view'
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.View].Tag = doc;
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.View].Text = viewName; //Select between 'Top view', 'Wall view' and 'Symbol view'
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.View].Tag = doc;
 
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text = doc.ScaleFactorAsString;
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag = doc.ScaleFactorValue;//new ScaleFactorSubItem(doc.ScaleFactor)
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text = doc.ScaleFactorAsString;
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag = doc.ScaleFactorValue;//new ScaleFactorSubItem(doc.ScaleFactor)
 
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Text = doc.PageMediaSizeName.ToString();
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Tag = doc.PageMediaSizeName;
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Text = doc.PageMediaSizeName.ToString();
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Tag = doc.PageMediaSizeName;
 
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Text = doc.PageOrientation.ToString();
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag = doc.PageOrientation;
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Text = new PageOrientationSubItem(doc.PageOrientation).ToString(); // doc.PageOrientation.ToString();
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag = doc.PageOrientation;
 
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Text = String.Empty; // Preview button. It replaced by a button
-            lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Tag = String.Empty; // Preview button. It replaced by a button
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Text = String.Empty; // Preview button. It replaced by a button
+            lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Tag = String.Empty; // Preview button. It replaced by a button
         }
 
         private void UpdateDocumentListFromListView()
         {           
             this._documentList.Clear();
             this.myListView_MLV.Update();
-            foreach (ListViewItem lvItem in this.myListView_MLV.Items)
+            foreach (ListViewItem lvi in this.myListView_MLV.Items)
             {                
-                this.UpdateDocumentFromListViewSubItem(lvItem);
-                this._documentList.Add((TechnicalDocument)lvItem.Tag);                
+                this.UpdateDocumentFromListViewSubItem(lvi);
+                this._documentList.Add((TechnicalDocument)lvi.Tag);                
             }
         }     
-        private void UpdateDocumentFromListViewSubItem(ListViewItem lvItem)
+        private void UpdateDocumentFromListViewSubItem(ListViewItem lvi)
         {           
-            TechnicalDocument doc = (TechnicalDocument)lvItem.Tag;
-           
-            doc.ScaleFactorAsString = lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text;
-            doc.ScaleFactorValue = (double)lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag; 
+            TechnicalDocument doc = (TechnicalDocument)lvi.Tag;
 
-            doc.PageMediaSizeName = (System.Printing.PageMediaSizeName)lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Tag;
+            KD.Model.Article article = new KD.Model.Article(_plugin.CurrentAppli, doc.ObjectID);
+            
+            if (article.Type == (int)KD.SDK.SceneEnum.ObjectType.WALL)
+            {
+                doc.TypeID = (int)TechnicalDocumentEnum.viewTypeId.WallElevation;
+            }
+            else if (article.Type == (int)KD.SDK.SceneEnum.ObjectType.ELEVATIONSYMBOL)
+            {
+                doc.TypeID = (int)TechnicalDocumentEnum.viewTypeId.SymbolElevation;
+            }
+            else
+            {
+                doc.TypeID = (int)TechnicalDocumentEnum.viewTypeId.Top;
+            }
+
+            doc.ScaleFactorAsString = lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Text;
+            doc.ScaleFactorValue = (double)lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag; 
+
+            doc.PageMediaSizeName = (System.Printing.PageMediaSizeName)lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Tag;
             PageMediaSizeNameSubItem pmsnInt = new PageMediaSizeNameSubItem(doc.PageMediaSizeName);
             doc.PageMediaSizeNameID = pmsnInt.ToInt();
 
-            doc.PageOrientation = (System.Printing.PageOrientation)lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag;
+            doc.PageOrientation = (System.Printing.PageOrientation)lvi.SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag;
             PageOrientationSubItem poInt = new PageOrientationSubItem(doc.PageOrientation);
             doc.PageOrientationID = poInt.ToInt();           
                        
-            lvItem.Tag = doc;
+            lvi.Tag = doc;
 
             //this.FindDocNameFromChoice(lvItem.Index); // here there is translate to contol
 
         }
-
 
         private void AssignComboBox(Rectangle clickedItem)
         {
@@ -1209,16 +1365,17 @@ namespace Schmidt.TechnicalPlan
 
         private void TransferTechnicalPlanToSM2()
         {
-            foreach (ListViewItem lvItem in myListView_MLV.Items)
+            foreach (ListViewItem lvi in myListView_MLV.Items)
             {
-                if (lvItem.Checked)
+                if (lvi.Checked)
                 {
-                    this.Build(false, lvItem.Index);
+                    this.Build(false, lvi);//lvItem.Index
                 }
             }
         }
         private void SelectOrDeselectAllListViewItem()
         {
+            lviSelectedColumnIndex = 0;
             foreach (ListViewItem lvItem in myListView_MLV.Items)
             {
                 if (selectAll_CHB.Checked)
@@ -1230,6 +1387,8 @@ namespace Schmidt.TechnicalPlan
                     lvItem.Checked = false;
                 }
             }
+            myListView_MLV.Refresh();
+            myListView_MLV.Update();
         }
         private void InitializeTechnicalPlanFileNameForm()
         {
@@ -1248,6 +1407,7 @@ namespace Schmidt.TechnicalPlan
             {
                 this.SaveCustomInfo();
                 this.TransferTechnicalPlanToSM2();
+                this.Ok_BTN.PerformClick();
             }
         }
         private void DisableTechnicalPlanFileNameForm()
@@ -1255,22 +1415,21 @@ namespace Schmidt.TechnicalPlan
             _technicalPlanDocumentFileNameForm = null;
         }
 
-        // Form
+        #region // Form
         private void GenerateViewDialogForm_Load(object sender, EventArgs e)
         {
-            this.InitializePreviewDirectory();
             this.InitializeListView();
+            this.DesactivatePdfViewer();
+            this.InitializePreviewDirectory();           
             this.ClearComboBoxListView();
             this.AssignItemsInComboBox();
             this.InitializeDocumentList();
             
-            this.UpdateListViewFromDocumentList();
+            this.UpdateListViewFromDocumentList();           
         }
         private void GenerateViewDialogForm_Shown(object sender, EventArgs e)
         {
-            this.AddTwinButton();
-
-            //Load info from scene 
+            this.AddTwinButton();           
             this.LoadCustomInfoOrCalculateBestFormat();           
         }
         private void GenerateViewDialogForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -1298,7 +1457,7 @@ namespace Schmidt.TechnicalPlan
             lviSelectedColumnIndex = this.GetSelectColumnIndex(e.X);
 
             // Make sure that an item is clicked.
-            if (lvItem != null && lviSelectedRowIndex != -1 && lviSelectedColumnIndex != -1)
+            if (lvItem != null && lviSelectedRowIndex != KD.Const.UnknownId && lviSelectedColumnIndex != KD.Const.UnknownId)
             {
                 // Get the bounds of the item that is clicked.
                 Rectangle ClickedItem = lvItem.Bounds;
@@ -1352,11 +1511,21 @@ namespace Schmidt.TechnicalPlan
         }       
         private void MyListView_MLV_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
-            if (lvItem != null && e.Item.Index != -1 && lvItem.Index != -1)
+            if (lvItem != null)
             {
-                if (lvItem.Checked)
-                {                                   
-                    lviSelectedRowIndex = lvItem.Index;                    
+                if (lviSelectedColumnIndex > (int)MyListView.Enum.ColumnIndex.View)
+                {
+                    lvItem.Selected = false;
+                    lvItem.Checked = false;
+                    return;
+                }
+
+                if (e.Item.Index != KD.Const.UnknownId && lvItem.Index != KD.Const.UnknownId)
+                {
+                    if (lvItem.Checked)
+                    {
+                        lviSelectedRowIndex = lvItem.Index;
+                    }
                 }
             }
         }    
@@ -1382,8 +1551,8 @@ namespace Schmidt.TechnicalPlan
             this.HideComboBox(this.scaleList_CBX);
             lvItem.SubItems[(int)MyListView.Enum.ColumnIndex.Scale].Tag = new ScaleFactorSubItem((string)comboBox.SelectedItem).ToDouble();
 
-            this.UpdateDocumentFromListViewSubItem(lvItem);
-            //this.UpdateDocumentListFromListView();
+            //this.UpdateDocumentFromListViewSubItem(lvItem); //this one work but not implement the _documentList
+            this.UpdateDocumentListFromListView(); //this one implement the _documentList but look if it work ?
         }
         private void scaleList_CBX_Enter(object sender, EventArgs e)
         {
@@ -1405,8 +1574,8 @@ namespace Schmidt.TechnicalPlan
             this.HideComboBox(this.paperList_CBX);
             this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Paper].Tag = (System.Printing.PageMediaSizeName)comboBox.SelectedItem;
 
-            this.UpdateDocumentFromListViewSubItem(lvItem);
-            //this.UpdateDocumentListFromListView();
+            //this.UpdateDocumentFromListViewSubItem(lvItem); //this one work but not implement the _documentList
+            this.UpdateDocumentListFromListView(); //this one implement the _documentList but look if it work ?
         }
         private void paperList_CBX_Enter(object sender, EventArgs e)
         {
@@ -1425,11 +1594,12 @@ namespace Schmidt.TechnicalPlan
         private void orientationList_CBX_SelectedValueChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
+            this.SetItemTagInComboBox(comboBox);
             this.HideComboBox(this.orientationList_CBX);
-            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag = (System.Printing.PageOrientation)comboBox.SelectedItem;
+            this.myListView_MLV.Items[lviSelectedRowIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Orientation].Tag = (System.Printing.PageOrientation)comboBox.Tag; // SelectedItem;
 
-            this.UpdateDocumentFromListViewSubItem(lvItem);
-            //this.UpdateDocumentListFromListView();
+            //this.UpdateDocumentFromListViewSubItem(lvItem); //this one work but not implement the _documentList
+            this.UpdateDocumentListFromListView(); //this one implement the _documentList but look if it work ?
         }
         private void orientationList_CBX_Enter(object sender, EventArgs e)
         {
@@ -1444,9 +1614,11 @@ namespace Schmidt.TechnicalPlan
             if (lvItem != null)
             {
                 lviSelectedRowIndex = lvItem.Index;
-                this.SaveDrawingConfig();
-                this.SetDrawingConfig();
-                this.Build(true, lviSelectedRowIndex);
+                //maybe save zoom or green frame. Actually i take the green frame
+                //this.SaveDrawingConfig();
+                //this.SetDrawingConfig();
+                this.SetCurrentFormat();
+                this.Build(true, lvItem);//lviSelectedRowIndex
                 this.RestoreDrawingConfig();
             }
 
@@ -1460,16 +1632,14 @@ namespace Schmidt.TechnicalPlan
         private void Cancel_BTN_Click(object sender, EventArgs e)
         {
             this.DesactivatePdfViewer();
+            this.InitializePreviewDirectory();
             this.Close();
         }
         private void Ok_BTN_Click(object sender, EventArgs e)
         {
-            this.InitializeTechnicalPlanFileNameForm();
-            this.ShowTechnicalPlanFileNameForm();
-            this.DialogAnswerToSM2();
-            this.DisableTechnicalPlanFileNameForm();
-
+            this.SaveCustomInfo();
             this.DesactivatePdfViewer();
+            this.InitializePreviewDirectory();
             this.Close();
         }
 
@@ -1478,7 +1648,7 @@ namespace Schmidt.TechnicalPlan
             this.InitializeTechnicalPlanFileNameForm();
             this.ShowTechnicalPlanFileNameForm();
             this.DialogAnswerToSM2();
-            this.DisableTechnicalPlanFileNameForm();            
+            this.DisableTechnicalPlanFileNameForm();
         }
 
         private void selectAll_CHB_CheckedChanged(object sender, EventArgs e)
@@ -1496,9 +1666,10 @@ namespace Schmidt.TechnicalPlan
 
                 generikPaperSizeText = comboBox.Text;
 
-                this.UpdateDocumentFromListViewSubItem(lvItem);
+                //this.UpdateDocumentFromListViewSubItem(lvItem); //this one work but not implement the _documentList
+                           
             }
-            //this.UpdateDocumentListFromListView();
+            this.UpdateDocumentListFromListView(); //this one implement the _documentList but look if it work ? yes
         }
         private void generikPaperList_CBX_TextChanged(object sender, EventArgs e)
         {
@@ -1507,112 +1678,97 @@ namespace Schmidt.TechnicalPlan
         }
 
         private void openFolder_BTN_Click(object sender, EventArgs e)
-        {
+        {           
+
             string dir = this.ArchiveFileDir;
-            if (System.IO.Directory.Exists(System.IO.Path.Combine(this.ArchiveFileDir, ConstFile.DocTechnicalPlanDir)))
+            if (System.IO.Directory.Exists(Plugin.SM2Directory))//System.IO.Path.Combine(this.ArchiveFileDir, ConstRessourceNames.DocTechnicalPlanDir
             {
-                dir = (System.IO.Path.Combine(this.ArchiveFileDir, ConstFile.DocTechnicalPlanDir));
+                dir = Plugin.SM2Directory; // (System.IO.Path.Combine(this.ArchiveFileDir, ConstRessourceNames.DocTechnicalPlanDir));
             }
             KD.IO.Explorer.ShowDir(dir);                    
         }
 
         private void print_BTN_Click(object sender, EventArgs e)
         {
-            PrintDialog printDialog = new PrintDialog();
-            printDialog.AllowPrintToFile = true;
-            printDialog.AllowSomePages = true;
-            printDialog.AllowCurrentPage = true;            
-
-            printDialog.Document = pdfDocumentView_PDFV.PrintDocument;
-            int angleLandScape = printDialog.PrinterSettings.LandscapeAngle;
-            System.Drawing.Printing.PrinterSettings.PaperSizeCollection paperSizeCollection = printDialog.PrinterSettings.PaperSizes;
-
-            printDialog.Document.PrinterSettings.DefaultPageSettings.Landscape = true;
-            printDialog.Document.PrinterSettings.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("First custom size", 100, 200);
-
-            if (printDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (_loadedDocument != null && pdfDocumentView_PDFV.Visible)
             {
-                //if (printDialog.Document != null)
-                //{ 
-                if (this.myListView_MLV.CheckedItems.Count > 1)
-                {
-                    //PrintDocument[] documents = new PrintDocument[this.docListView.CheckedItems.Count];
-                    foreach (ListViewItem lvItem in this.myListView_MLV.CheckedItems)
-                    {
-                        string docname = this._pluginWord.GetLocalizedDocName(this._pluginWord.DocIndex2Use);//GetDocNameFromListViewItem(lvItem);
-                        string pdfFilePath = this._pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
+                PrintDialog printDialog = new PrintDialog();
+                printDialog.AllowPrintToFile = true;
+                printDialog.AllowSomePages = true;
+                printDialog.AllowCurrentPage = true;
 
-                        // Set cursor as hourglass
-                        Cursor.Current = Cursors.WaitCursor;
-                        pdfDocumentView_PDFV.Load(pdfFilePath);
-                        // Set cursor as default arrow
-                        Cursor.Current = Cursors.Default;
-                        if (pdfDocumentView_PDFV.PrintDocument != null)
-                        {
-                            pdfDocumentView_PDFV.PrintDocument.Print();
-                        }
-                        //documents.SetValue(new PrintDocument(), iDoc++);
-                    }
-                    // reload last loaded by user (not by program, like above to update PrintDocument)
-                    this.CreateAndLoadPdfLoadedDocument(this.CurrentPdfFilePath);
-                    // MultiPrintDocument mp = new MultiPrintDocument(documents);
-                    // printDialog.Document = mp;
-                }
-                else
+                printDialog.Document = pdfDocumentView_PDFV.PrintDocument;
+
+                int angleLandScape = printDialog.PrinterSettings.LandscapeAngle;
+                System.Drawing.Printing.PrinterSettings.PaperSizeCollection paperSizeCollection = printDialog.PrinterSettings.PaperSizes;
+
+                printDialog.Document.PrinterSettings.DefaultPageSettings.Landscape = true;
+                printDialog.Document.PrinterSettings.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("First custom size", 100, 200);
+
+                if (printDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    printDialog.Document = pdfDocumentView_PDFV.PrintDocument;
-                    printDialog.Document.Print();
+                    //if (printDialog.Document != null)
+                    //{ 
+                    if (this.myListView_MLV.CheckedItems.Count > 1)
+                    {
+                        //PrintDocument[] documents = new PrintDocument[this.docListView.CheckedItems.Count];
+                        foreach (ListViewItem lvItem in this.myListView_MLV.CheckedItems)
+                        {
+                            string docname = _pluginWord.GetLocalizedDocName(_pluginWord.DocIndex2Use);//GetDocNameFromListViewItem(lvItem);
+                            string pdfFilePath = _pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
+
+                            // Set cursor as hourglass
+                            Cursor.Current = Cursors.WaitCursor;
+                            pdfDocumentView_PDFV.Load(pdfFilePath);
+                            // Set cursor as default arrow
+                            Cursor.Current = Cursors.Default;
+                            if (pdfDocumentView_PDFV.PrintDocument != null)
+                            {
+                                pdfDocumentView_PDFV.PrintDocument.Print();
+                            }
+                            //documents.SetValue(new PrintDocument(), iDoc++);
+                        }
+                        // reload last loaded by user (not by program, like above to update PrintDocument)
+                        this.CreateAndLoadPdfLoadedDocument(this.CurrentPdfFilePath);
+                        // MultiPrintDocument mp = new MultiPrintDocument(documents);
+                        // printDialog.Document = mp;
+                    }
+                    else
+                    {
+                        printDialog.Document = pdfDocumentView_PDFV.PrintDocument;
+                        printDialog.Document.Print();
+                    }
+                    //XpsDocument xpsDocument = new System.Windows.Xps.Packaging.XpsDocument("C:\\FixedDocumentSequence.xps", FileAccess.ReadWrite);
+                    //FixedDocumentSequence fixedDocSeq = xpsDocument.GetFixedDocumentSequence();
+                    //printDialog.PrintDocument(fixedDocSeq.DocumentPaginator, "Test print job");
                 }
-                //XpsDocument xpsDocument = new System.Windows.Xps.Packaging.XpsDocument("C:\\FixedDocumentSequence.xps", FileAccess.ReadWrite);
-                //FixedDocumentSequence fixedDocSeq = xpsDocument.GetFixedDocumentSequence();
-                //printDialog.PrintDocument(fixedDocSeq.DocumentPaginator, "Test print job");
             }
         }
-     
+
+        private void InitCustomInfo_BTN_Click(object sender, EventArgs e)
+        {           
+            _technicalDocument.DeleteXml();
+            _pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(null, TechnicalDocument.technicalDocumentsTag);
+        }
+        #endregion
     }
 
     public class SubItemsConst
     {
         public const double scaleFactorUnknown = -1.0;
         public const double scaleFactor1_20 = 0.05;
+        public const double scaleFactor1_25 = 0.04;
         public const double scaleFactor1_50 = 0.02;
         public const double scaleFactorAuto = 0.0;
 
-        public const string scaleFactorString1_20 = "1/20";
-        public const string scaleFactorString1_50 = "1/50";
+        public const string scaleFactorString1_20 = "120";
+        public const string scaleFactorString1_25 = "125";
+        public const string scaleFactorString1_50 = "150";
         public const string scaleFactorStringAuto = "Auto";
-       
-        public const string pageOrientationStringPortrait = "Portrait";
-        public const string pageOrientationStringLandScape = "Landscape";
-
-        public const string pageMediaSizeNameStringISOA4 = "ISOA4";
-        public const string pageMediaSizeNameStringISOA3 = "ISOA3";
     }
 
-    public class ConstFile
-    {
-        public const string TechnicalPlanPreviewDirName = "TECHNICAL_PLAN_PREVIEW";
-        public const string DocTechnicalPlanDir = "DocTechnicalPlan";
-    }
 
-    public class ConstCustomName
-    {
-        public const string ScaleID = "_ScaleID";
-        public const string PaperID = "_PaperID";
-        public const string OrientationID = "_OrientationID";
-    }
-
-    public class ConstComboBox
-    {
-        public const string PartialScaleName = "SCALE";
-        public const string PartialPaperName = "PAPER";
-        public const string PartialOrientationName = "ORIENTATION";
-
-    }
-
- 
-
-    //UI
+    #region //UI
     public class ScaleFactorSubItem : ListViewItem.ListViewSubItem
     {
         public static Dictionary<double, string> Dico = new Dictionary<double, string>();
@@ -1647,12 +1803,15 @@ namespace Schmidt.TechnicalPlan
         {
             if (_scaleFactor == SubItemsConst.scaleFactor1_20)
             {
-                return(SubItemsConst.scaleFactorString1_20);
+                return (ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_20]); //(SubItemsConst.scaleFactorString1_20);
+            }
+            else if (_scaleFactor == SubItemsConst.scaleFactor1_25)
+            {
+                return (ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_25]); // (SubItemsConst.scaleFactorString1_25);
             }
             else if (_scaleFactor == SubItemsConst.scaleFactor1_50)
-
             {
-                return (SubItemsConst.scaleFactorString1_50);
+                return (ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_50]); // (SubItemsConst.scaleFactorString1_50);
             }
             else if (_scaleFactor == SubItemsConst.scaleFactorAuto)
             {
@@ -1667,15 +1826,19 @@ namespace Schmidt.TechnicalPlan
 
         public double ToDouble()
         {
-            if (_scaleFactorString == SubItemsConst.scaleFactorString1_20)
+            if (_scaleFactorString == ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_20]) // SubItemsConst.scaleFactorString1_20)
             {
                 return (SubItemsConst.scaleFactor1_20);
             }
-            else if (_scaleFactorString == SubItemsConst.scaleFactorString1_50)
+            else if (_scaleFactorString == ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_25]) //SubItemsConst.scaleFactorString1_25)
+            {
+                return (SubItemsConst.scaleFactor1_25);
+            }
+            else if (_scaleFactorString == ScaleFactorSubItem.Dico[SubItemsConst.scaleFactor1_50]) //SubItemsConst.scaleFactorString1_50)
             {
                 return (SubItemsConst.scaleFactor1_50);
             }
-            else if (_scaleFactorString == SubItemsConst.scaleFactorStringAuto)
+            else if (_scaleFactorString == ScaleFactorSubItem.Dico[SubItemsConst.scaleFactorAuto]) //SubItemsConst.scaleFactorStringAuto)
             {
                 return (SubItemsConst.scaleFactorAuto);
             }
@@ -1724,11 +1887,11 @@ namespace Schmidt.TechnicalPlan
         }
         public System.Printing.PageMediaSizeName ToPageMediaSizeName()
         {
-            if (_pageMediaSizeNameString == SubItemsConst.pageMediaSizeNameStringISOA4)
+            if (_pageMediaSizeNameString == System.Printing.PageMediaSizeName.ISOA4.ToString()) // PageMediaSizeNameSubItem.Dico[(int)System.Printing.PageMediaSizeName.ISOA4])  //SubItemsConst.pageMediaSizeNameStringISOA4)
             {
                 return System.Printing.PageMediaSizeName.ISOA4;
             }
-            else if (_pageMediaSizeNameString == SubItemsConst.pageMediaSizeNameStringISOA3)
+            else if (_pageMediaSizeNameString == System.Printing.PageMediaSizeName.ISOA3.ToString()) // PageMediaSizeNameSubItem.Dico[(int)System.Printing.PageMediaSizeName.ISOA3]) //SubItemsConst.pageMediaSizeNameStringISOA3)
             {
                 return System.Printing.PageMediaSizeName.ISOA3;
             }
@@ -1775,17 +1938,19 @@ namespace Schmidt.TechnicalPlan
         }
         public System.Printing.PageOrientation ToPageOrientation()
         {
-            if (_pageOrientationString == SubItemsConst.pageOrientationStringPortrait)
+            if (_pageOrientationString == PageOrientationSubItem.Dico[(int)System.Printing.PageOrientation.Portrait]) // SubItemsConst.pageOrientationStringPortrait)
             {
                 return System.Printing.PageOrientation.Portrait;
             }
-            else if (_pageOrientationString == SubItemsConst.pageOrientationStringLandScape)
+            else if (_pageOrientationString == PageOrientationSubItem.Dico[(int)System.Printing.PageOrientation.Landscape])  //SubItemsConst.pageOrientationStringLandScape)
             {
                 return System.Printing.PageOrientation.Landscape;
             }
 
             return System.Printing.PageOrientation.Unknown;
         }
-    }
 
+       // public 
+    }
+    #endregion
 }

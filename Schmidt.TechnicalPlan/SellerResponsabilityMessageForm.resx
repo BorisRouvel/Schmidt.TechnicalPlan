@@ -117,4 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="SellerResponsabilityText_LAB.Text" xml:space="preserve">
+    <value>Nous vous rappelons que l’édition du plan technique engage votre responsabilité.
+
+L’apport en automatique des symboles n’est réalisé que pour faciliter votre travail et ne remplace en aucun cas une étude spécifique et approfondie du projet.
+
+Il vous appartient donc de vérifier que tous les symboles nécessaires à la conformité du plan technique sont présents et correctement positionnés sur le plan.
+
+A cet effet, nous déclinons toute responsabilité concernant la conformité des plans techniques générés et vous invitons à vous assurer de la conformité avant toute édition et remise du plan technique au client. </value>
+  </data>
 </root>

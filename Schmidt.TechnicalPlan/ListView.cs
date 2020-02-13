@@ -11,7 +11,7 @@ namespace Schmidt.TechnicalPlan
         {
             public enum ColumnIndex
             {
-                UnKnown = -1,
+                UnKnown = KD.Const.UnknownId,
                 Select = 0,
                 View = 1,
                 Scale = 2,

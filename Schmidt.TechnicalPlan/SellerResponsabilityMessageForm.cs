@@ -29,9 +29,9 @@ namespace Schmidt.TechnicalPlan
 
         private void InitializeText()
         {
-            this.Ok_BTN.Text = this.Dico.GetTranslate(TranslateIdentifyId.OkButtonID);//, "Ok / Continuer");
-            this.Cancel_BTN.Text = this.Dico.GetTranslate(TranslateIdentifyId.CancelButtonID);//, "Retourner dans InSitu");
-            this.SellerResponsabilityText_LAB.Text = this.Dico.GetTranslate(TranslateIdentifyId.SellerMessageID);//, "Nous rappelons que Plan Technique engage la responsabilité du vendeur.");
+            this.Ok_BTN.Text = this.Dico.GetTranslate(TranslateIdentifyId.SellerMessageOkButton_ID);//, "Ok / Continuer");
+            this.Cancel_BTN.Text = this.Dico.GetTranslate(TranslateIdentifyId.SellerMessageCancelButton_ID);//, "Retourner dans InSitu");
+            this.SellerResponsabilityText_LAB.Text = this.Dico.GetTranslate(TranslateIdentifyId.SellerMessageText_ID);//, "Nous rappelons que Plan Technique engage la responsabilité du vendeur.");
         }
 
         public bool IsSellerResponsabilityMessage()

@@ -1,11 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<configuration>
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>  
   <configSections>
+    <sectionGroup name="userSettings" type="System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" >
+      <section name="Schmidt.TechnicalPlan.Properties.TechnicalPlan" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" allowExeDefinition="MachineToLocalUser" requirePermission="false" />
+    </sectionGroup>
   </configSections>
   <runtime>
     <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
       <dependentAssembly>
-
+       
       </dependentAssembly>
       <dependentAssembly>
         <assemblyIdentity name="Syncfusion.Pdf.Base" publicKeyToken="3d67ed1f87d44c89" culture="neutral" />
@@ -24,5 +27,15 @@
         <bindingRedirect oldVersion="0.0.0.0-17.4450.0.41" newVersion="17.4450.0.41" />
       </dependentAssembly>
     </assemblyBinding>
-  </runtime>
+  </runtime> 
+  <userSettings>
+    <Schmidt.TechnicalPlan.Properties.TechnicalPlan>
+      <setting name="IsPrintButtonVisible" serializeAs="String">
+        <value>False</value>
+      </setting>
+      <setting name="IsOpenFolderButtonVisible" serializeAs="String">
+        <value>False</value>
+      </setting>
+    </Schmidt.TechnicalPlan.Properties.TechnicalPlan>
+  </userSettings>
 </configuration>
