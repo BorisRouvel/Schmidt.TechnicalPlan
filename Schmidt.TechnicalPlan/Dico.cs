@@ -153,6 +153,7 @@ namespace Schmidt.TechnicalPlan
         public const string WallElevation_ID = "WallElevation_ID";  //Elévation du mur...nb
         public const string SymbolElevation_ID = "SymbolElevation_ID"; //Elévation...nb (Elevation symbol)
 
+        public const string Unknown_ID = "Unknown_ID";
         public const string Portrait_ID = "Portrait_ID";
         public const string Landscape_ID = "Landscape_ID";
         public const string _1_20_ID = "1_20_ID";
@@ -161,6 +162,8 @@ namespace Schmidt.TechnicalPlan
         public const string Auto_ID = "Auto_ID";
         public const string ISOA4_ID = "ISOA4_ID";
         public const string ISOA3_ID = "ISOA3_ID";
+
+        public const string MessageInfo_01_ID = "MessageInfo_01_ID";
 
     }
 }

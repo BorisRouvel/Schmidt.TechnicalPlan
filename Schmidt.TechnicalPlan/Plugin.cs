@@ -17,16 +17,16 @@ namespace Schmidt.TechnicalPlan
     public class ConstRessourceNames
     {       
         public const string IconeFileName = "callplugin.png";
-        public const string IconeResourceDir = "Resources";
-
-        //public const string TechnicalPlanPreviewDirName = "TECHNICAL_PLAN_PREVIEW";
-        //public const string DocTechnicalPlanDir = "DocTechnicalPlan";
-
+        public const string SM2FileName = "SM2.png";
+        public const string TwinFileName = "twin.png";
+        public const string ResourceDir = "Resources";
+             
         public const string TopViewFileNameHeader = "TOP";
         public const string ElevationViewFileNameHeader = "ELEV";
 
         public const string ConfigInSituDir = "$(InSituDir)";
         public const string ConfigSceneDir = "$(SceneDir)";
+        public const string ConfigDocDir = "$(DocDir)";
 
         public const string IsPrintButtonVisible = "IsPrintButtonVisible";
         public const string IsOpenFolderButtonVisible = "IsOpenFolderButtonVisible";
@@ -71,51 +71,46 @@ namespace Schmidt.TechnicalPlan
 
         public Plugin()
         {
-            SyncfusionLicenseProvider.RegisterLicense("MTkzMDk4QDMxMzcyZTM0MmUzMEJjQmV2NjRGRzhPVHVnZ3hzd1RCT09vNEZIOTQvZ3lNdnIrV1N4Ui9pQWc9");
-            SyncfusionLicenseProvider.RegisterLicense("MTkzMDk5QDMxMzcyZTM0MmUzMGJRQ09tR1JiSU9Td1BtTEpzOWJHTFRSelFHaVNkT2xMd0VlcmxmbVZhcFU9");
+            SyncfusionLicenseProvider.RegisterLicense("MjA5MzE3QDMxMzcyZTM0MmUzMGxVK0UwczN4TGVQNXhubno4S1Vaby9KN2dweTZWM0lGUEJRZmJUQVVDaDA9");
+            SyncfusionLicenseProvider.RegisterLicense("MjA5MzE4QDMxMzcyZTM0MmUzMFFQLzZkWG5WSWprOVl4SmpCOHZsQ0JZaWg1Y3ZGdVB1bERKdFdHWHRFMmc9");
 
             pluginWord = new KD.Plugin.Word.Plugin();
 
-            this.InitConfig();
-
-            Plugin.IsPrintButtonVisible = System.Convert.ToBoolean(keyValueConfigurationCollection[ConstRessourceNames.IsPrintButtonVisible].Value);
-            Plugin.IsOpenFolderButtonVisible = System.Convert.ToBoolean(keyValueConfigurationCollection[ConstRessourceNames.IsOpenFolderButtonVisible].Value);
-
-            Plugin.PreviewDirectory = keyValueConfigurationCollection[ConstRessourceNames.PreviewDirectory].Value;
-
-            Plugin.SM2Directory = keyValueConfigurationCollection[ConstRessourceNames.SM2Directory].Value;
+            this.InitConfig();            
 
             Plugin.TemplateDocumentDirectory = keyValueConfigurationCollection[ConstRessourceNames.TemplateDocumentDirectory].Value;
-            Plugin.TemplateDocumentDirectory = TemplateDocumentDirectory.Replace(ConstRessourceNames.ConfigInSituDir, this.CurrentAppli.ExeDir);
+            Plugin.TemplateDocumentDirectory = TemplateDocumentDirectory.Replace(ConstRessourceNames.ConfigDocDir, this.GetDocDirDirectory());
 
             Plugin.TechnicalPlanLayer = keyValueConfigurationCollection[ConstRessourceNames.TechnicalPlanLayer].Value;
 
-
             this.InitializeDico();
-            this.InitializeMenuItem();            
+            this.InitializeMenuItem();
 
+            TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.UNKNOWN, _dico.GetTranslate(TranslateIdentifyId.Unknown_ID)); //
             TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION, _dico.GetTranslate(TranslateIdentifyId.Elevation_ID)); //Elevation
             TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.TOP, _dico.GetTranslate(TranslateIdentifyId.Top_ID)); //Dessus
             TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION + 100, _dico.GetTranslate(TranslateIdentifyId.WallElevation_ID)); //Elévation du mur...nb
             TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.TOP + 100, _dico.GetTranslate(TranslateIdentifyId.TopView_ID)); //Vue de dessus
             TechnicalDocument.Dico.Add((int)KD.SDK.SceneEnum.ViewMode.VECTELEVATION + 200, _dico.GetTranslate(TranslateIdentifyId.SymbolElevation_ID)); //Elévation...nb (Elevation symbol)
 
-            PageOrientationSubItem.Dico.Add((int)System.Printing.PageOrientation.Portrait, _dico.GetTranslate(TranslateIdentifyId.Portrait_ID));
+            PageOrientationSubItem.Dico.Add((int)System.Printing.PageOrientation.Unknown, _dico.GetTranslate(TranslateIdentifyId.Unknown_ID));
             PageOrientationSubItem.Dico.Add((int)System.Printing.PageOrientation.Landscape, _dico.GetTranslate(TranslateIdentifyId.Landscape_ID));
+            PageOrientationSubItem.Dico.Add((int)System.Printing.PageOrientation.Portrait, _dico.GetTranslate(TranslateIdentifyId.Portrait_ID));
 
-            PageMediaSizeNameSubItem.Dico.Add((int)System.Printing.PageMediaSizeName.ISOA4, _dico.GetTranslate(TranslateIdentifyId.ISOA4_ID));
+            PageMediaSizeNameSubItem.Dico.Add((int)System.Printing.PageMediaSizeName.Unknown, _dico.GetTranslate(TranslateIdentifyId.Unknown_ID));
             PageMediaSizeNameSubItem.Dico.Add((int)System.Printing.PageMediaSizeName.ISOA3, _dico.GetTranslate(TranslateIdentifyId.ISOA3_ID));
+            PageMediaSizeNameSubItem.Dico.Add((int)System.Printing.PageMediaSizeName.ISOA4, _dico.GetTranslate(TranslateIdentifyId.ISOA4_ID));
 
+            ScaleFactorSubItem.Dico.Add(SubItemsConst.scaleFactorUnknown, _dico.GetTranslate(TranslateIdentifyId.Unknown_ID));
             ScaleFactorSubItem.Dico.Add(SubItemsConst.scaleFactor1_20, _dico.GetTranslate(TranslateIdentifyId._1_20_ID));
             ScaleFactorSubItem.Dico.Add(SubItemsConst.scaleFactor1_25, _dico.GetTranslate(TranslateIdentifyId._1_25_ID));
             ScaleFactorSubItem.Dico.Add(SubItemsConst.scaleFactor1_50, _dico.GetTranslate(TranslateIdentifyId._1_50_ID));
             ScaleFactorSubItem.Dico.Add(SubItemsConst.scaleFactorAuto, _dico.GetTranslate(TranslateIdentifyId.Auto_ID));
-
         }
 
         public new bool OnPluginLoad(int iCallParamsBlock)
         {            
-            _menu.IconFileName = Path.Combine(Directory.GetCurrentDirectory(), ConstRessourceNames.IconeResourceDir, ConstRessourceNames.IconeFileName);
+            _menu.IconFileName = Path.Combine(Path.GetDirectoryName(this.AssemblyFilePath) , ConstRessourceNames.ResourceDir, ConstRessourceNames.IconeFileName);           
             _menu.Insert(this.CurrentAppli);            
             this.ActiveMenu(false);
             return true;
@@ -218,11 +213,35 @@ namespace Schmidt.TechnicalPlan
         }
         private void InitConfigDirectories()
         {
+            Plugin.IsPrintButtonVisible = System.Convert.ToBoolean(keyValueConfigurationCollection[ConstRessourceNames.IsPrintButtonVisible].Value);
+            Plugin.IsOpenFolderButtonVisible = System.Convert.ToBoolean(keyValueConfigurationCollection[ConstRessourceNames.IsOpenFolderButtonVisible].Value);
+
             string sceneName = System.IO.Path.GetFileNameWithoutExtension(pluginWord.CurrentAppli.SceneName);
             pluginWord.Config.SceneDocDir = System.IO.Path.Combine(pluginWord.CurrentAppli.ScenesDir, sceneName);
+            pluginWord.Config.BuiltDocDirPath = Plugin.TemplateDocumentDirectory;
 
-            Plugin.SM2Directory = Plugin.SM2Directory.Replace(ConstRessourceNames.ConfigSceneDir, pluginWord.Config.SceneDocDir);
+            Plugin.PreviewDirectory = keyValueConfigurationCollection[ConstRessourceNames.PreviewDirectory].Value;
             Plugin.PreviewDirectory = Plugin.PreviewDirectory.Replace(ConstRessourceNames.ConfigSceneDir, pluginWord.Config.SceneDocDir);
+
+            Plugin.SM2Directory = keyValueConfigurationCollection[ConstRessourceNames.SM2Directory].Value;
+            Plugin.SM2Directory = Plugin.SM2Directory.Replace(ConstRessourceNames.ConfigSceneDir, pluginWord.Config.SceneDocDir);     
+            
+
+
+        }
+        private string GetDocDirDirectory()
+        {
+            KD.Config.IniFile iniFile = new KD.Config.IniFile(Path.Combine(this.CurrentAppli.SpaceIniFilePath));
+            string docDir = iniFile.GetStringValue("Remote", "DocDir");
+            if (string.IsNullOrEmpty(docDir))
+            {
+                docDir = iniFile.GetStringValue("Local", "DocDir");
+                if (string.IsNullOrEmpty(docDir))
+                {
+                    docDir = iniFile.GetStringValue("InSitu", "DocDir");
+                }
+            }
+            return docDir;
         }
 
         private void DisableMessageForm()
@@ -232,14 +251,14 @@ namespace Schmidt.TechnicalPlan
 
         public bool Main(int lCallParamsBlock)
         {
-            //this.InitializeMessageForm();
-            //this.ShowSellerResponsabilityMessage();
-            //if (!sellerResponsabilityMessageForm.IsSellerResponsabilityMessage())
-            //{                
-            //    return false;
-            //}
-           
-            //this.DisableMessageForm();
+            this.InitializeMessageForm();
+            this.ShowSellerResponsabilityMessage();
+            if (!sellerResponsabilityMessageForm.IsSellerResponsabilityMessage())
+            {
+                return false;
+            }
+
+            this.DisableMessageForm();
             this.InitializeViewDialogForm();
 
             pluginWord.InitializeAll(lCallParamsBlock);

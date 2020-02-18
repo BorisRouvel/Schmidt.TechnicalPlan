@@ -39,7 +39,10 @@ namespace Schmidt.TechnicalPlan
         private int lviSelectedRowIndex = KD.Const.UnknownId;
         private int lviSelectedColumnIndex = (int)MyListView.Enum.ColumnIndex.UnKnown;
 
-        string drawingSurface2D = String.Empty;
+        private KD.SDK.SceneEnum.ViewMode currentView;
+        private string drawingSurface2D = String.Empty;
+        private string currentTopLayer = String.Empty;
+        private string currentElevLayer = String.Empty;
 
         public Plugin Plugin
         {
@@ -141,10 +144,8 @@ namespace Schmidt.TechnicalPlan
             _plugin = plugin;
             _pluginWord = pluginWord;
             _dico = dico;
-            _technicalDocument = technicalDocument;
-            
-            this.InitializeForm();
-            this.CreateConfigDirectories();           
+            _technicalDocument = technicalDocument;           
+               
         }
 
    
@@ -218,15 +219,18 @@ namespace Schmidt.TechnicalPlan
         }
         private void InitializeForm()
         {
-            this.Text = _dico.GetTranslate(TranslateIdentifyId.UITitle_ID);
+            this.Text = _dico.GetTranslate(TranslateIdentifyId.UITitle_ID) + 
+                                            KD.StringTools.Format.Spaced( KD.StringTools.Const.MinusSign) + 
+                                            Path.Combine(_pluginWord.CurrentAppli.ScenesDir, _pluginWord.CurrentAppli.SceneName);
             this.Ok_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.UIOkButton_ID);
             this.Cancel_BTN.Text = _dico.GetTranslate(TranslateIdentifyId.UICancelButton_ID);
             this.selectAll_CHB.Text = _dico.GetTranslate(TranslateIdentifyId.UISelectAllViewCheckBox_ID);
-            this.paper_LAB.Text = _dico.GetTranslate(TranslateIdentifyId.ColumnHeaderPaper_ID);                      
+            this.paper_LAB.Text = _dico.GetTranslate(TranslateIdentifyId.ColumnHeaderPaper_ID);
 
+            this.transferSM2_BTN.Image = Bitmap.FromFile(Path.Combine(Path.GetDirectoryName(Plugin.AssemblyFilePath), ConstRessourceNames.ResourceDir, ConstRessourceNames.SM2FileName));
             this.ToolStripButtonVisible(this.openFolder_BTN, Plugin.IsOpenFolderButtonVisible);
-            this.ToolStripButtonVisible(this.print_BTN, Plugin.IsPrintButtonVisible); 
-            
+            this.ToolStripButtonVisible(this.print_BTN, Plugin.IsPrintButtonVisible);         
+
         }
         private void CreateConfigDirectories()
         {
@@ -307,8 +311,7 @@ namespace Schmidt.TechnicalPlan
             //System.Guid.NewGuid().ToString();
             technicalDocument.FileName = this.TranslateTechnicalDocumentFileName(technicalDocument); 
 
-            // Optimize the generate doc, look at preview if exist
-            //string sceneNameDir = Path.Combine(_plugin.CurrentAppli.ScenesDir, _plugin.CurrentAppli.SceneName);
+            // Optimize the generate doc, look at preview if exist           
             string previewPdfFilePath = Path.Combine(Plugin.PreviewDirectory, technicalDocument.FileName + KD.IO.File.Extension.Pdf);//sceneNameDir,ConstRessourceNames.DocTechnicalPlanDir, ConstRessourceNames.TechnicalPlanPreviewDirName
             string previewDotFilePath = Path.Combine(Plugin.PreviewDirectory, technicalDocument.FileName + KD.IO.File.Extension.Dot);//sceneNameDir, ConstRessourceNames.DocTechnicalPlanDir, ConstRessourceNames.TechnicalPlanPreviewDirName
 
@@ -330,9 +333,14 @@ namespace Schmidt.TechnicalPlan
 
                 if (_pluginWord.DocIndex2Use != KD.Const.UnknownId)
                 {
+                    if (technicalDocument.ViewMode == KD.SDK.SceneEnum.ViewMode.VECTELEVATION)
+                    {
+                        _plugin.CurrentAppli.Scene.ObjectSelect(technicalDocument.ObjectID, false);
+                    }
                     _pluginWord.GenerateDocument(false);
 
                     string docname = _pluginWord.GetLocalizedDocName(_pluginWord.DocIndex2Use);
+
                     if (!String.IsNullOrEmpty(docname))
                     {
                         string pdfFilePath = _pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
@@ -340,6 +348,7 @@ namespace Schmidt.TechnicalPlan
 
                         string idPdfFileName = technicalDocument.FileName + KD.IO.File.Extension.Pdf;
                         string idPdfFilePath = System.IO.Path.Combine(Plugin.SM2Directory, idPdfFileName);//System.IO.Path.GetDirectoryName(pdfFilePath)
+
                         if (System.IO.File.Exists(pdfFilePath) && !System.IO.File.Exists(idPdfFilePath))
                         {
                             System.IO.File.Copy(pdfFilePath, idPdfFilePath, true);
@@ -406,7 +415,8 @@ namespace Schmidt.TechnicalPlan
                     {
                         if (time <= 5)
                         {
-                            MoveFileToDocPlanDir(lviIndex, pdfFilePath, dotFilePath, time++);
+                            time++;
+                            MoveFileToDocPlanDir(lviIndex, pdfFilePath, dotFilePath, time);
                         }
                         else
                         {
@@ -512,25 +522,17 @@ namespace Schmidt.TechnicalPlan
                 if (System.IO.File.Exists(pdfFilePath))
                 {
                     this._loadedDocument = new Syncfusion.Pdf.Parsing.PdfLoadedDocument(pdfFilePath);
-                    pdfDocumentView_PDFV.Load(_loadedDocument); // @"D:\Ic90dev\Scenes\5DE66AB8_0226_01\DocTechnicalPlan\TECHNICAL_PLAN_PREVIEW\Elévation du mur.pdf"); 
-               
-                
-
-                // first load fit page                
-                //if (_zoom == InitialZoomValue)
-                //{
+                    pdfDocumentView_PDFV.Load(_loadedDocument);               
+             
                     pdfDocumentView_PDFV.ZoomMode = Syncfusion.Windows.Forms.PdfViewer.ZoomMode.FitPage;
-                    //}
-                    //else // take last zoom value                 
-                    //{
-                    //    pdfDocumentView_PDFV.ZoomTo(Convert.ToInt32(_zoom));
-                    //}
+                   
                     // can Update member only after load
                     _currentPdfFilePath = pdfFilePath;
                 }
                 else
                 {
                     this.DesactivatePdfViewer();
+                    MessageBox.Show(_dico.GetTranslate(TranslateIdentifyId.MessageInfo_01_ID));
                 }
                 // Set cursor as default arrow
                 Cursor.Current = Cursors.Default;
@@ -596,7 +598,7 @@ namespace Schmidt.TechnicalPlan
         {           
             string technicalDocumentName = this.GetTechnicalDocumentFileNameFromListViewItem(lvi);// technicalDocumentViewMode + scale + paper + orientation;                                                           
 
-            int nbSubDoc = _pluginWord.CurrentAppli.GetDocsNb();
+            int nbSubDoc = _plugin.CurrentAppli.GetDocsNb();
 
             for (int iSubDoc = 0; iSubDoc <= nbSubDoc; iSubDoc++)
             {                      
@@ -1044,27 +1046,54 @@ namespace Schmidt.TechnicalPlan
             return lvi.Tag.ToString();
         }
       
-        private void SaveDrawingConfig()
+        private void SaveSceneConfig()
         {
+            currentView = _plugin.CurrentAppli.Scene.ViewGetMode();
             drawingSurface2D = _plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
+
+            _plugin.CurrentAppli.Scene.ViewSetMode(KD.SDK.SceneEnum.ViewMode.TOP);
+            currentTopLayer = _plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.LAYERSET_NAME);
+
+            _plugin.CurrentAppli.Scene.ViewSetMode(KD.SDK.SceneEnum.ViewMode.VECTELEVATION);
+            currentElevLayer = _plugin.CurrentAppli.Scene.SceneGetInfo(KD.SDK.SceneEnum.SceneInfo.LAYERSET_NAME);
         }
-        private void SetDrawingConfig()
+        private void SetSceneConfig()
         {
-            _plugin.CurrentAppli.Scene.SceneSetInfo("0", KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
+            _plugin.CurrentAppli.Scene.ViewSetMode(KD.SDK.SceneEnum.ViewMode.TOP);
+            bool bTopLayer = _plugin.CurrentAppli.Scene.SceneSetInfo(Plugin.TechnicalPlanLayer, KD.SDK.SceneEnum.SceneInfo.LAYERSET_NAME);
+
+            _plugin.CurrentAppli.Scene.ViewSetMode(KD.SDK.SceneEnum.ViewMode.VECTELEVATION);
+            bool bElevLayer = _plugin.CurrentAppli.Scene.SceneSetInfo(Plugin.TechnicalPlanLayer, KD.SDK.SceneEnum.SceneInfo.LAYERSET_NAME);
+
+            bool b2D = _plugin.CurrentAppli.Scene.SceneSetInfo("0", KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
             _plugin.CurrentAppli.Scene.ZoomAdjusted();
         }
-        private void RestoreDrawingConfig()
-        {
+        private void RestoreSceneConfig()
+        {            
+            if (!String.IsNullOrEmpty(currentTopLayer))
+            {
+                _plugin.CurrentAppli.Scene.ViewSetMode(KD.SDK.SceneEnum.ViewMode.TOP);
+                bool bTopLayer = _plugin.CurrentAppli.Scene.SceneSetInfo(currentTopLayer, KD.SDK.SceneEnum.SceneInfo.LAYERSET_NAME);
+            }
+            if (!String.IsNullOrEmpty(currentElevLayer))
+            {
+                _plugin.CurrentAppli.Scene.ViewSetMode(KD.SDK.SceneEnum.ViewMode.VECTELEVATION);
+                bool bElevLayer = _plugin.CurrentAppli.Scene.SceneSetInfo(currentElevLayer, KD.SDK.SceneEnum.SceneInfo.LAYERSET_NAME);
+            }
             if (!String.IsNullOrEmpty(drawingSurface2D))
             {
-                _plugin.CurrentAppli.Scene.SceneSetInfo(drawingSurface2D, KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
+                bool b2D = _plugin.CurrentAppli.Scene.SceneSetInfo(drawingSurface2D, KD.SDK.SceneEnum.SceneInfo.DRAWING_SURFACE_2D);
             }
+
+            _plugin.CurrentAppli.Scene.ViewSetMode(currentView);
         }
-        private void SetCurrentFormat()
+        private void SetCurrentFormat(ListViewItem lvi)
         {
-            _currentScaleFactor = _documentList[lviSelectedRowIndex].ScaleFactorAsString;
-            _currentPageMediaSizeName = _documentList[lvItem.Index].PageMediaSizeName.ToString();
-            _currentPageOrientation = _documentList[lvItem.Index].PageOrientation.ToString();
+            TechnicalDocument technicalDocument = (TechnicalDocument)lvi.Tag;
+
+            _currentScaleFactor = technicalDocument.ScaleFactorAsString;
+            _currentPageMediaSizeName = technicalDocument.PageMediaSizeName.ToString();
+            _currentPageOrientation = new PageOrientationSubItem(technicalDocument.PageOrientation).ToString();//_documentList[lviSelectedRowIndex]
         }
 
         private void InitializeDocumentList()
@@ -1329,7 +1358,7 @@ namespace Schmidt.TechnicalPlan
             for (int lineIndex = 0; lineIndex < this.myListView_MLV.Items.Count; lineIndex++)
             {
                 Rectangle subItemImageButton = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Bounds;
-                subItemImageButton.Y = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Bounds.Y;// + this.myListView.Top;
+                subItemImageButton.Y = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Bounds.Y;
                 subItemImageButton.X = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Bounds.X + this.myListView_MLV.Left;
                 subItemImageButton.Height = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Bounds.Height + 4;
                 subItemImageButton.Width = this.myListView_MLV.Items[lineIndex].SubItems[(int)MyListView.Enum.ColumnIndex.Overview].Bounds.Height + 4;
@@ -1338,6 +1367,7 @@ namespace Schmidt.TechnicalPlan
                 myListView_MLV.Controls.Add(myOverViewButton);
                 myOverViewButton.Bounds = subItemImageButton;
                 myOverViewButton.Location = new Point(subItemImageButton.X + 10, subItemImageButton.Y - 2);
+                myOverViewButton.BackgroundImage = Image.FromFile(Path.Combine(Path.GetDirectoryName(Plugin.AssemblyFilePath), ConstRessourceNames.ResourceDir, ConstRessourceNames.TwinFileName));
 
                 // Set default text for ComboBox to match the item that is clicked.                 
                 myOverViewButton.Visible = true;
@@ -1415,9 +1445,69 @@ namespace Schmidt.TechnicalPlan
             _technicalPlanDocumentFileNameForm = null;
         }
 
+        private void PrintDocument()
+        {
+            if (_loadedDocument != null && pdfDocumentView_PDFV.Visible)
+            {
+                PrintDialog printDialog = new PrintDialog();
+                printDialog.AllowPrintToFile = true;
+                printDialog.AllowSomePages = true;
+                printDialog.AllowCurrentPage = true;
+
+                printDialog.Document = pdfDocumentView_PDFV.PrintDocument;
+
+                int angleLandScape = printDialog.PrinterSettings.LandscapeAngle;
+                System.Drawing.Printing.PrinterSettings.PaperSizeCollection paperSizeCollection = printDialog.PrinterSettings.PaperSizes;
+
+                //Test this for select setting
+                printDialog.Document.PrinterSettings.DefaultPageSettings.Landscape = true;
+                printDialog.Document.PrinterSettings.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("First custom size", 100, 200);
+
+                if (printDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    //if (printDialog.Document != null)
+                    //{ 
+                    if (this.myListView_MLV.CheckedItems.Count > 1)
+                    {
+                        //PrintDocument[] documents = new PrintDocument[this.docListView.CheckedItems.Count];
+                        foreach (ListViewItem lvItem in this.myListView_MLV.CheckedItems)
+                        {
+                            string docname = _pluginWord.GetLocalizedDocName(_pluginWord.DocIndex2Use);//GetDocNameFromListViewItem(lvItem);
+                            string pdfFilePath = _pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
+
+                            // Set cursor as hourglass
+                            Cursor.Current = Cursors.WaitCursor;
+                            pdfDocumentView_PDFV.Load(pdfFilePath);
+                            // Set cursor as default arrow
+                            Cursor.Current = Cursors.Default;
+                            if (pdfDocumentView_PDFV.PrintDocument != null)
+                            {
+                                pdfDocumentView_PDFV.PrintDocument.Print();
+                            }
+                            //documents.SetValue(new PrintDocument(), iDoc++);
+                        }
+                        // reload last loaded by user (not by program, like above to update PrintDocument)
+                        this.CreateAndLoadPdfLoadedDocument(this.CurrentPdfFilePath);
+                        // MultiPrintDocument mp = new MultiPrintDocument(documents);
+                        // printDialog.Document = mp;
+                    }
+                    else
+                    {
+                        printDialog.Document = pdfDocumentView_PDFV.PrintDocument;
+                        printDialog.Document.Print();
+                    }
+                    //XpsDocument xpsDocument = new System.Windows.Xps.Packaging.XpsDocument("C:\\FixedDocumentSequence.xps", FileAccess.ReadWrite);
+                    //FixedDocumentSequence fixedDocSeq = xpsDocument.GetFixedDocumentSequence();
+                    //printDialog.PrintDocument(fixedDocSeq.DocumentPaginator, "Test print job");
+                }
+            }
+        }
+
         #region // Form
         private void GenerateViewDialogForm_Load(object sender, EventArgs e)
         {
+            this.InitializeForm();
+            this.CreateConfigDirectories();
             this.InitializeListView();
             this.DesactivatePdfViewer();
             this.InitializePreviewDirectory();           
@@ -1425,7 +1515,9 @@ namespace Schmidt.TechnicalPlan
             this.AssignItemsInComboBox();
             this.InitializeDocumentList();
             
-            this.UpdateListViewFromDocumentList();           
+            this.UpdateListViewFromDocumentList();
+
+            _pluginWord.ReLoadDocsAndDico();
         }
         private void GenerateViewDialogForm_Shown(object sender, EventArgs e)
         {
@@ -1615,11 +1707,11 @@ namespace Schmidt.TechnicalPlan
             {
                 lviSelectedRowIndex = lvItem.Index;
                 //maybe save zoom or green frame. Actually i take the green frame
-                //this.SaveDrawingConfig();
-                //this.SetDrawingConfig();
-                this.SetCurrentFormat();
+                this.SaveSceneConfig();
+                this.SetSceneConfig();
+                this.SetCurrentFormat(lvItem);
                 this.Build(true, lvItem);//lviSelectedRowIndex
-                this.RestoreDrawingConfig();
+                this.RestoreSceneConfig();
             }
 
         }
@@ -1690,59 +1782,7 @@ namespace Schmidt.TechnicalPlan
 
         private void print_BTN_Click(object sender, EventArgs e)
         {
-            if (_loadedDocument != null && pdfDocumentView_PDFV.Visible)
-            {
-                PrintDialog printDialog = new PrintDialog();
-                printDialog.AllowPrintToFile = true;
-                printDialog.AllowSomePages = true;
-                printDialog.AllowCurrentPage = true;
-
-                printDialog.Document = pdfDocumentView_PDFV.PrintDocument;
-
-                int angleLandScape = printDialog.PrinterSettings.LandscapeAngle;
-                System.Drawing.Printing.PrinterSettings.PaperSizeCollection paperSizeCollection = printDialog.PrinterSettings.PaperSizes;
-
-                printDialog.Document.PrinterSettings.DefaultPageSettings.Landscape = true;
-                printDialog.Document.PrinterSettings.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("First custom size", 100, 200);
-
-                if (printDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    //if (printDialog.Document != null)
-                    //{ 
-                    if (this.myListView_MLV.CheckedItems.Count > 1)
-                    {
-                        //PrintDocument[] documents = new PrintDocument[this.docListView.CheckedItems.Count];
-                        foreach (ListViewItem lvItem in this.myListView_MLV.CheckedItems)
-                        {
-                            string docname = _pluginWord.GetLocalizedDocName(_pluginWord.DocIndex2Use);//GetDocNameFromListViewItem(lvItem);
-                            string pdfFilePath = _pluginWord.GetArchiveFilePath(docname, KD.IO.File.Extension.Pdf);
-
-                            // Set cursor as hourglass
-                            Cursor.Current = Cursors.WaitCursor;
-                            pdfDocumentView_PDFV.Load(pdfFilePath);
-                            // Set cursor as default arrow
-                            Cursor.Current = Cursors.Default;
-                            if (pdfDocumentView_PDFV.PrintDocument != null)
-                            {
-                                pdfDocumentView_PDFV.PrintDocument.Print();
-                            }
-                            //documents.SetValue(new PrintDocument(), iDoc++);
-                        }
-                        // reload last loaded by user (not by program, like above to update PrintDocument)
-                        this.CreateAndLoadPdfLoadedDocument(this.CurrentPdfFilePath);
-                        // MultiPrintDocument mp = new MultiPrintDocument(documents);
-                        // printDialog.Document = mp;
-                    }
-                    else
-                    {
-                        printDialog.Document = pdfDocumentView_PDFV.PrintDocument;
-                        printDialog.Document.Print();
-                    }
-                    //XpsDocument xpsDocument = new System.Windows.Xps.Packaging.XpsDocument("C:\\FixedDocumentSequence.xps", FileAccess.ReadWrite);
-                    //FixedDocumentSequence fixedDocSeq = xpsDocument.GetFixedDocumentSequence();
-                    //printDialog.PrintDocument(fixedDocSeq.DocumentPaginator, "Test print job");
-                }
-            }
+            this.PrintDocument();
         }
 
         private void InitCustomInfo_BTN_Click(object sender, EventArgs e)

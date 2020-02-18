@@ -57,7 +57,7 @@
             this.SellerResponsabilityText_LAB.Location = new System.Drawing.Point(6, 16);
             this.SellerResponsabilityText_LAB.Name = "SellerResponsabilityText_LAB";
             this.SellerResponsabilityText_LAB.Size = new System.Drawing.Size(522, 271);
-            this.SellerResponsabilityText_LAB.TabIndex = 0;
+            this.SellerResponsabilityText_LAB.TabIndex = 2;
             this.SellerResponsabilityText_LAB.Text = resources.GetString("SellerResponsabilityText_LAB.Text");
             this.SellerResponsabilityText_LAB.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
