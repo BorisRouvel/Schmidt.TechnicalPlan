@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schmidt.TechnicalPlan_V1", "Schmidt.TechnicalPlan\Schmidt.TechnicalPlan_V1.csproj", "{3B89B204-2765-4EC7-A254-ADE5803409E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schmidt.TechnicalPlan", "Schmidt.TechnicalPlan\Schmidt.TechnicalPlan.csproj", "{A56AC12C-A802-4048-A1E9-0FA149A8522C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,14 @@ Global
 		{3B89B204-2765-4EC7-A254-ADE5803409E3}.Release|Any CPU.Build.0 = Release|x86
 		{3B89B204-2765-4EC7-A254-ADE5803409E3}.Release|x86.ActiveCfg = Release|x86
 		{3B89B204-2765-4EC7-A254-ADE5803409E3}.Release|x86.Build.0 = Release|x86
+		{A56AC12C-A802-4048-A1E9-0FA149A8522C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A56AC12C-A802-4048-A1E9-0FA149A8522C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A56AC12C-A802-4048-A1E9-0FA149A8522C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A56AC12C-A802-4048-A1E9-0FA149A8522C}.Debug|x86.Build.0 = Debug|Any CPU
+		{A56AC12C-A802-4048-A1E9-0FA149A8522C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A56AC12C-A802-4048-A1E9-0FA149A8522C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A56AC12C-A802-4048-A1E9-0FA149A8522C}.Release|x86.ActiveCfg = Release|Any CPU
+		{A56AC12C-A802-4048-A1E9-0FA149A8522C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
