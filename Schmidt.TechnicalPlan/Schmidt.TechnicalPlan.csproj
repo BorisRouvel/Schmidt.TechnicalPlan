@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A56AC12C-A802-4048-A1E9-0FA149A8522C}</ProjectGuid>
+    <ProjectGuid>{92ECFB30-1764-432A-9739-3F175BBF0966}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Schmidt.TechnicalPlan</RootNamespace>
@@ -17,10 +17,11 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\Ic90dev\Plugins\Standard\Word\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,10 +30,20 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="KD.Plugin.Word">
+      <HintPath>..\..\..\..\Ic90dev\Plugins\Standard\Word\KD.Plugin.Word.dll</HintPath>
+    </Reference>
+    <Reference Include="kd.sdk">
+      <HintPath>..\..\..\..\Ic90dev\kd.sdk.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,8 +51,63 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Plugins.Core\src\InSitu\InSitu.Ini.cs">
+      <Link>InSitu.Ini.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Plugins.Core\src\Maths\Maths.cs">
+      <Link>Maths.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Plugins.Core\src\Model\ModelWrapper.cs">
+      <Link>ModelWrapper.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\..\Plugins.Core\src\SDK\FilterBuilder.cs">
+      <Link>FilterBuilder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Plugins.Core\src\SDK\SDKWrapper.cs">
+      <Link>SDKWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Plugins.Core\src\System\IniHelper.cs">
+      <Link>IniHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Plugins.Core\src\System\IOHelper.cs">
+      <Link>IOHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Plugins.Core\src\System\StringHelper.cs">
+      <Link>StringHelper.cs</Link>
+    </Compile>
+    <None Include="..\..\Plugins\Standard\Word\KD.Plugin.Word\TechnicalPlan\Dico.cs">
+      <Link>Dico.cs</Link>
+    </None>
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SellerResponsabilityMessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SellerResponsabilityMessageForm.designer.cs">
+      <DependentUpon>SellerResponsabilityMessageForm.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SellerResponsabilityMessageForm.resx">
+      <DependentUpon>SellerResponsabilityMessageForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\callplugin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SM2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
