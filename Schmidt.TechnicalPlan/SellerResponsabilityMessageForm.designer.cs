@@ -41,6 +41,7 @@
             this.SellerResponsabilityText_LAB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.SellerResponsabilityText_LAB.BackColor = System.Drawing.SystemColors.Control;
             this.SellerResponsabilityText_LAB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SellerResponsabilityText_LAB.Location = new System.Drawing.Point(6, 16);
             this.SellerResponsabilityText_LAB.Name = "SellerResponsabilityText_LAB";
@@ -52,7 +53,7 @@
             // Ok_BTN
             // 
             this.Ok_BTN.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.Ok_BTN.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.Ok_BTN.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.Ok_BTN.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.Ok_BTN.Location = new System.Drawing.Point(278, 308);
             this.Ok_BTN.Name = "Ok_BTN";
@@ -64,7 +65,7 @@
             // Cancel_BTN
             // 
             this.Cancel_BTN.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.Cancel_BTN.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.Cancel_BTN.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.Cancel_BTN.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel_BTN.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.Cancel_BTN.Location = new System.Drawing.Point(179, 308);
@@ -91,6 +92,7 @@
             this.AcceptButton = this.Ok_BTN;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.CancelButton = this.Cancel_BTN;
             this.ClientSize = new System.Drawing.Size(558, 358);
             this.ControlBox = false;

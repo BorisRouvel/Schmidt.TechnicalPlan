@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using System;
-using System.Reflection;
+using System.IO;
+using System.Resources;
 
 using KD.Plugin;
 
@@ -9,7 +9,7 @@ namespace Schmidt.TechnicalPlan
     public class ConstRessourceNames
     {
         public const string IconeFileName = "callplugin.png";
-        public const string SM2FileName = "SM2.png";
+        //public const string SM2FileName = "SM2.png";
 
     }
 
@@ -17,11 +17,11 @@ namespace Schmidt.TechnicalPlan
     {
         public static SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
         private MainAppMenuItem _technicalPlanMenu = null;       
-        public static KD.Plugin.Word.Plugin pluginWord = null;
+        public static KD.Plugin.Word.Plugin _pluginWord = null;
 
         public Plugin()
         {
-            pluginWord = new KD.Plugin.Word.Plugin();
+            _pluginWord = new KD.Plugin.Word.Plugin();
 
             this.InitializeTechnicalPlan();
 
@@ -39,7 +39,7 @@ namespace Schmidt.TechnicalPlan
         {
             if (KD.Plugin.Word.Plugin._technicalPlan == null)
             {
-                KD.Plugin.Word.Plugin._technicalPlan = new KD.Plugin.Word.TechnicalPlan(pluginWord);
+                KD.Plugin.Word.Plugin._technicalPlan = new KD.Plugin.Word.TechnicalPlan(_pluginWord);
             }
         }
         private void InitializeMenuItem()
@@ -60,7 +60,7 @@ namespace Schmidt.TechnicalPlan
             if (_technicalPlanMenu != null && KD.Plugin.Word.Plugin._isCallByExterne)
             {
                 KD.Plugin.Word.Plugin._technicalPlan.PluginLoad(_technicalPlanMenu, ConstRessourceNames.IconeFileName);
-            }
+                }
             return true;
         }
         public bool OnPluginUnload(int iCallParamsBlock)
@@ -129,7 +129,9 @@ namespace Schmidt.TechnicalPlan
         {
             sellerResponsabilityMessageForm = null;
         }
+
     }
+
 
     
 }
