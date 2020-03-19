@@ -59,6 +59,7 @@
             this.Ok_BTN.Name = "Ok_BTN";
             this.Ok_BTN.Size = new System.Drawing.Size(93, 38);
             this.Ok_BTN.TabIndex = 2;
+            this.Ok_BTN.Text = "ok";
             this.Ok_BTN.UseVisualStyleBackColor = false;
             this.Ok_BTN.Click += new System.EventHandler(this.Ok_BTN_Click);
             // 
@@ -72,6 +73,7 @@
             this.Cancel_BTN.Name = "Cancel_BTN";
             this.Cancel_BTN.Size = new System.Drawing.Size(93, 38);
             this.Cancel_BTN.TabIndex = 4;
+            this.Cancel_BTN.Text = "no";
             this.Cancel_BTN.UseVisualStyleBackColor = false;
             this.Cancel_BTN.Click += new System.EventHandler(this.Cancel_BTN_Click);
             // 
