@@ -8,16 +8,15 @@ namespace Schmidt.TechnicalPlan
 {
     public class ConstRessourceNames
     {
-        public const string IconeFileName = "callplugin.png";
-        //public const string SM2FileName = "SM2.png";
+        public const string IconeFileName = "callplugin.png";     
 
     }
 
     public class Plugin 
     {
         public static SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
-        private MainAppMenuItem _technicalPlanMenu = null;       
-        public static KD.Plugin.Word.Plugin _pluginWord = null;
+        private MainAppMenuItem _technicalPlanMenuItem= null;       
+        public static KD.Plugin.Word.Plugin _pluginWord = null;            
 
         public Plugin()
         {
@@ -29,10 +28,14 @@ namespace Schmidt.TechnicalPlan
             {
                 if (KD.Plugin.Word.TechnicalPlan.keyValueConfigurationCollection.AllKeys.Contains(KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType))
                 {
-                    KD.Plugin.Word.Plugin._isCallByExterne = System.Convert.ToBoolean(KD.Plugin.Word.TechnicalPlan.keyValueConfigurationCollection[KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType].Value);
+                    bool bGenerateTechnicalPlanDocumentType = System.Convert.ToBoolean(KD.Plugin.Word.TechnicalPlan.keyValueConfigurationCollection[KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType].Value);
+                    if (bGenerateTechnicalPlanDocumentType)
+                    {
+                        this.InitializeMenuItem();
+                    }
                 }
-            }
-            this.InitializeMenuItem();
+            }           
+
         }
 
         private void InitializeTechnicalPlan()
@@ -44,10 +47,10 @@ namespace Schmidt.TechnicalPlan
         }
         private void InitializeMenuItem()
         {
-            if (_technicalPlanMenu == null)
+            if (_technicalPlanMenuItem == null)
             {
                 string assemblyName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetCallingAssembly().Location);
-                _technicalPlanMenu = new MainAppMenuItem((int)KD.SDK.AppliEnum.SceneMenuItemsId.INFO,
+                _technicalPlanMenuItem = new MainAppMenuItem((int)KD.SDK.AppliEnum.SceneMenuItemsId.INFO,
                                                             KD.Plugin.Word.TechnicalPlan._dico.GetTranslate(KD.Plugin.Word.TranslateIdentifyId.FunctionName_ID),
                                                             assemblyName,
                                                             KD.Plugin.Const.PluginClassName,
@@ -57,42 +60,42 @@ namespace Schmidt.TechnicalPlan
 
         public bool OnPluginLoad(int iCallParamsBlock)
         {
-            if (_technicalPlanMenu != null && KD.Plugin.Word.Plugin._isCallByExterne)
+            if (_technicalPlanMenuItem != null )
             {
-                KD.Plugin.Word.Plugin._technicalPlan.PluginLoad(_technicalPlanMenu, ConstRessourceNames.IconeFileName);
-                }
+                KD.Plugin.Word.Plugin._technicalPlan.PluginLoad(_technicalPlanMenuItem, ConstRessourceNames.IconeFileName);
+            }
             return true;
         }
         public bool OnPluginUnload(int iCallParamsBlock)
         {
-            if (_technicalPlanMenu != null && KD.Plugin.Word.Plugin._isCallByExterne)
+            if (_technicalPlanMenuItem != null )
             {
-                KD.Plugin.Word.Plugin._technicalPlan.PluginUnload(_technicalPlanMenu);
+                KD.Plugin.Word.Plugin._technicalPlan.PluginUnload(_technicalPlanMenuItem);
             }
             return true;
         }
 
         public bool OnFileOpenBefore(int lCallParamsBlock)
         {
-            if (_technicalPlanMenu != null && KD.Plugin.Word.Plugin._isCallByExterne)
+            if (_technicalPlanMenuItem != null)
             {
-                KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenu, true);
+                KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenuItem, true);
             }
             return true;
         }
         public bool OnFileNewBefore(int lCallParamsBlock)
         {
-            if (_technicalPlanMenu != null && KD.Plugin.Word.Plugin._isCallByExterne)
+            if (_technicalPlanMenuItem != null)
             {
-                KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenu, true);
+                KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenuItem, true);
             }
             return true;
         }
         public bool OnFileCloseAfter(int lCallParamsBlock)
         {
-            if (_technicalPlanMenu != null && KD.Plugin.Word.Plugin._isCallByExterne)
+            if (_technicalPlanMenuItem != null)
             {
-                KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenu, false);
+                KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenuItem, false);
             }
             return true;
         }
