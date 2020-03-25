@@ -52,32 +52,32 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Plugins.Core\src\InSitu\InSitu.Ini.cs">
-      <Link>InSitu.Ini.cs</Link>
+      <Link>src\InSitu.Ini.cs</Link>
     </Compile>
     <Compile Include="..\..\Plugins.Core\src\Maths\Maths.cs">
-      <Link>Maths.cs</Link>
+      <Link>src\Maths.cs</Link>
     </Compile>
     <Compile Include="..\..\Plugins.Core\src\Model\ModelWrapper.cs">
-      <Link>ModelWrapper.cs</Link>
+      <Link>src\ModelWrapper.cs</Link>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="..\..\Plugins.Core\src\SDK\FilterBuilder.cs">
-      <Link>FilterBuilder.cs</Link>
+      <Link>src\FilterBuilder.cs</Link>
     </Compile>
     <Compile Include="..\..\Plugins.Core\src\SDK\SDKWrapper.cs">
-      <Link>SDKWrapper.cs</Link>
+      <Link>src\SDKWrapper.cs</Link>
     </Compile>
     <Compile Include="..\..\Plugins.Core\src\System\IniHelper.cs">
-      <Link>IniHelper.cs</Link>
+      <Link>src\IniHelper.cs</Link>
     </Compile>
     <Compile Include="..\..\Plugins.Core\src\System\IOHelper.cs">
-      <Link>IOHelper.cs</Link>
+      <Link>src\IOHelper.cs</Link>
     </Compile>
     <Compile Include="..\..\Plugins.Core\src\System\StringHelper.cs">
-      <Link>StringHelper.cs</Link>
+      <Link>src\StringHelper.cs</Link>
     </Compile>
     <None Include="..\..\Plugins\Standard\Word\KD.Plugin.Word\TechnicalPlan\Dico.cs">
-      <Link>Dico.cs</Link>
+      <Link>src\Dico.cs</Link>
     </None>
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

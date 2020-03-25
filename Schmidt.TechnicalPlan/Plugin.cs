@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using System.IO;
-using System.Resources;
 
 using KD.Plugin;
 
@@ -9,42 +7,42 @@ namespace Schmidt.TechnicalPlan
     public class ConstRessourceNames
     {
         public const string IconeFileName = "callplugin.png";     
-
     }
 
     public class Plugin 
     {
         public static SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
         private MainAppMenuItem _technicalPlanMenuItem= null;       
-        public static KD.Plugin.Word.Plugin _pluginWord = null;            
+        public static KD.Plugin.Word.Plugin _pluginWord = null; 
 
         public Plugin()
         {
-            _pluginWord = new KD.Plugin.Word.Plugin();
+            _pluginWord = new KD.Plugin.Word.Plugin();           
 
             this.InitializeTechnicalPlan();
-
-            if (KD.Plugin.Word.TechnicalPlan.keyValueConfigurationCollection != null)
-            {
-                if (KD.Plugin.Word.TechnicalPlan.keyValueConfigurationCollection.AllKeys.Contains(KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType))
-                {
-                    bool bGenerateTechnicalPlanDocumentType = System.Convert.ToBoolean(KD.Plugin.Word.TechnicalPlan.keyValueConfigurationCollection[KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType].Value);
-                    if (bGenerateTechnicalPlanDocumentType)
-                    {
-                        this.InitializeMenuItem();
-                    }
-                }
-            }           
-
         }
 
         private void InitializeTechnicalPlan()
         {
+            KD.Plugin.Word.Config config = new KD.Plugin.Word.Config(_pluginWord.CurrentAppli, _pluginWord.CurrentAppli.Language);
+
+            if (!config.ContainsKey(KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType))
+            {
+                return;
+            }
+         
             if (KD.Plugin.Word.Plugin._technicalPlan == null)
             {
                 KD.Plugin.Word.Plugin._technicalPlan = new KD.Plugin.Word.TechnicalPlan(_pluginWord);
             }
+          
+            bool bGenerateTechnicalPlanDocumentType = _pluginWord.Config.GetBooleanConfigValue(KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType);
+            if (bGenerateTechnicalPlanDocumentType)
+            {
+                this.InitializeMenuItem();
+            }
         }
+
         private void InitializeMenuItem()
         {
             if (_technicalPlanMenuItem == null)
@@ -61,7 +59,7 @@ namespace Schmidt.TechnicalPlan
         public bool OnPluginLoad(int iCallParamsBlock)
         {
             if (_technicalPlanMenuItem != null )
-            {
+            {              
                 KD.Plugin.Word.Plugin._technicalPlan.PluginLoad(_technicalPlanMenuItem, ConstRessourceNames.IconeFileName);
             }
             return true;
