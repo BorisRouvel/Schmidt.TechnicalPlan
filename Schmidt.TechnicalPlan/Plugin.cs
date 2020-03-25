@@ -8,6 +8,10 @@ namespace Schmidt.TechnicalPlan
     {
         public const string IconeFileName = "callplugin.png";     
     }
+    public class ConstConfig
+    {
+        public const string TechnicalPlanSchmidtMenuItem = "TechnicalPlanSchmidtMenuItem";
+    }
 
     public class Plugin 
     {
@@ -17,29 +21,40 @@ namespace Schmidt.TechnicalPlan
 
         public Plugin()
         {
-            _pluginWord = new KD.Plugin.Word.Plugin();           
+            _pluginWord = new KD.Plugin.Word.Plugin();
 
-            this.InitializeTechnicalPlan();
+            KD.Plugin.Word.Config config = new KD.Plugin.Word.Config(_pluginWord.CurrentAppli, _pluginWord.CurrentAppli.Language);
+
+            string assemblyName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            try
+            {
+                config.ConfigurationFile = System.Configuration.ConfigurationManager.OpenExeConfiguration(assemblyName);
+            }
+            catch (System.Exception)
+            {
+                return;
+            }
+
+
+            if (!config.ContainsKey(ConstConfig.TechnicalPlanSchmidtMenuItem))
+            {
+                return;
+            }
+
+            bool bTechnicalPlanSchmidtMenuItem = config.GetBooleanConfigValue(ConstConfig.TechnicalPlanSchmidtMenuItem);
+            if (bTechnicalPlanSchmidtMenuItem)
+            {
+                this.InitializeTechnicalPlan();
+                this.InitializeMenuItem();
+            }           
+                    
         }
 
         private void InitializeTechnicalPlan()
         {
-            KD.Plugin.Word.Config config = new KD.Plugin.Word.Config(_pluginWord.CurrentAppli, _pluginWord.CurrentAppli.Language);
-
-            if (!config.ContainsKey(KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType))
-            {
-                return;
-            }
-         
             if (KD.Plugin.Word.Plugin._technicalPlan == null)
             {
-                KD.Plugin.Word.Plugin._technicalPlan = new KD.Plugin.Word.TechnicalPlan(_pluginWord);
-            }
-          
-            bool bGenerateTechnicalPlanDocumentType = _pluginWord.Config.GetBooleanConfigValue(KD.Plugin.Word.Config.Const.GenerateTechnicalPlanDocumentType);
-            if (bGenerateTechnicalPlanDocumentType)
-            {
-                this.InitializeMenuItem();
+                KD.Plugin.Word.Plugin._technicalPlan = new KD.Plugin.Word.TechnicalPlan(_pluginWord);                       
             }
         }
 
@@ -47,7 +62,7 @@ namespace Schmidt.TechnicalPlan
         {
             if (_technicalPlanMenuItem == null)
             {
-                string assemblyName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetCallingAssembly().Location);
+                string assemblyName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 _technicalPlanMenuItem = new MainAppMenuItem((int)KD.SDK.AppliEnum.SceneMenuItemsId.INFO,
                                                             KD.Plugin.Word.TechnicalPlan._dico.GetTranslate(KD.Plugin.Word.TranslateIdentifyId.FunctionName_ID),
                                                             assemblyName,
