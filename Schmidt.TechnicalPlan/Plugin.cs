@@ -30,7 +30,11 @@ namespace Schmidt.TechnicalPlan
             assemblyName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             try
             {
-                config.ConfigurationFile = System.Configuration.ConfigurationManager.OpenExeConfiguration(assemblyName);
+                string myselfPath = System.Reflection.Assembly.GetExecutingAssembly().Location;                              
+                string myselfDir = System.IO.Path.GetDirectoryName(myselfPath);
+                string userConfigPath = System.IO.Path.Combine(myselfDir, assemblyName);
+                
+                config.ConfigurationFile = System.Configuration.ConfigurationManager.OpenExeConfiguration(userConfigPath);
             }
             catch (System.Exception)
             {
