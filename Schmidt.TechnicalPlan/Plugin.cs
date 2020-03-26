@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System;
 
 using KD.Plugin;
 
@@ -17,7 +17,9 @@ namespace Schmidt.TechnicalPlan
     {
         public static SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
         private MainAppMenuItem _technicalPlanMenuItem= null;       
-        public static KD.Plugin.Word.Plugin _pluginWord = null; 
+        public static KD.Plugin.Word.Plugin _pluginWord = null;
+
+        string assemblyName = String.Empty;
 
         public Plugin()
         {
@@ -25,7 +27,7 @@ namespace Schmidt.TechnicalPlan
 
             KD.Plugin.Word.Config config = new KD.Plugin.Word.Config(_pluginWord.CurrentAppli, _pluginWord.CurrentAppli.Language);
 
-            string assemblyName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            assemblyName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             try
             {
                 config.ConfigurationFile = System.Configuration.ConfigurationManager.OpenExeConfiguration(assemblyName);
@@ -34,7 +36,6 @@ namespace Schmidt.TechnicalPlan
             {
                 return;
             }
-
 
             if (!config.ContainsKey(ConstConfig.TechnicalPlanSchmidtMenuItem))
             {
@@ -61,15 +62,14 @@ namespace Schmidt.TechnicalPlan
         private void InitializeMenuItem()
         {
             if (_technicalPlanMenuItem == null)
-            {
-                string assemblyName = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            {                
                 _technicalPlanMenuItem = new MainAppMenuItem((int)KD.SDK.AppliEnum.SceneMenuItemsId.INFO,
                                                             KD.Plugin.Word.TechnicalPlan._dico.GetTranslate(KD.Plugin.Word.TranslateIdentifyId.FunctionName_ID),
                                                             assemblyName,
                                                             KD.Plugin.Const.PluginClassName,
                                                             "TechnicalPlanMainMethod");
             }
-        }
+        }        
 
         public bool OnPluginLoad(int iCallParamsBlock)
         {
