@@ -119,7 +119,7 @@ namespace Schmidt.TechnicalPlan
 
         public bool TechnicalPlanMainMethod(int lCallParamsBlock)
         {
-            this.InitializeMessageForm();
+            this.InitializeSellerResponsabilityMessageForm();
             this.ShowSellerResponsabilityMessage();
 
             if (!sellerResponsabilityMessageForm.IsSellerResponsabilityMessage())
@@ -133,7 +133,7 @@ namespace Schmidt.TechnicalPlan
             return true;
         }
 
-        public void InitializeMessageForm()
+        public void InitializeSellerResponsabilityMessageForm()
         {
             if (sellerResponsabilityMessageForm == null)
             {
@@ -150,8 +150,18 @@ namespace Schmidt.TechnicalPlan
             sellerResponsabilityMessageForm = null;
         }
 
+        public bool SetScaleFactorOnDocWord(int iCallParamsBlock)
+        {
+            return KD.Plugin.Word.TechnicalPlan._pluginWord.SetScaleFactorOnDocWord(iCallParamsBlock);
+        }
+        public bool SetPageMediaSizeNameOnDocWord(int iCallParamsBlock)
+        {
+            return KD.Plugin.Word.TechnicalPlan._pluginWord.SetPageMediaSizeNameOnDocWord(iCallParamsBlock);
+        }
+        public bool SetPageOrientationOnDocWord(int iCallParamsBlock)
+        {
+            return KD.Plugin.Word.TechnicalPlan._pluginWord.SetPageOrientationOnDocWord(iCallParamsBlock);
+        }
     }
-
-
     
 }
