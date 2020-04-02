@@ -47,7 +47,7 @@ namespace Schmidt.TechnicalPlan
             }
 
             bool bTechnicalPlanSchmidtMenuItem = config.GetBooleanConfigValue(ConstConfig.TechnicalPlanSchmidtMenuItem);
-            if (bTechnicalPlanSchmidtMenuItem)
+            if (bTechnicalPlanSchmidtMenuItem & System.IO.Directory.Exists(KD.Plugin.Word.TechnicalPlan.TechnicalPlanTemplateDocumentDirectory))
             {
                 this.InitializeTechnicalPlan();
                 this.InitializeMenuItem();
