@@ -92,7 +92,7 @@ namespace Schmidt.TechnicalPlan
             return true;
         }
 
-        public bool OnFileOpenBefore(int lCallParamsBlock)
+        public bool OnFileOpenBefore(int iCallParamsBlock)
         {
             if (_technicalPlanMenuItem != null)
             {
@@ -100,24 +100,46 @@ namespace Schmidt.TechnicalPlan
             }
             return true;
         }
-        public bool OnFileNewBefore(int lCallParamsBlock)
+        public bool OnFileNewBefore(int iCallParamsBlock)
         {
             if (_technicalPlanMenuItem != null)
             {
                 KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenuItem, true);
             }
             return true;
-        }
-        public bool OnFileCloseAfter(int lCallParamsBlock)
+        }        
+        public bool OnFileCloseAfter(int iCallParamsBlock)
         {
             if (_technicalPlanMenuItem != null)
             {
                 KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenuItem, false);
             }
             return true;
+        }       
+        public bool OnAppCommandBefore(int iCallParamsBlock)
+        {
+            //bool isModified = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.SceneComponent.Modified;
+            //System.Windows.Forms.MessageBox.Show("cmd app bef : " + isModified.ToString());
+
+            string menuCommandIdAsString = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.GetCallParamsInfoDirect(iCallParamsBlock, KD.SDK.AppliEnum.CallParamId.MENUCOMMANDID);
+            int menuCommandId = Convert.ToInt32(menuCommandIdAsString);
+
+            if (menuCommandId == (int)KD.SDK.AppliEnum.FileMenuItemsId.CLOSE || menuCommandId == (int)KD.SDK.AppliEnum.FileMenuItemsId.QUIT)
+            {
+                this.SaveModifiedSceneByTransfer();
+            }
+            return true;
         }
 
-        public bool TechnicalPlanMainMethod(int lCallParamsBlock)
+         public bool OnAppCommandAfter(int iCallParamsBlock)
+        {
+            //bool isModified = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.SceneComponent.Modified;
+            //System.Windows.Forms.MessageBox.Show("cmd app aft : " + isModified.ToString());
+           
+            return true;
+        }
+
+        public bool TechnicalPlanMainMethod(int iCallParamsBlock)
         {
             this.InitializeSellerResponsabilityMessageForm();
             this.ShowSellerResponsabilityMessage();
@@ -129,7 +151,8 @@ namespace Schmidt.TechnicalPlan
 
             this.DisableMessageForm();
 
-            KD.Plugin.Word.TechnicalPlan._pluginWord.TechnicalPlanMainMethod(lCallParamsBlock);
+            KD.Plugin.Word.TechnicalPlan._pluginWord.TechnicalPlanMainMethod(iCallParamsBlock);
+
             return true;
         }
 
@@ -162,6 +185,23 @@ namespace Schmidt.TechnicalPlan
         {
             return KD.Plugin.Word.TechnicalPlan._pluginWord.SetPageOrientationOnDocWord(iCallParamsBlock);
         }
+
+        private void SaveModifiedSceneByTransfer()
+        {
+            string sceneModified = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(KD.Plugin.Word.ConstRessourceNames.IsSceneModified);
+
+            if (!String.IsNullOrEmpty(sceneModified))
+            {
+                if (bool.TryParse(sceneModified, out bool isSceneModified))
+                {
+                    if (isSceneModified)
+                    {
+                        bool result = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(KD.StringTools.Const.FalseCamelCase, KD.Plugin.Word.ConstRessourceNames.IsSceneModified);
+                        KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.ExecuteMenuItem(-1, (int)KD.SDK.AppliEnum.FileMenuItemsId.SAVE);
+                    }
+                }
+            }
+        }   
     }
     
 }

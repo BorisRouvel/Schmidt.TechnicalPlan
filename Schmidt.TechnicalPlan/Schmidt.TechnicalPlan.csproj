@@ -75,9 +75,6 @@
     <Compile Include="..\..\Plugins.Core\src\System\IOHelper.cs">
       <Link>src\IOHelper.cs</Link>
     </Compile>
-    <Compile Include="..\..\Plugins.Core\src\System\StringHelper.cs">
-      <Link>src\StringHelper.cs</Link>
-    </Compile>
     <None Include="..\..\Plugins\Standard\Word\KD.Plugin.Word\TechnicalPlan\Dico.cs">
       <Link>src\Dico.cs</Link>
     </None>
