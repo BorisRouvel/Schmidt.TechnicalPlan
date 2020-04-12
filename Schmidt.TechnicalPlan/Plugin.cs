@@ -126,7 +126,7 @@ namespace Schmidt.TechnicalPlan
 
             if (menuCommandId == (int)KD.SDK.AppliEnum.FileMenuItemsId.CLOSE || menuCommandId == (int)KD.SDK.AppliEnum.FileMenuItemsId.QUIT)
             {
-                this.SaveModifiedSceneByTransfer();
+                //this.SaveModifiedSceneByTransfer();
             }
             return true;
         }
@@ -186,22 +186,22 @@ namespace Schmidt.TechnicalPlan
             return KD.Plugin.Word.TechnicalPlan._pluginWord.SetPageOrientationOnDocWord(iCallParamsBlock);
         }
 
-        private void SaveModifiedSceneByTransfer()
-        {
-            string sceneModified = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(KD.Plugin.Word.ConstRessourceNames.IsSceneModified);
+        //private void SaveModifiedSceneByTransfer()
+        //{
+        //    string sceneModified = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(KD.Plugin.Word.ConstRessourceNames.IsSceneModified);
 
-            if (!String.IsNullOrEmpty(sceneModified))
-            {
-                if (bool.TryParse(sceneModified, out bool isSceneModified))
-                {
-                    if (isSceneModified)
-                    {
-                        bool result = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(KD.StringTools.Const.FalseCamelCase, KD.Plugin.Word.ConstRessourceNames.IsSceneModified);
-                        KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.ExecuteMenuItem(-1, (int)KD.SDK.AppliEnum.FileMenuItemsId.SAVE);
-                    }
-                }
-            }
-        }   
+        //    if (!String.IsNullOrEmpty(sceneModified))
+        //    {
+        //        if (bool.TryParse(sceneModified, out bool isSceneModified))
+        //        {
+        //            if (isSceneModified)
+        //            {
+        //                bool result = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(KD.StringTools.Const.FalseCamelCase, KD.Plugin.Word.ConstRessourceNames.IsSceneModified);
+        //                KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.ExecuteMenuItem(-1, (int)KD.SDK.AppliEnum.FileMenuItemsId.SAVE);
+        //            }
+        //        }
+        //    }
+        //}   
     }
     
 }
