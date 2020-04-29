@@ -59,15 +59,8 @@
     <Compile Include="..\..\Plugins.Core\src\Maths\Maths.cs">
       <Link>src\Maths.cs</Link>
     </Compile>
-    <Compile Include="..\..\Plugins.Core\src\Model\ModelWrapper.cs">
-      <Link>src\ModelWrapper.cs</Link>
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="..\..\Plugins.Core\src\SDK\FilterBuilder.cs">
       <Link>src\FilterBuilder.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Plugins.Core\src\SDK\SDKWrapper.cs">
-      <Link>src\SDKWrapper.cs</Link>
     </Compile>
     <Compile Include="..\..\Plugins.Core\src\System\IniHelper.cs">
       <Link>src\IniHelper.cs</Link>

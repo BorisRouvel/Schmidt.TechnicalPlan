@@ -15,11 +15,12 @@ namespace Schmidt.TechnicalPlan
 
     public class Plugin 
     {
-        public static SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
-        private MainAppMenuItem _technicalPlanMenuItem= null;       
         public static KD.Plugin.Word.Plugin _pluginWord = null;
+        public static SellerResponsabilityMessageForm sellerResponsabilityMessageForm = null;
 
-        string assemblyName = String.Empty;
+        private MainAppMenuItem _technicalPlanMenuItem= null;              
+
+        private string assemblyName = String.Empty;
 
         public Plugin()
         {
@@ -115,27 +116,26 @@ namespace Schmidt.TechnicalPlan
                 KD.Plugin.Word.Plugin._technicalPlan.ActiveMenu(_technicalPlanMenuItem, false);
             }
             return true;
-        }       
+        }
         public bool OnAppCommandBefore(int iCallParamsBlock)
         {
-            //bool isModified = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.SceneComponent.Modified;
-            //System.Windows.Forms.MessageBox.Show("cmd app bef : " + isModified.ToString());
-
-            string menuCommandIdAsString = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.GetCallParamsInfoDirect(iCallParamsBlock, KD.SDK.AppliEnum.CallParamId.MENUCOMMANDID);
-            int menuCommandId = Convert.ToInt32(menuCommandIdAsString);
-
-            if (menuCommandId == (int)KD.SDK.AppliEnum.FileMenuItemsId.CLOSE || menuCommandId == (int)KD.SDK.AppliEnum.FileMenuItemsId.QUIT)
+            if (_technicalPlanMenuItem != null)
             {
-                //this.SaveModifiedSceneByTransfer();
+                string menuCommandIdAsString = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.GetCallParamsInfoDirect(iCallParamsBlock, KD.SDK.AppliEnum.CallParamId.MENUCOMMANDID);
+                KD.Plugin.Word.Plugin._technicalPlan.GetCurrentObjectIDForViewElevation(menuCommandIdAsString);
             }
             return true;
         }
-
-         public bool OnAppCommandAfter(int iCallParamsBlock)
+        public bool OnAppCommandAfter(int iCallParamsBlock)
         {
-            //bool isModified = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.SceneComponent.Modified;
-            //System.Windows.Forms.MessageBox.Show("cmd app aft : " + isModified.ToString());
-           
+            if (_technicalPlanMenuItem != null)
+            {
+                string menuCommandIdAsString = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.GetCallParamsInfoDirect(iCallParamsBlock, KD.SDK.AppliEnum.CallParamId.MENUCOMMANDID);
+                KD.Plugin.Word.Plugin._technicalPlan.InitializeCurrentObjectIDForViewElevation(menuCommandIdAsString);
+
+                KD.Plugin.Word.Plugin._technicalPlan.ManageStateOfModifiedScene();
+            }
+
             return true;
         }
 
@@ -152,7 +152,7 @@ namespace Schmidt.TechnicalPlan
             this.DisableMessageForm();
 
             KD.Plugin.Word.TechnicalPlan._pluginWord.TechnicalPlanMainMethod(iCallParamsBlock);
-
+           
             return true;
         }
 
@@ -185,23 +185,6 @@ namespace Schmidt.TechnicalPlan
         {
             return KD.Plugin.Word.TechnicalPlan._pluginWord.SetPageOrientationOnDocWord(iCallParamsBlock);
         }
-
-        //private void SaveModifiedSceneByTransfer()
-        //{
-        //    string sceneModified = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.Scene.SceneGetCustomInfo(KD.Plugin.Word.ConstRessourceNames.IsSceneModified);
-
-        //    if (!String.IsNullOrEmpty(sceneModified))
-        //    {
-        //        if (bool.TryParse(sceneModified, out bool isSceneModified))
-        //        {
-        //            if (isSceneModified)
-        //            {
-        //                bool result = KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.Scene.SceneSetCustomInfo(KD.StringTools.Const.FalseCamelCase, KD.Plugin.Word.ConstRessourceNames.IsSceneModified);
-        //                KD.Plugin.Word.TechnicalPlan._pluginWord.CurrentAppli.ExecuteMenuItem(-1, (int)KD.SDK.AppliEnum.FileMenuItemsId.SAVE);
-        //            }
-        //        }
-        //    }
-        //}   
     }
     
 }
