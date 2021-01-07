@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Ic90dev\Plugins\Standard\Word\</OutputPath>
+    <OutputPath>..\..\..\..\Ic91dev\Plugins\Standard\Word\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -37,9 +37,11 @@
   <ItemGroup>
     <Reference Include="KD.Plugin.Word">
       <HintPath>..\..\..\..\Ic90dev\Plugins\Standard\Word\KD.Plugin.Word.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="kd.sdk">
       <HintPath>..\..\..\..\Ic90dev\kd.sdk.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -48,7 +50,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>

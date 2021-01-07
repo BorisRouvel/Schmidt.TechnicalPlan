@@ -93,7 +93,7 @@ namespace Schmidt.TechnicalPlan
             return true;
         }
 
-        public bool OnFileOpenBefore(int iCallParamsBlock)
+        public bool OnFileOpenAfter(int iCallParamsBlock)
         {
             if (_technicalPlanMenuItem != null)
             {
@@ -101,7 +101,7 @@ namespace Schmidt.TechnicalPlan
             }
             return true;
         }
-        public bool OnFileNewBefore(int iCallParamsBlock)
+        public bool OnFileNewAfter(int iCallParamsBlock)
         {
             if (_technicalPlanMenuItem != null)
             {
